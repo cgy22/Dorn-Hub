@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>随机抽号器</title>
+    <!-- Cookie 同意组件 -->
+	<script src="http://dorn.rf.gd/resources/cookie-consent.js"></script>
+    <style>
+        #navname1 {
+            margin-left: 10px;
+            font-weight: 900;
+            background-color: transparent;
+            color: rgb(102, 153, 255);
+            font-size: 30px;
+            font-family: Microsoft Yahei;
+        }
+        #navname2 {
+            margin-left: 10px;
+            font-weight: 900;
+            height: 50px;
+            color: white;
+            font-size: 30px;
+            background-color: rgb(102, 153, 255);
+            border-radius: 10px;
+            font-family: Microsoft Yahei;
+        }
+        #inp {
+            font-size: 25px;
+            font-weight: 900;
+            color: #16DA49;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            width: 100px;
+            height: 30px;
+            background-color: white;
+            box-shadow: 6px 6px 10px #32243E;
+        }
+        #sliderContainer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #challengeSlider {
+            width: 80%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 5px;
+            background: white;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .15s ease-in-out;
+        }
+        #challengeSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: white;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #000;
+        }
+        #challengeSlider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: white;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid #000;
+        }
+    </style>
+    <link rel="stylesheet" href="css/style2.css">
+</head>
+<body>
+<nav>
+    <div class="menu">
+        <span id="navname1">Dorn</span>
+        <span id="navname2">&nbsp;Hub&nbsp;</span>
+        <div class="menu_links">
+            <a href="index.html" class="link">随机抽号器</a>
+            <a href="index2.html" class="link">随机抽皓器</a>
+            <a href="index4.html" class="link">不重复的随机抽号器</a>
+        </div>
+        <div class="menu_icon">
+            <span class="icon"></span>
+        </div>
+    </div>
+</nav>
+<section class="wrapper">
+    <div class="container">
+        <div id="scene" class="scene" data-hover-only="false">
+            <div class="circle" data-depth="1.2"></div>
+            <div class="one" data-depth="0.9">
+                <div class="content">
+                    <span class="piece"></span>
+                    <span class="piece"></span>
+                    <span class="piece"></span>
+                </div>
+            </div>
+            <div class="two" data-depth="0.60">
+                <div class="content">
+                    <span class="piece"></span>
+                    <span class="piece"></span>
+                    <span class="piece"></span>
+                </div>
+            </div>
+            <div class="three" data-depth="0.40">
+                <div class="content">
+                    <span class="piece"></span>
+                    <span class="piece"></span>
+                    <span class="piece"></span>
+                </div>
+            </div>
+            <p class="p404" data-depth="0.50" style="font-size: 100px;" id="number">请抽号</p>
+            <p class="p404" data-depth="0.10" style="font-size: 100px;" id="number1">请抽号</p>
+        </div>
+        <div class="text">
+            <article>
+                <div align="center">
+                    <p style="font-size: 20px;">号数：1~<input id="inp" value="53" oninput="resetChouhao()"/></p>
+                </div>
+                <button id="ch" onclick="toggleChouhao();" style="font-size: 20px;">抽号</button>
+                <div id="sliderContainer">
+                    <label for="challengeSlider" style="font-size: 20px; color: white;">挑战性：</label>
+                    <input type="range" id="challengeSlider" min="10" max="100" value="1" />
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+<script src='js/jquery.min.js'></script>
+<script>
+var intervalId;
+var speed = 100;
+
+function resetChouhao() {
+    document.getElementById("number").innerHTML = "请抽号";
+    document.getElementById("number1").innerHTML = "请抽号";
+    clearInterval(intervalId);
+    document.getElementById("ch").innerHTML = "抽号";
+    document.getElementById("ch").onclick = toggleChouhao;
+}
+
+function toggleChouhao() {
+    var btn = document.getElementById("ch");
+    if (btn.innerHTML === "抽号") {
+        startChouhao();
+    } else {
+        stopChouhao();
+    }
+}
+
+function startChouhao() {
+    var maxNumber = parseInt(document.getElementById("inp").value);
+    intervalId = setInterval(function() {
+        var randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+        document.getElementById("number").innerHTML = randomNumber;
+        document.getElementById("number1").innerHTML = randomNumber;
+    }, speed);
+    document.getElementById("ch").innerHTML = "停止";
+}
+
+function stopChouhao() {
+    clearInterval(intervalId);
+    document.getElementById("ch").innerHTML = "抽号";
+}
+
+document.getElementById('challengeSlider').addEventListener('input', function() {
+    speed = 1000 / this.value;
+});
+</script>
+</body>
+</html>
