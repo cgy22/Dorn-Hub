@@ -9,7 +9,7 @@
 🔗 **Main Website:** [https://dornhub.eu.org](https://dornhub.eu.org)  
 🔄 **Another domain:** [https://dorn.rf.gd](https://dorn.rf.gd)
 
-📬 **Contact:** [dornhub@126.com](mailto:dornhub@126.com), [https://dornhub.eu.org/contact.html](https://dornhub.eu.org/contact.html) — or [open an issue](../../issues)
+📬 **Contact:** [contact@dornhub.eu.org](mailto:contact@dornhub.eu.org), [https://dornhub.eu.org/contact.html](https://dornhub.eu.org/contact.html) — or [open an issue](../../issues)
 
 ---
 
@@ -17,7 +17,7 @@
 
 | Folder | Purpose |
 | :--- | :--- |
-| 🌐 **/website** | Website documentation, screenshots, changelog (not full source code) |
+| 🌐 **/website** | Website documentation, screenshots, changelog (maybe not full source code) |
 | 🎮 **/projects** | Games, tools, apps — each in its own subfolder |
 | 📖 **/literature** | Lore, characters, worldbuilding |
 | ⚙️ **/assets** | Shared files. Media, fonts, and more |
@@ -52,7 +52,7 @@ Please keep all content respectful and on-theme for the Donh IP.
 
 ---
 
-*Last updated: April 2026*
+*Last updated: July 5, 2026*
 
 ---
 
@@ -72,7 +72,7 @@ Dorn Hub
 🔗 **主站：** [https://dornhub.eu.org](https://dornhub.eu.org)  
 🔄 **另一域名：** [https://dorn.rf.gd](https://dorn.rf.gd)
 
-📬 **联系方式：** [dornhub@126.com](mailto:dornhub@126.com)，[https://dornhub.eu.org/contact.html](https://dornhub.eu.org/contact.html) — 或 [提交 Issue](../../issues)
+📬 **联系方式：** [contact@dornhub.eu.org](mailto:contact@dornhub.eu.org)，[https://dornhub.eu.org/contact.html](https://dornhub.eu.org/contact.html) — 或 [提交 Issue](../../issues)
 
 ---
 
@@ -115,7 +115,7 @@ Dorn Hub
 
 ---
 
-*最后更新：2026年4月*
+*最后更新：2026年7月5日*
 
 ---
 
