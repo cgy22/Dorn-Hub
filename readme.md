@@ -67,8 +67,8 @@ The painting, music, articles, and other content in this warehouse are licensed 
 
 ### Detailed explanation
 
--Code file: See [LICENSE](LICENSE)
--Content file: See [CONTENT-LICENSE](CONTENT-LICENSE)
+- Code file: See [LICENSE](LICENSE)
+- Content file: See [CONTENT-LICENSE](CONTENT-LICENSE)
 
 ---
 
