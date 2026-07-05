@@ -58,7 +58,17 @@ Please keep all content respectful and on-theme for the Donh IP.
 
 All code and content of this project are protected by copyright. Unauthorized copying, modification, distribution, or commercial use is prohibited.
 
-Please refer to the [LICENSE](LICENSE) document for detailed license terms.
+### Code
+The **code** (*.js, *.css, *.html, *.php) in this repository is licensed under the **AGPL-3.0** license.
+
+### Content
+
+The painting, music, articles, and other content in this warehouse are licensed under CC BY-NC-ND 4.0 license.
+
+### Detailed explanation
+
+-Code file: See [LICENSE](LICENSE)
+-Content file: See [CONTENT-LICENSE](CONTENT-LICENSE)
 
 ---
 
@@ -131,7 +141,15 @@ Dorn Hub
 
 本项目的所有代码和内容均受版权保护。未经授权，禁止复制、修改、分发或商业使用。
 
-详细许可条款请参见 [LICENSE](LICENSE) 文件。
+### 代码
+本仓库的**代码**（*.js, *.css, *.html, *.php）使用 **AGPL-3.0** 许可证。
+
+### 内容
+本仓库的**绘画、音乐、文章等内容**使用 **CC BY-NC-ND 4.0** 许可证。
+
+### 详细说明
+- 代码文件：参见 [LICENSE](LICENSE)
+- 内容文件：参见 [CONTENT-LICENSE](CONTENT-LICENSE)
 
 ---
 
