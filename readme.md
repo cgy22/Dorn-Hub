@@ -63,7 +63,7 @@ The **code** (*.js, *.css, *.html, *.php) in this repository is licensed under t
 
 ### Content
 
-The painting, music, articles, and other content in this warehouse are licensed under CC BY-NC-ND 4.0 license.
+Some of the paintings, music, articles, and other content in this warehouse are licensed under CC BY-NC-ND 4.0 license.
 
 ### Detailed explanation
 
@@ -145,7 +145,7 @@ Dorn Hub
 本仓库的**代码**（*.js, *.css, *.html, *.php）使用 **AGPL-3.0** 许可证。
 
 ### 内容
-本仓库的**绘画、音乐、文章等内容**使用 **CC BY-NC-ND 4.0** 许可证。
+本仓库的部分**绘画、音乐、文章等内容**使用 **CC BY-NC-ND 4.0** 许可证。
 
 ### 详细说明
 - 代码文件：参见 [LICENSE](LICENSE)
