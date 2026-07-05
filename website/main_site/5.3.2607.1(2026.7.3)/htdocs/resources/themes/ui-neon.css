@@ -1,0 +1,392 @@
+/* ==================== 限定版 - 赛博霓虹限定 ==================== */
+/* 直接覆盖原有样式，无需修改HTML任何class/ID */
+
+/* 1. 核心变量重定义 - 赛博朋克霓虹配色 */
+:root {
+    /* 原变量覆盖 */
+    --primary-color: #FF2A6D;
+    --primary-color-rgb: 255, 42, 109;
+    --secondary-color: #1A1A2E;
+    --card-hover-color: #16213E;
+    --text-color: #E0E0E0;
+    --bg-color: #0F0F1A;
+    --card-bg: #1A1A2E;
+    --header-bg: rgba(26, 26, 46, 0.85);
+    --border-color: #FF2A6D30;
+    --shadow-color: rgba(255, 42, 109, 0.2);
+    --overlay-color: rgba(15, 15, 26, 0.8);
+    
+    /* 限定版新增变量 */
+    --accent-color: #05D9E8;
+    --accent-rgb: 5, 217, 232;
+    --glow-intensity: 0px 0px 10px;
+    --border-glow: 0 0 5px rgba(255, 42, 109, 0.5);
+}
+
+/* 2. 深色主题强化（原[data-theme="dark"]基础上增强） */
+[data-theme="dark"] {
+    --primary-color: #05D9E8;
+    --primary-color-rgb: 5, 217, 232;
+    --secondary-color: #0A0A15;
+    --card-hover-color: #0F0F1F;
+    --bg-color: #05050A;
+    --card-bg: #0A0A15;
+    --border-color: #05D9E830;
+    --shadow-color: rgba(5, 217, 232, 0.15);
+}
+
+/* 3. 全局扫描线效果 */
+body {
+    position: relative;
+    background: var(--bg-color);
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.03) 0px,
+        rgba(255, 255, 255, 0.03) 2px,
+        transparent 2px,
+        transparent 6px
+    );
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.5;
+}
+
+/* 4. 云母效果增强 - 改为霓虹光晕 */
+.section-container {
+    background: rgba(26, 26, 46, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 20px rgba(255, 42, 109, 0.2), inset 0 0 20px rgba(255, 42, 109, 0.05);
+    transition: all 0.4s cubic-bezier(0.05, 0.7, 0.1, 1.25);
+}
+
+.section-container:hover {
+    box-shadow: 0 0 30px rgba(255, 42, 109, 0.4), inset 0 0 30px rgba(255, 42, 109, 0.1);
+    transform: translateY(-2px);
+}
+
+[data-theme="dark"] .section-container {
+    background: rgba(10, 10, 21, 0.6);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(5, 217, 232, 0.2);
+}
+
+/* 5. 卡片霓虹边框特效 */
+.card, .pinned-card {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 42, 109, 0.05) 100%);
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before, .pinned-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 42, 109, 0.2), 
+        transparent
+    );
+    transition: left 0.6s cubic-bezier(0.05, 0.85, 0.1, 1.25);
+}
+
+.card:hover::before, .pinned-card:hover::before {
+    left: 100%;
+}
+
+.card:hover, .pinned-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--border-glow), 0 10px 30px var(--shadow-color);
+}
+
+/* 6. 卡片标题霓虹文字 */
+.card h3, .pinned-card h3 {
+    text-shadow: 0 0 5px rgba(255, 42, 109, 0.5);
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent !important;
+}
+
+/* 7. 按钮 - 霓虹发光效果 */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    box-shadow: 0 0 15px rgba(255, 42, 109, 0.4);
+    border: none;
+    position: relative;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 25px rgba(255, 42, 109, 0.6);
+    transform: scale(1.05) translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: scale(0.98) translateY(0);
+}
+
+/* 8. 搜索框 - 科技感边框 */
+.search-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.05, 0.85, 0.1, 1.25);
+}
+
+.search-box:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 42, 109, 0.2), inset 0 0 5px rgba(255, 42, 109, 0.3);
+    transform: scale(1.02);
+}
+
+/* 9. 搜索按钮增强 */
+.search-btn {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    position: relative;
+    overflow: hidden;
+}
+
+.search-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.05, 0.85, 0.1, 1.25);
+}
+
+.search-btn:hover::after {
+    opacity: 0.5;
+}
+
+/* 10. 头部 - 动态霓虹下划线 */
+header {
+    border-bottom: 2px solid transparent;
+    background: linear-gradient(var(--header-bg), var(--header-bg)) padding-box,
+                linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color)) border-box;
+    animation: borderFlow 3s linear infinite;
+}
+
+@keyframes borderFlow {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+/* 11. 模态框 - 霓虹发光 */
+.modal-content {
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 0 40px rgba(255, 42, 109, 0.3), inset 0 0 20px rgba(255, 42, 109, 0.05);
+}
+
+.modal-header h2 {
+    text-shadow: 0 0 10px rgba(255, 42, 109, 0.5);
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent !important;
+}
+
+/* 12. 滚动条自定义 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+    box-shadow: 0 0 5px var(--primary-color);
+}
+
+/* 13. Logo强化 - 霓虹脉冲 */
+.dornhub-logo .logo-part1,
+.dornhub-logo .logo-part2 {
+    animation: logoPulse 2s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+    0%, 100% {
+        text-shadow: 0 0 5px var(--primary-color);
+    }
+    50% {
+        text-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--accent-color);
+    }
+}
+
+/* 14. 下拉菜单毛玻璃增强 */
+.user-dropdown {
+    backdrop-filter: blur(20px);
+    background: rgba(26, 26, 46, 0.9);
+    border-left: 3px solid var(--primary-color);
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(90deg, rgba(255, 42, 109, 0.2), transparent);
+    padding-left: 20px;
+}
+
+/* 15. 选项卡霓虹样式 */
+.update-tab {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+    transition: all 0.3s cubic-bezier(0.05, 0.85, 0.1, 1.25);
+}
+
+.update-tab.active {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    box-shadow: 0 0 15px rgba(255, 42, 109, 0.4);
+}
+
+.update-tab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 42, 109, 0.3);
+}
+
+/* 16. 设置选项开关强化 */
+.toggle-slider {
+    background: linear-gradient(135deg, #666, #444);
+}
+
+input:checked + .toggle-slider {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+    background: #fff;
+    box-shadow: 0 0 5px var(--primary-color);
+}
+
+/* 17. 颜色选项 - 霓虹圆点 */
+.color-option {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.05, 0.85, 0.1, 1.25);
+}
+
+.color-option.active {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* 18. 数据加载动画强化 */
+@keyframes spin {
+    0% { transform: rotate(0deg); text-shadow: 0 0 5px var(--primary-color); }
+    100% { transform: rotate(360deg); text-shadow: 0 0 20px var(--accent-color); }
+}
+
+.update-loading i {
+    animation: spin 1s cubic-bezier(0.05, 0.85, 0.1, 1.25) infinite;
+}
+
+/* 19. 卡片入场动画增强 */
+@keyframes cardAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+        filter: blur(5px);
+    }
+    70% {
+        transform: translateY(-5px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* 20. 底部渐变装饰 */
+footer::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), var(--accent-color), transparent);
+}
+
+footer {
+    position: relative;
+}
+
+/* 21. 响应式微调 */
+@media (max-width: 800px) {
+    .section-container {
+        margin: 15px 10px;
+        backdrop-filter: blur(8px);
+    }
+    
+    .card::before, .pinned-card::before {
+        display: none; /* 移动端性能优化 */
+    }
+}
+
+/* 22. 全局鼠标悬浮特效 */
+* {
+    cursor: default;
+}
+
+a, button, .btn, .card, .pinned-card, .dropdown-item, .color-option, .theme-option, .background-option, .update-tab {
+    cursor: pointer;
+}
+
+/* 23. 输入框聚焦特效 */
+input:focus, textarea:focus, select:focus {
+    animation: focusGlow 0.4s cubic-bezier(0.05, 0.85, 0.1, 1.25);
+}
+
+@keyframes focusGlow {
+    0% { box-shadow: 0 0 0 0 rgba(255, 42, 109, 0.4); }
+    100% { box-shadow: 0 0 0 3px rgba(255, 42, 109, 0.2); }
+}
+
+/* 24. 通知消息强化 */
+.insider-badge {
+    animation: badgePulse 1.5s cubic-bezier(0.05, 0.85, 0.1, 1.25) infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 42, 109, 0.4); }
+    50% { box-shadow: 0 0 0 5px rgba(255, 42, 109, 0); }
+}
+
+/* 25. 最终装饰 - 四角光晕 */
+.container::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 40%, rgba(255, 42, 109, 0.03), transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
