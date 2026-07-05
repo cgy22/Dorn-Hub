@@ -1,6 +1,9 @@
-/* loading.css - Page loading overlay styles */
+/* loading.css - 页面加载遮罩样式 */
+/* 文件位置: http://resources.dorn.rf.gd/loading.css */
+/* 导入主 UI 的动画变量 */
+@import url('ui.css');
 
-/* Loading mask container */
+/* 加载遮罩容器 */
 #loading-mask {
     position: fixed;
     top: 0;
@@ -14,26 +17,26 @@
     align-items: center;
     z-index: 9999;
     opacity: 1;
-    transition: opacity 0.3s ease-out;
+    transition: opacity var(--transition-speed) var(--animation-curve);  /* ← 改 */
     backdrop-filter: blur(10px) saturate(180%) contrast(80%);
     -webkit-backdrop-filter: blur(50px) saturate(180%) contrast(80%);
     overflow: hidden;
     text-align: center;
 }
 
-/* Loading text container */
+/* 加载文字容器 */
 .spinner-text {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Individual character animation */
+/* 单个文字动画 */
 .spinner-text span {
     animation: slideUpDown 0.65s infinite alternate ease-in-out;
 }
 
-/* "Dorn" text */
+/* Dorn 文字 */
 #loading-text-1 {
     margin-left: 10px;
     font-weight: 700;
@@ -43,7 +46,7 @@
     animation-delay: 0s;
 }
 
-/* "Hub" text */
+/* Hub 文字 */
 #loading-text-2 {
     margin-left: 5px;
     font-weight: 700;
@@ -58,7 +61,7 @@
     align-items: center;
 }
 
-/* Slide up and down animation */
+/* 上下滑动动画 */
 @keyframes slideUpDown {
     0% {
         transform: translateY(0);
@@ -68,14 +71,14 @@
     }
 }
 
-/* Hint text */
+/* 提示文字 */
 #loading-mask p {
     margin-top: 20px;
     color: #000;
     font-size: 16px;
 }
 
-/* Loading spinner animation */
+/* 加载转圈圈动画 */
 .loading-spinner {
     width: 50px;
     height: 50px;
@@ -91,7 +94,7 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Stop loading button */
+/* 中断加载按钮 */
 #stop-button {
     display: none;
     background: var(--primary-color, #16DA49);
@@ -102,7 +105,7 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-speed) var(--animation-curve);
     box-shadow: 0 1.6px 3.6px 0 var(--shadow-color, rgba(0,0,0,0.1)), 0 0.3px 0.9px 0 var(--shadow-color, rgba(0,0,0,0.1));
     position: relative;
     overflow: hidden;
@@ -118,7 +121,7 @@
     transform: translateY(0) scale(0.98);
 }
 
-/* Button shine effect */
+/* 按钮闪光效果（可选） */
 #stop-button::before {
     content: '';
     position: absolute;
@@ -127,7 +130,7 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.5s;
+    transition: left 0.5s var(--animation-curve);
 }
 
 #stop-button:hover::before {
@@ -139,7 +142,7 @@
     font-size: 12px;
 }
 
-/* Stop hint text */
+/* 中断提示文字 */
 #stop-text {
     display: none;
     font-size: 12px;
@@ -151,7 +154,7 @@
     max-width: 300px;
 }
 
-/* Dark theme adaptation */
+/* 深色主题适配 */
 [data-theme="dark"] #loading-mask {
     background-color: rgba(30, 30, 30, 0.8);
 }
@@ -168,7 +171,7 @@
     border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Responsive design */
+/* 响应式设计 */
 @media (max-width: 768px) {
     #loading-text-1,
     #loading-text-2 {
