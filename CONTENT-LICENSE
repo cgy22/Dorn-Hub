@@ -16,14 +16,19 @@ This license applies to the following original content works created by Dorn Hub
 
 ### Literature & Documents
 - Document files under `website/main_site/*/htdocs/library/`
+- Document files under `literature/documents`
 - **Exception**: The following video files are excluded:
   - `2023.11失踪打吗.mp4`
   - `《天上飞》翻唱.mp4`
   - `刺梨.mp4`
+  - `【4K顶级画质60FPS】蔡徐坤《只因你太美》原版完整版现场！一晃眼6年过去了.mp4`
+  - `prickly-pear.mp4`
 
 ### Image Resources
 - Images under `website/main_site/*/htdocs/resources/images/`
 - Images under `website/main_site/*/htdocs/`
+- Images under `assets/images`
+- Images under `literature/pictures`
 - `website/main_site/*/htdocs/gov-services/id/flag.jpg`
 
 ## License Terms
@@ -44,6 +49,7 @@ The following contents are NOT covered by this license:
 | `2023.11失踪打吗.mp4` | Copyright belongs to original authors |
 | `《天上飞》翻唱.mp4` | Copyright belongs to original authors |
 | `刺梨.mp4` | Copyright belongs to original authors |
+| `【4K顶级画质60FPS】蔡徐坤《只因你太美》原版完整版现场！一晃眼6年过去了.mp4` | Copyright belongs to original authors |
 
 ##Full License Text
 
