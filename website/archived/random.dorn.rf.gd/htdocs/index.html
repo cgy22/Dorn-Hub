@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh" >
+<head>
+<meta charset="UTF-8">
+<title>随机抽号器</title>
+<link rel="icon" href="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimage2.sina.com.cn%2FIT%2Fother%2F2004-06-10%2FU73P2T1D374147F13DT20040610173949.jpg&amp;refer=http%3A%2F%2Fimage2.sina.com.cn&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=auto?sec=1672128169&amp;t=72b87204897814c21f69b40aec9b3ef4">
+    <!-- Cookie 同意组件 -->
+	<script src="http://dorn.rf.gd/resources/cookie-consent.js"></script>
+<style>
+	#navname1{
+		margin-left:10px;
+		font-weight:900;
+		background-color:transparent;
+		color:rgb(102,153,255);
+		font-size:30px;
+		font-family:Microsoft Yahei;
+	}
+	#navname2{
+		margin-left:10px;
+		font-weight:900;
+		height:50px;
+		color:white;
+		font-size:30px;
+		background-color:rgb(102,153,255);
+		border-radius:10px;
+		font-family:Microsoft Yahei;
+		}
+	#inp{
+		font-size: 25px;
+		font-weight: 900;
+		color: #16DA49;
+		border: 1px solid #000000;
+		border-radius: 10px;
+		width:100px;
+		height: 30px;
+		background-color:white;
+		box-shadow: 6px 6px 10px #32243E;
+	}
+</style>
+<link rel="stylesheet" href="css/style1.css">
+
+</head>
+<body>
+
+<!--<div class="about">
+   <a class="bg_links social portfolio" href="#">
+      <span class="icon"></span>
+   </a>
+   <a class="bg_links social dribbble" href="#">
+      <span class="icon"></span>
+   </a>
+   <a class="bg_links social linkedin" href="#">
+      <span class="icon"></span>
+   </a>
+   <a class="bg_links logo"></a>
+</div>-->
+
+<nav>
+	<div class="menu">
+		<span id="navname1">Dorn</span>
+		<span id="navname2">&nbsp;Hub&nbsp;</span>
+		<div class="menu_links">
+			<a href="index.html" class="link">随机抽号器</a>
+			<a href="index2.html" class="link">随机抽皓器</a>
+            <a href="index3.html" class="link">公平的随机抽号器</a>
+            <a href="http://random2.dorn.rf.gd" class="link">前往新版</a>
+            <a href="https://cgy22.github.io/dhof" class="link">𣿅国名人堂</a>
+		</div>
+		<div class="menu_icon">
+			<span class="icon"></span>
+		</div>
+	</div>
+</nav>
+
+<section class="wrapper">
+
+	<div class="container">
+
+		<div id="scene" class="scene" data-hover-only="false">
+
+
+			<div class="circle" data-depth="1.2"></div>
+			
+
+			<div class="one" data-depth="0.9">
+				<div class="content">
+					<!--<span class="piece"></span>
+					<span class="piece"></span>
+					<span class="piece"></span>-->
+				</div>
+			</div>
+			
+			<div class="one" data-depth="0.9">
+				<div class="content" style="width: 10px; height: 10px; display: flex; justify-content: center; align-items: center; position: absolute; top: 50%; left: calc(50% + 400px); transform: translate(-50%, -50%)";
+}">
+					<!--<span class="piece"></span>
+					<span class="piece"></span>
+					<span class="piece"></span>-->
+				</div>
+			</div>
+			
+
+			<div class="two" data-depth="0.60">
+				<div class="content">
+					<!--<span class="piece"></span>
+					<span class="piece"></span>
+					<span class="piece"></span>-->
+				</div>
+			</div>
+
+			<div class="three" data-depth="0.40">
+				<div class="content">
+					<!--<span class="piece"></span>
+					<span class="piece"></span>
+					<span class="piece"></span>-->
+				</div>
+			</div>
+
+			<p class="p404" data-depth="0.50" style="font-size:100px;" id="number">请抽号</p>
+			<p class="p404" data-depth="0.10" style="font-size:100px;" id="number1">请抽号</p>
+
+		</div>
+
+		<div class="text">
+			<article>
+				<div align="center">
+					<p style="font-size:20px;">号数：1~<input id="inp" value="53"/></p>
+				</div>
+				<button id="ch" onclick="chouhao();" style="font-size:20px;">抽号</button>
+			</article>
+		</div>
+
+	</div>
+</section>
+
+<!--<script src='js/parallax.min.js'></script>-->
+<script src='js/jquery.min.js'></script>
+<script src="js/script.js"></script>
+<script>
+function Time() {var date = new Date();var hour = date.getHours();var minute = date.getMinutes();var second = date.getSeconds();var period = "";if (hour >= 12) {period = "下午";} else {period = "上午";}if (hour == 0) {hour = 12;} else {if (hour > 12) {hour = hour - 12;}}hour = update(hour);minute = update(minute);second = update(second);document.getElementById("digital-clock").innerText =period + " " + hour + " : " + minute + " : " + second;document.getElementById("digital-clock1").innerText =period + " " + hour + " : " + minute + " : " + second;setTimeout(Time, 1000);}var die_people=num=tonhnb=0,sb=!true,isNotSb=[0,1];function chouhao(){tonhnb=Math.random();num=document.getElementById("inp").value;die_people=(Math.random()*num).toFixed(0);if(!die_people){chouhao();sb=false}if(isNotSb.includes(die_people)){chouhao();sb=false}else if(tonhnb<=0.8&&tonhnb>0.3&&!sb){document.getElementById("number").innerHTML= `${11+4*5+14}`;document.getElementById("number1").innerHTML= `${11+4*5+14}`;sb=!sb;return}else if(die_people==0){document.getElementById("number").innerHTML= '恭喜你,再抽一次!';document.getElementById("number1").innerHTML= '恭喜你,再抽一次!';sb=!sb;return}else if(die_people==1){document.getElementById("number").innerHTML= '恭喜你,再抽一次!';document.getElementById("number1").innerHTML= '恭喜你,再抽一次!';sb=!sb;return}document.getElementById("number").innerHTML=die_people;document.getElementById("number1").innerHTML=die_people;sb=false}function update(t) {if (t < 10) {return "0" + t;} else {return t;}}Time();function date() {var date = new Date();var ms = date.getTime();var actual = ms - 1577808000000;var left = actual % 32054400000;var yearms = actual - left;var year = yearms / 32054400000 + 1;var leftyear = year % 8;var leftyear1 = year - leftyear;var Olympics = leftyear1 * 32054400000; //fengexianvar actual2 = actual + Olympics;var left2 = actual2 % 32054400000;var yearms2 = actual2 - left2;var year2 = yearms2 / 32054400000 + 1;var leftmonth2 = left2 % 3974400000;var actualmonthms = left2 - leftmonth2;var month = actualmonthms / 3974400000 + 1;var leftdayms = leftmonth2 % 86400000;var dayms = leftmonth2 - leftdayms;var day = dayms / 86400000 + 1;var d = new Date();var dateearth = d.getFullYear() + "年" +(d.getMonth() + 1) + "月" + d.getDate() + "日";document.getElementById("Date1").innerText = dateearth;document.getElementById("Date").innerText =year2 + "年" + month + "月" + day + "日";//background-image: url('https://cgy22.github.io/dorn/20230318192133_1.jpg');
+}date();//(function($) {var	$window = $(window),$body = $('body'),$header = $('#header'),$all = $body.add($header);// Breakpoints.breakpoints({xxlarge: [ '1681px',  '1920px' ],xlarge:  [ '1281px',  '1680px' ],large:   [ '1001px',  '1280px' ],medium:  [ '737px',   '1000px' ],small:   [ '481px',   '736px'  ],xsmall:  [ null,      '480px'  ]});$window.on('load', function() {setTimeout(function() {$body.removeClass('is-preload');}, 100);});if (browser.mobile)$body.addClass('is-touch');else {breakpoints.on('<=small', function() {$body.addClass('is-touch');});breakpoints.on('>small', function() {$body.removeClass('is-touch');});}//if (browser.name == 'ie') /{var $main = $('.main.fullscreen'),IEResizeTimeout;$window.on('resize.ie-flexbox-fix', function() {clearTimeout(IEResizeTimeout);IEResizeTimeout = setTimeout(function() {var wh = $window.height();$main.each(function() {var $this = $(this);$this.css('height', '');if ($this.height() <= wh)$this.css('height', (wh - 50) + 'px');});});}).triggerHandler('resize.ie-flexbox-fix');}
+</script>
+</body>
+</html>
