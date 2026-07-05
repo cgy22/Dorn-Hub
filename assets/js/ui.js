@@ -1,15 +1,16 @@
-// ui.js - Dorn Hub website unified UI control and animation effects
+// ui.js - 统一UI控制与动画效果
+// 文件位置: https://dornhub.eu.org/resources/ui.js
 
 /**
- * Global UI Control Module
- * Includes: Theme switching, color management, background control, mica effects, animation effects
- * Does not include any login components
+ * 全局UI控制模块
+ * 包含: 主题切换、颜色管理、背景控制、云母效果、动画效果
+ * 不包含任何登录组件
  */
 
 (function() {
     'use strict';
 
-    // ==================== Global Variables ====================
+    // ==================== 全局变量 ====================
     let currentTheme = localStorage.getItem('theme') || 'auto';
     let currentColor = localStorage.getItem('primaryColor') || '#16DA49';
     let backgroundType = localStorage.getItem('backgroundType') || 'default';
@@ -17,7 +18,7 @@
     let showTime = localStorage.getItem('showTime') !== 'false';
     let animationTimer = null;
 
-    // ==================== Initialization ====================
+    // ==================== 初始化 ====================
     document.addEventListener('DOMContentLoaded', function() {
         initTheme();
         initColor();
@@ -26,9 +27,10 @@
         initScrollEffects();
         initMicaEffects();
         initAnimations();
+        initHamburgerMenu();
     });
 
-    // ==================== Theme Management ====================
+    // ==================== 主题管理 ====================
     function initTheme() {
         applyTheme(currentTheme);
         setupThemeListeners();
@@ -65,7 +67,7 @@
         });
     }
 
-    // ==================== Color Management ====================
+    // ==================== 颜色管理 ====================
     function initColor() {
         applyColor(currentColor);
         updatePrimaryColorRGB();
@@ -133,7 +135,7 @@
         }
     }
 
-    // ==================== Background Management ====================
+    // ==================== 背景管理 ====================
     function initBackground() {
         applyBackground(backgroundType);
         setupBackgroundListeners();
@@ -191,7 +193,7 @@
 
     function tryLoadImage(sources, index, bgLayer) {
         if (index >= sources.length) {
-            console.warn('All background images failed to load');
+            console.warn('所有背景图片加载失败');
             return;
         }
 
@@ -233,7 +235,7 @@
         }
     }
 
-    // ==================== Date and Time ====================
+    // ==================== 日期时间 ====================
     function initDateTime() {
         updateDateTime();
         setInterval(updateDateTime, 1000);
@@ -292,7 +294,7 @@
         return showTime;
     }
 
-    // ==================== Scroll Effects ====================
+    // ==================== 滚动效果 ====================
     function initScrollEffects() {
         window.addEventListener('scroll', handleScroll);
         handleScroll();
@@ -315,7 +317,7 @@
         }
     }
 
-    // ==================== Mica Effects ====================
+    // ==================== 云母效果 ====================
     function initMicaEffects() {
         const sections = document.querySelectorAll('.section-container, .modal-content, .user-dropdown');
         sections.forEach(section => {
@@ -345,7 +347,7 @@
         });
     }
 
-    // ==================== Animation Effects ====================
+    // ==================== 动画效果 ====================
     function initAnimations() {
         const cards = document.querySelectorAll('.card, .pinned-card, .info-item');
         cards.forEach(card => {
@@ -463,7 +465,7 @@
         });
     }
 
-    // ==================== Notification System ====================
+    // ==================== 通知系统 ====================
     function showNotification(message, type = 'info', duration = 3000) {
         const existingNotification = document.querySelector('.notification');
         if (existingNotification) {
@@ -529,7 +531,7 @@
         
         function removeNotification(notif) {
             if (notif.parentNode) {
-                notif.style.animation = `slideOutRight var(--transition-speed) var(--animation-curve)`;
+                notif.style.animation = `slideOutRight var(--transition-speed) var(--animation-curve) forwards`;
                 setTimeout(() => {
                     if (notif.parentNode) {
                         notif.remove();
@@ -541,7 +543,7 @@
         return notification;
     }
 
-    // ==================== Event Dispatch ====================
+    // ==================== 事件派发 ====================
     function dispatchThemeChange(theme) {
         const event = new CustomEvent('themeChanged', { detail: { theme } });
         document.dispatchEvent(event);
@@ -557,7 +559,7 @@
         document.dispatchEvent(event);
     }
 
-    // ==================== Public API ====================
+    // ==================== 公共API ====================
     window.UI = {
         getTheme: () => currentTheme,
         setTheme: setTheme,
@@ -582,6 +584,8 @@
         info: (msg, duration) => showNotification(msg, 'info', duration),
         handleScroll: handleScroll
     };
+	
+	window.showNotification = showNotification;
 
     const style = document.createElement('style');
     style.textContent = `
@@ -616,4 +620,74 @@
     `;
     document.head.appendChild(style);
 
+})();
+
+// ==================== 汉堡菜单 ====================
+(function() {
+    var isOpen = false;
+    var btn, menu, overlay, headerRight;
+
+    function init() {
+        var header = document.querySelector('header .header-content');
+        if (!header) return;
+        if (document.querySelector('.hamburger-btn')) return;
+
+        headerRight = header.querySelector('.header-right');
+        if (!headerRight) return;
+
+        btn = document.createElement('button');
+        btn.className = 'hamburger-btn';
+        btn.innerHTML = '<span></span><span></span><span></span>';
+
+        menu = document.createElement('div');
+        menu.className = 'mobile-menu';
+
+        overlay = document.createElement('div');
+        overlay.className = 'mobile-overlay';
+
+        header.appendChild(btn);
+        document.body.appendChild(menu);
+        document.body.appendChild(overlay);
+
+        btn.addEventListener('click', toggle);
+        overlay.addEventListener('click', toggle);
+
+        // 监听窗口变化，移动端把 header-right 移入菜单，桌面端移回 header
+        moveHeaderRight();
+        window.addEventListener('resize', moveHeaderRight);
+    }
+
+    function moveHeaderRight() {
+        var isMobile = window.innerWidth <= 800;
+        var header = document.querySelector('header .header-content');
+        if (!header || !headerRight) return;
+
+        if (isMobile) {
+            // 移动端：放入菜单
+            if (headerRight.parentNode === header) {
+                menu.insertBefore(headerRight, menu.firstChild);
+            }
+        } else {
+            // 桌面端：放回 header
+            if (headerRight.parentNode === menu) {
+                header.appendChild(headerRight);
+            }
+            // 关闭菜单
+            if (isOpen) toggle();
+        }
+    }
+
+    function toggle() {
+        isOpen = !isOpen;
+        btn.classList.toggle('active');
+        menu.classList.toggle('active');
+        overlay.classList.toggle('active');
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();
