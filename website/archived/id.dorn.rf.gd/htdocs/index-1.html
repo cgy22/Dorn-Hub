@@ -1,0 +1,1907 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>𣿅国公民身份文件生成系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <!-- 引入题库 -->
+    <script src="questions.js"></script>
+    <style>
+        /* ========================================================================= */
+        /* I. 网站整体样式 - Noto Sans SC 字体 */
+        /* ========================================================================= */
+        :root {
+            --main-color: #16DA49; /* 主题色 */
+            --bg-color: #f4f4f9;
+            --border-color: #ccc;
+            --text-color: #333;
+            --font-family-web: 'Noto Sans SC', sans-serif;
+            --font-family-pdf: 'SimSun', 'Noto Sans SC', sans-serif; 
+        }
+        body {
+            font-family: var(--font-family-web);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--main-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: var(--font-family-web);
+        }
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--main-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-button:hover {
+            background-color: #0f8f30; 
+        }
+        .submit-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        h2 {
+            border-bottom: 2px solid var(--main-color);
+            padding-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        /* ========================================================================= */
+        /* II. 答题页面样式 */
+        /* ========================================================================= */
+        #quiz-container {
+            display: block;
+        }
+        #application-container {
+            display: none;
+        }
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .quiz-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--main-color);
+        }
+        .question-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .question-number {
+            font-weight: bold;
+            color: var(--main-color);
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option:hover {
+            background-color: #f5f5f5;
+        }
+        .option.selected {
+            background-color: #e8f5e9;
+            border-color: var(--main-color);
+        }
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .quiz-button {
+            padding: 10px 20px;
+            background-color: var(--main-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .quiz-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background-color: var(--main-color);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .progress-text {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* ========================================================================= */
+        /* III. 身份证 PDF 模板样式 */
+        /* ========================================================================= */
+        #pdf-template-container {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            display: none;
+        }
+        
+        #pdf-template {
+            width: 1100px; 
+            height: 770px; 
+            border: 15px solid;
+            border-radius: 20px;
+            box-sizing: border-box;
+            overflow: hidden; 
+            position: relative;
+            background-color: white;
+            color: black; 
+            font-family: var(--font-family-pdf);
+            margin: 0;
+            padding: 0;
+            transform: none;
+        }
+        
+        /* 背景图片设置 */
+        #pdf-template::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('bg.png'); 
+            background-size: cover;
+            background-position: center;
+            opacity: 1;
+            z-index: 1;
+        }
+        
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+            padding: 20px 40px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* 徽章和标题区域 */
+        .header-section {
+            text-align: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .badge-container {
+            margin-bottom: 10px;
+        }
+        .badge {
+            width: 80px;
+            height: auto;
+            display: inline-block;
+        }
+        .main-title {
+            font-size: 34px;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: 3px;
+        }
+        .fixed-slogan {
+            font-size: 16px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            color: #555;
+            line-height: 1.4;
+        }
+        
+        /* 核心信息区 */
+        .info-section {
+            display: flex;
+            flex-grow: 1; 
+            padding-bottom: 10px;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .info-details {
+            flex: 1;
+            padding-right: 50px;
+            max-width: 700px;
+        }
+        
+        .detail-row {
+            margin-bottom: 8px;
+            display: flex;
+            font-size: 19px;
+        }
+        .detail-label {
+            font-weight: bold;
+            width: 180px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #ddd;
+            padding: 3px 0; 
+        }
+        .detail-value {
+            flex-grow: 1;
+            padding: 3px 0; 
+            word-break: break-all;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        /* 二维码和图片区 */
+        .image-area {
+            width: 220px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        #qrcode-canvas {
+            width: 120px; 
+            height: 120px;
+            border: 1px solid #333;
+            margin-bottom: 10px;
+        }
+        
+        /* 底部信息 */
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+            padding-top: 15px;
+        }
+        
+        .footer-left {
+            width: 55%;
+            font-size: 22px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        .footer-left img {
+            width: 120px;
+            height: auto;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            opacity: 0.9;
+        }
+        
+        .footer-right {
+            width: 40%;
+            text-align: right;
+            position: relative;
+            font-size: 22px;
+            padding-bottom: 10px;
+        }
+        .footer-right .stamp {
+            width: 200px;
+            height: auto;
+            position: absolute;
+            bottom: -15px;
+            right: 15px;
+            opacity: 0.8;
+        }
+        
+        .page-footer {
+            text-align: center;
+            font-size: 20px;
+            padding-top: 5px;
+            border-top: 1px dashed #aaa;
+            width: 100%;
+        }
+        
+        /* PDF 预览窗口样式 */
+        #pdf-preview {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            min-height: 700px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #pdf-iframe {
+            height: 700px !important;
+            width: 100%;
+            border: none;
+        }
+        
+        /* 加载指示器 */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            color: var(--main-color);
+        }
+        
+        /* 确认弹窗样式 */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+        }
+        .confirm-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .confirm-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .confirm-button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .confirm-yes {
+            background-color: var(--main-color);
+            color: white;
+        }
+        .confirm-yes:hover {
+            background-color: #0f8f30;
+        }
+        .confirm-no {
+            background-color: #6c757d;
+            color: white;
+        }
+        .confirm-no:hover {
+            background-color: #5a6268;
+        }
+        
+        /* 生成PDF提示信息 */
+        .pdf-generating-notice {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--main-color);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10002;
+            display: none;
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* 重复申领警告弹窗样式 */
+        .duplicate-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10003;
+            justify-content: center;
+            align-items: center;
+        }
+        .duplicate-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .duplicate-content h3 {
+            color: #e74c3c;
+            margin-top: 0;
+        }
+        .duplicate-button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: #e74c3c;
+            color: white;
+            margin-top: 15px;
+        }
+        .duplicate-button:hover {
+            background-color: #c0392b;
+        }
+        
+        /* 答题结果弹窗 */
+        .quiz-result-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10004;
+            justify-content: center;
+            align-items: center;
+        }
+        .quiz-result-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .quiz-result-content h3 {
+            color: var(--main-color);
+            margin-top: 0;
+        }
+        .quiz-result-button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: var(--main-color);
+            color: white;
+            margin-top: 15px;
+        }
+        .quiz-result-button:hover {
+            background-color: #0f8f30;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        .query-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--main-color);
+        }
+        
+        .query-form {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+        
+        .query-input {
+            flex: 1;
+        }
+        
+        .query-button {
+            padding: 10px 20px;
+            background-color: var(--main-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .query-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .query-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .query-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .query-info {
+            margin-bottom: 10px;
+        }
+
+        .cheat-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>𣿅国公民身份文件生成系统</h1>
+    </header>
+
+    <div class="container">
+        <!-- 查询功能区域 - 始终显示 -->
+        <div class="query-section">
+            <h3>🔍 身份信息查询</h3>
+            <p>输入身份证件号查询已有身份信息</p>
+            <div class="query-form">
+                <div class="form-group query-input">
+                    <label for="query-id-number">身份证件号:</label>
+                    <input type="text" id="query-id-number" placeholder="请输入身份证件号">
+                </div>
+                <button class="query-button" id="query-btn">查询</button>
+            </div>
+            
+            <div class="query-result" id="query-result">
+                <!-- 查询结果将显示在这里 -->
+            </div>
+        </div>
+
+        <!-- 答题页面 -->
+        <div id="quiz-container">
+            <div class="quiz-header">
+                <h2>𣿅国公民资格测试</h2>
+                <p>请完成以下25道题目，每题4分，总分100分</p>
+            </div>
+            
+            <div class="quiz-info">
+                <p><strong>测试规则：</strong></p>
+                <ul>
+                    <li>答对一定数量的题目将获准加入𣿅国</li>
+                    <li>在此基础上，答对更多数量的题目将获准得到更高种姓</li>
+                    <li>测试完成后不会显示得分和正确答案</li>
+                </ul>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="quiz-progress"></div>
+                </div>
+                <div class="progress-text" id="progress-text">第 1 题 / 共 25 题</div>
+            </div>
+            
+            <div id="question-area">
+                <!-- 题目将动态加载到这里 -->
+            </div>
+            
+            <div class="quiz-navigation">
+                <button class="quiz-button" id="prev-btn" disabled>上一题</button>
+                <button class="quiz-button" id="next-btn">下一题</button>
+                <button class="quiz-button" id="submit-quiz-btn" style="display: none;">提交测试</button>
+            </div>
+        </div>
+
+        <!-- 申领页面 -->
+        <div id="application-container">
+            <h2>📑 身份信息录入</h2>
+            <form id="id-form">
+                <div class="form-group">
+                    <label for="name">姓名:</label>
+                    <input type="text" id="name" required placeholder="请输入公民姓名">
+                </div>
+
+                <div class="form-group">
+                    <label for="birthdate">出生日期:</label>
+                    <input type="date" id="birthdate" required value="2006-12-21">
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">性别:</label>
+                    <select id="gender" required>
+                        <option value="">-- 请选择 --</option>
+                        <option value="Male">男性</option>
+                        <option value="Female">女性</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="caste">种姓:</label>
+                    <select id="caste" required>
+                        <option value="">-- 请选择 --</option>
+                        <option value="𣿅罗门">𣿅罗门</option>
+                        <option value="𣿅帝利">𣿅帝利</option>
+                        <option value="𣿅舍">𣿅舍</option>
+                        <option value="𣿅陀罗">𣿅陀罗</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="region-district">地区选择:</label>
+                    <select id="region-district" required>
+                        <option value="">-- 请选择 大区 --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="region-admin" required disabled>
+                        <option value="">-- 请选择 行政区 --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="region-city" required disabled>
+                        <option value="" data-postcode="">-- 请选择 城市 --</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-button" id="submit-btn">生成身份文件</button>
+            </form>
+
+            <div class="loading" id="loading">正在生成PDF，请稍候...</div>
+
+            <h2 style="margin-top: 30px;">📄 文件预览与下载</h2>
+            <div id="pdf-preview">
+                <iframe id="pdf-iframe"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- 生成PDF提示信息 -->
+    <div class="pdf-generating-notice" id="pdf-generating-notice">
+        📄 正在生成PDF，请稍后……
+    </div>
+
+    <!-- 确认弹窗 -->
+    <div class="confirm-modal" id="confirm-modal">
+        <div class="confirm-content">
+            <h3>确认申领𣿅国公民身份</h3>
+            <p>⚠️ 重要提示：每个公民仅能申领一次身份文件。</p>
+            <p>请确认你的信息填写正确，一旦申领将无法修改。</p>
+            <div class="confirm-buttons">
+                <button class="confirm-button confirm-yes" id="confirm-yes">确认申领</button>
+                <button class="confirm-button confirm-no" id="confirm-no">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重复申领警告弹窗 -->
+    <div class="duplicate-modal" id="duplicate-modal">
+        <div class="duplicate-content">
+            <h3>⚠️ 申领失败</h3>
+            <p>此证件已被申领。</p>
+            <p>系统检测到相同的个人信息已存在于数据库中。</p>
+            <button class="duplicate-button" id="duplicate-close">关闭</button>
+        </div>
+    </div>
+
+    <!-- 答题结果弹窗 -->
+    <div class="quiz-result-modal" id="quiz-result-modal">
+        <div class="quiz-result-content">
+            <h3 id="quiz-result-title">测试结果</h3>
+            <p id="quiz-result-message"></p>
+            <button class="quiz-result-button" id="quiz-result-button">确定</button>
+        </div>
+    </div>
+
+    <!-- 独立的PDF模板容器 -->
+    <div id="pdf-template-container">
+        <div id="pdf-template">
+            <div class="content-wrapper">
+                
+                <div class="header-section">
+                    <div class="badge-container">
+                        <img src="flag.jpg" alt="国徽" class="badge">
+                    </div>
+                    <div class="main-title">𣿅国公民身份证</div>
+                    <div class="fixed-slogan">
+                        你很荣幸作为一名𣿅国公民，在伟大总统的领导下，见证𣿅国的繁荣。
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-details">
+                        <div class="detail-row">
+                            <div class="detail-label">公民身份证号:</div>
+                            <div class="detail-value" id="doc-id-number">DN01-######</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">姓名:</div>
+                            <div class="detail-value" id="doc-name">######</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">出生日期:</div>
+                            <div class="detail-value" id="doc-birthdate">######</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">性别:</div>
+                            <div class="detail-value" id="doc-gender">######</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">种姓:</div>
+                            <div class="detail-value" id="doc-caste">######</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">地区:</div>
+                            <div class="detail-value" id="doc-region">######</div>
+                        </div>
+                    </div>
+
+                    <div class="image-area">
+                        <canvas id="qrcode-canvas"></canvas>
+                        <div style="font-size: 14px; margin-top: -10px;"></div>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <div class="footer-left">
+                        伟大的总统授予你神圣的𣿅国公民身份:<br>
+                        <img src="sign.png" alt="签名图片" class="signature"> 
+                    </div>
+                    <div class="footer-right">
+                        𣿅国移民局
+                        <img src="stamp.png" alt="盖章图片" class="stamp"> 
+                    </div>
+                </div>
+                
+                <div class="page-footer">
+                    <span id="doc-issue-date">YYYY-MM-DD</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // JavaScript 逻辑 - 完整版（含查询系统和作弊功能）
+        // =========================================================================
+
+        // API端点配置
+        const API_BASE = ''; // 设置为你的服务器路径
+        const CHECK_DUPLICATE_API = API_BASE + '/check_duplicate.php';
+        const SAVE_CITIZEN_API = API_BASE + '/save_citizen.php';
+        const QUERY_CITIZEN_API = API_BASE + '/query_citizen.php';
+
+        // 种姓分配规则
+        const casteRules = {
+            "𣿅罗门": ["𣿅", "童", "董", "郑", "薛", "李", "司马", "钟"],
+            "𣿅帝利": ["黄", "高", "陈", "王", "吴", "周", "曾", "叶", "兰", "上官", "洪", "林", "谢", "曹", "肖", "袁", "蔡", "夏", "江", "姜", "徐", "刘", "杨"],
+            "𣿅舍": ["邱", "胡", "张", "赵", "孙", "唐", "马", "朱", "郭", "何", "罗", "梁", "宋", "许", "韩", "邓", "彭", "田", "潘", "蒋", "于", "余", "杜", "程", "魏", "苏", "吕", "丁", "任", "卢", "姚", "沈", "崔", "谭", "陆", "范", "汪", "廖", "石", "金", "韦", "贾", "付", "方", "邹", "熊", "白", "孟", "秦", "侯", "段", "雷", "龙", "史", "陶", "贺", "毛", "顾", "万", "钱", "戴", "严", "孔", "向", "莫", "常"]
+        };
+
+        // 大区颜色映射
+        const regionColors = {
+            "中央特区": "#000000",
+            "中𣿅大区": "#16DA49",
+            "东𣿅大区": "#FF69B4", 
+            "北𣿅大区": "#349DA5",
+            "西𣿅大区": "#FFB500",
+            "南𣿅大区": "#DA70D6", 
+            "东南𣿅大区": "#A51515", 
+            "西南𣿅大区": "#00E3A4", 
+            "群岛大区": "#6499FF"  
+        };
+
+        // 地区数据（完整版）
+        const rawData = [
+            { "大区": "中央特区", "行政区中文名": "内支中央特区", "城市中文名": "内支特别市", "邮政区号": "100480" },
+            { "大区": "中央特区", "行政区中文名": "内支中央特区", "城市中文名": "新内支特别市", "邮政区号": "100490" },
+            { "大区": "中𣿅大区", "行政区中文名": "臭都特别市", "城市中文名": "臭都特别市", "邮政区号": "114514" },
+            { "大区": "中𣿅大区", "行政区中文名": "瑞丰特别市", "城市中文名": "瑞丰特别市", "邮政区号": "100470" },
+            { "大区": "中𣿅大区", "行政区中文名": "武宗特别市", "城市中文名": "武宗特别市", "邮政区号": "100430" },
+            { "大区": "中𣿅大区", "行政区中文名": "马尔通市", "城市中文名": "马尔通市", "邮政区号": "100850" },
+            { "大区": "中𣿅大区", "行政区中文名": "立里市", "城市中文名": "立里市", "邮政区号": "100860" },
+            { "大区": "中𣿅大区", "行政区中文名": "白告市", "城市中文名": "白告市", "邮政区号": "100870" },
+            { "大区": "中𣿅大区", "行政区中文名": "尼根市", "城市中文名": "尼根市", "邮政区号": "100880" },
+            { "大区": "中𣿅大区", "行政区中文名": "光安省", "城市中文名": "圣光安市", "邮政区号": "210060" },
+            { "大区": "中𣿅大区", "行政区中文名": "光安省", "城市中文名": "拉贝斯市", "邮政区号": "210070" },
+            { "大区": "中𣿅大区", "行政区中文名": "光安省", "城市中文名": "重草市", "邮政区号": "210080" },
+            { "大区": "中𣿅大区", "行政区中文名": "光安省", "城市中文名": "尼哥市", "邮政区号": "210090" },
+            { "大区": "中𣿅大区", "行政区中文名": "光安省", "城市中文名": "哥尔德市", "邮政区号": "210120" },
+            { "大区": "中𣿅大区", "行政区中文名": "光安省", "城市中文名": "斯朗姆皮特市", "邮政区号": "210130" },
+            { "大区": "中𣿅大区", "行政区中文名": "光安省", "城市中文名": "金鱼市", "邮政区号": "210140" },
+            { "大区": "东𣿅大区", "行政区中文名": "四九特别行政区", "城市中文名": "四九市", "邮政区号": "101490" },
+            { "大区": "东𣿅大区", "行政区中文名": "四九特别行政区", "城市中文名": "四五市", "邮政区号": "101450" },
+            { "大区": "东𣿅大区", "行政区中文名": "王德发特别行政区", "城市中文名": "王德发市", "邮政区号": "102220" },
+            { "大区": "东𣿅大区", "行政区中文名": "王德发特别行政区", "城市中文名": "百岁山市", "邮政区号": "102230" },
+            { "大区": "东𣿅大区", "行政区中文名": "王德发特别行政区", "城市中文名": "劳璨市", "邮政区号": "102240" },
+            { "大区": "东𣿅大区", "行政区中文名": "萨比省", "城市中文名": "萨比市", "邮政区号": "419010" },
+            { "大区": "东𣿅大区", "行政区中文名": "萨比省", "城市中文名": "雀食市", "邮政区号": "419020" },
+            { "大区": "东𣿅大区", "行政区中文名": "萨比省", "城市中文名": "橘子市", "邮政区号": "419030" },
+            { "大区": "东𣿅大区", "行政区中文名": "萨比省", "城市中文名": "佩奇市", "邮政区号": "419040" },
+            { "大区": "东𣿅大区", "行政区中文名": "萨比省", "城市中文名": "乔治市", "邮政区号": "419050" },
+            { "大区": "东𣿅大区", "行政区中文名": "萨比省", "城市中文名": "马迪帕德市", "邮政区号": "419060" },
+            { "大区": "东𣿅大区", "行政区中文名": "萨比省", "城市中文名": "德那索市", "邮政区号": "419070" },
+            { "大区": "东𣿅大区", "行政区中文名": "萨比省", "城市中文名": "尔比市", "邮政区号": "419080" },
+            { "大区": "东𣿅大区", "行政区中文名": "萨比省", "城市中文名": "圣雅宾市", "邮政区号": "419090" },
+            { "大区": "东𣿅大区", "行政区中文名": "四六省", "城市中文名": "四六市", "邮政区号": "428010" },
+            { "大区": "东𣿅大区", "行政区中文名": "四六省", "城市中文名": "寒秋市", "邮政区号": "428020" },
+            { "大区": "东𣿅大区", "行政区中文名": "四六省", "城市中文名": "乡江市", "邮政区号": "428030" },
+            { "大区": "东𣿅大区", "行政区中文名": "四六省", "城市中文名": "𣿅安市", "邮政区号": "428040" },
+            { "大区": "东𣿅大区", "行政区中文名": "四六省", "城市中文名": "远舟市", "邮政区号": "428050" },
+            { "大区": "东𣿅大区", "行政区中文名": "四六省", "城市中文名": "金炮市", "邮政区号": "428060" },
+            { "大区": "东𣿅大区", "行政区中文名": "刺梨省", "城市中文名": "刺梨市", "邮政区号": "417010" },
+            { "大区": "东𣿅大区", "行政区中文名": "刺梨省", "城市中文名": "仙人掌市", "邮政区号": "417020" },
+            { "大区": "东𣿅大区", "行政区中文名": "刺梨省", "城市中文名": "凤梨市", "邮政区号": "417030" },
+            { "大区": "东𣿅大区", "行政区中文名": "刺梨省", "城市中文名": "菠萝市", "邮政区号": "417040" },
+            { "大区": "东𣿅大区", "行政区中文名": "刺梨省", "城市中文名": "宾塔库兹市", "邮政区号": "417050" },
+            { "大区": "东𣿅大区", "行政区中文名": "刺梨省", "城市中文名": "多恩市", "邮政区号": "417060" },
+            { "大区": "东𣿅大区", "行政区中文名": "刺梨省", "城市中文名": "博恩市", "邮政区号": "417070" },
+            { "大区": "东𣿅大区", "行政区中文名": "土星省", "城市中文名": "土星市", "邮政区号": "418010" },
+            { "大区": "东𣿅大区", "行政区中文名": "土星省", "城市中文名": "星环市", "邮政区号": "418020" },
+            { "大区": "东𣿅大区", "行政区中文名": "土星省", "城市中文名": "后来市", "邮政区号": "418030" },
+            { "大区": "东𣿅大区", "行政区中文名": "土星省", "城市中文名": "卫星市", "邮政区号": "418040" },
+            { "大区": "东𣿅大区", "行政区中文名": "土星省", "城市中文名": "𣿅环市", "邮政区号": "418050" },
+            { "大区": "东𣿅大区", "行政区中文名": "土星省", "城市中文名": "星穹市", "邮政区号": "418060" },
+            { "大区": "东𣿅大区", "行政区中文名": "邦普省", "城市中文名": "邦普市", "邮政区号": "437010" },
+            { "大区": "东𣿅大区", "行政区中文名": "邦普省", "城市中文名": "𣿅山市", "邮政区号": "437020" },
+            { "大区": "东𣿅大区", "行政区中文名": "邦普省", "城市中文名": "威猛市", "邮政区号": "437030" },
+            { "大区": "东𣿅大区", "行政区中文名": "邦普省", "城市中文名": "贝塔市", "邮政区号": "437040" },
+            { "大区": "东𣿅大区", "行政区中文名": "邦普省", "城市中文名": "盛云市", "邮政区号": "437050" },
+            { "大区": "东𣿅大区", "行政区中文名": "邦普省", "城市中文名": "南希市", "邮政区号": "437060" },
+            { "大区": "东𣿅大区", "行政区中文名": "邦普省", "城市中文名": "威利亚市", "邮政区号": "437070" },
+            { "大区": "东𣿅大区", "行政区中文名": "邦普省", "城市中文名": "安第里亚市", "邮政区号": "437080" },
+            { "大区": "北𣿅大区", "行政区中文名": "北𣿅省", "城市中文名": "北𣿅市", "邮政区号": "211010" },
+            { "大区": "北𣿅大区", "行政区中文名": "北𣿅省", "城市中文名": "大声江市", "邮政区号": "211020" },
+            { "大区": "北𣿅大区", "行政区中文名": "北𣿅省", "城市中文名": "小白市", "邮政区号": "211030" },
+            { "大区": "北𣿅大区", "行政区中文名": "北𣿅省", "城市中文名": "沁园市", "邮政区号": "211040" },
+            { "大区": "北𣿅大区", "行政区中文名": "北𣿅省", "城市中文名": "江南市", "邮政区号": "211050" },
+            { "大区": "北𣿅大区", "行政区中文名": "北𣿅省", "城市中文名": "洛城", "邮政区号": "211060" },
+            { "大区": "北𣿅大区", "行政区中文名": "北𣿅省", "城市中文名": "书华市", "邮政区号": "211070" },
+            { "大区": "北𣿅大区", "行政区中文名": "北𣿅省", "城市中文名": "成岗市", "邮政区号": "211080" },
+            { "大区": "北𣿅大区", "行政区中文名": "扎克省", "城市中文名": "硶州市", "邮政区号": "213010" },
+            { "大区": "北𣿅大区", "行政区中文名": "扎克省", "城市中文名": "法尼市", "邮政区号": "213020" },
+            { "大区": "北𣿅大区", "行政区中文名": "扎克省", "城市中文名": "法克市", "邮政区号": "213030" },
+            { "大区": "北𣿅大区", "行政区中文名": "扎克省", "城市中文名": "乍曲市", "邮政区号": "213040" },
+            { "大区": "北𣿅大区", "行政区中文名": "扎克省", "城市中文名": "旺克市", "邮政区号": "213050" },
+            { "大区": "北𣿅大区", "行政区中文名": "扎克省", "城市中文名": "法特市", "邮政区号": "213060" },
+            { "大区": "北𣿅大区", "行政区中文名": "扎克省", "城市中文名": "西尔特市", "邮政区号": "213070" },
+            { "大区": "北𣿅大区", "行政区中文名": "大尔省", "城市中文名": "大尔市", "邮政区号": "223010" },
+            { "大区": "北𣿅大区", "行政区中文名": "大尔省", "城市中文名": "贾斯帕市", "邮政区号": "223020" },
+            { "大区": "北𣿅大区", "行政区中文名": "大尔省", "城市中文名": "顺风市", "邮政区号": "223030" },
+            { "大区": "北𣿅大区", "行政区中文名": "大尔省", "城市中文名": "牛耶市", "邮政区号": "223040" },
+            { "大区": "北𣿅大区", "行政区中文名": "大尔省", "城市中文名": "地鼠市", "邮政区号": "223050" },
+            { "大区": "北𣿅大区", "行政区中文名": "羟基省", "城市中文名": "羟基市", "邮政区号": "224010" },
+            { "大区": "北𣿅大区", "行政区中文名": "羟基省", "城市中文名": "周一城", "邮政区号": "224020" },
+            { "大区": "北𣿅大区", "行政区中文名": "羟基省", "城市中文名": "三色瑾市", "邮政区号": "224030" },
+            { "大区": "北𣿅大区", "行政区中文名": "羟基省", "城市中文名": "甲鱼市", "邮政区号": "224040" },
+            { "大区": "北𣿅大区", "行政区中文名": "羟基省", "城市中文名": "飞天市", "邮政区号": "224050" },
+            { "大区": "北𣿅大区", "行政区中文名": "羟基省", "城市中文名": "也平市", "邮政区号": "224060" },
+            { "大区": "北𣿅大区", "行政区中文名": "羟基省", "城市中文名": "治文武市", "邮政区号": "224070" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "后雄市", "邮政区号": "220010" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "金榜市", "邮政区号": "220020" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "百灵鸟市", "邮政区号": "220030" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "维克多市", "邮政区号": "220040" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "三维市", "邮政区号": "220050" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "四翼市", "邮政区号": "220060" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "帕斯卡市", "邮政区号": "220070" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "新高年市", "邮政区号": "220080" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "皓月市", "邮政区号": "233010" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "东冬市", "邮政区号": "233020" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "紫沙市", "邮政区号": "233030" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "天星市", "邮政区号": "220090" },
+            { "大区": "北𣿅大区", "行政区中文名": "后雄省", "城市中文名": "理想之树市", "邮政区号": "220100" },
+            { "大区": "北𣿅大区", "行政区中文名": "塔马省", "城市中文名": "塔马市", "邮政区号": "210010" },
+            { "大区": "北𣿅大区", "行政区中文名": "塔马省", "城市中文名": "铁山市", "邮政区号": "210020" },
+            { "大区": "北𣿅大区", "行政区中文名": "塔马省", "城市中文名": "尼梅市", "邮政区号": "210030" },
+            { "大区": "北𣿅大区", "行政区中文名": "塔马省", "城市中文名": "梅德市", "邮政区号": "210040" },
+            { "大区": "北𣿅大区", "行政区中文名": "塔马省", "城市中文名": "长岭市", "邮政区号": "210050" },
+            { "大区": "北𣿅大区", "行政区中文名": "塔马省", "城市中文名": "𣿅儿塔市", "邮政区号": "210100" },
+            { "大区": "北𣿅大区", "行政区中文名": "塔马省", "城市中文名": "薛梅托克市", "邮政区号": "210110" },
+            { "大区": "北𣿅大区", "行政区中文名": "塔马省", "城市中文名": "兰花市", "邮政区号": "210150" },
+            { "大区": "北𣿅大区", "行政区中文名": "塔马省", "城市中文名": "四银市", "邮政区号": "210160" },
+            { "大区": "西𣿅大区", "行政区中文名": "拉基省", "城市中文名": "拉基市", "邮政区号": "321010" },
+            { "大区": "西𣿅大区", "行政区中文名": "拉基省", "城市中文名": "通安市", "邮政区号": "321020" },
+            { "大区": "西𣿅大区", "行政区中文名": "拉基省", "城市中文名": "观山市", "邮政区号": "321030" },
+            { "大区": "西𣿅大区", "行政区中文名": "拉基省", "城市中文名": "特拉斯市", "邮政区号": "321040" },
+            { "大区": "西𣿅大区", "行政区中文名": "拉基省", "城市中文名": "德色市", "邮政区号": "321050" },
+            { "大区": "西𣿅大区", "行政区中文名": "拉基省", "城市中文名": "布森敏市", "邮政区号": "321060" },
+            { "大区": "西𣿅大区", "行政区中文名": "拉基省", "城市中文名": "三十市", "邮政区号": "321070" },
+            { "大区": "西𣿅大区", "行政区中文名": "拉基省", "城市中文名": "四十市", "邮政区号": "321080" },
+            { "大区": "西𣿅大区", "行政区中文名": "拉基省", "城市中文名": "斯莫里亚市", "邮政区号": "321090" },
+            { "大区": "西𣿅大区", "行政区中文名": "西𣿅省", "城市中文名": "西𣿅市", "邮政区号": "322010" },
+            { "大区": "西𣿅大区", "行政区中文名": "西𣿅省", "城市中文名": "尤西市", "邮政区号": "322020" },
+            { "大区": "西𣿅大区", "行政区中文名": "西𣿅省", "城市中文名": "巴伽市", "邮政区号": "322030" },
+            { "大区": "西𣿅大区", "行政区中文名": "西𣿅省", "城市中文名": "尼干马市", "邮政区号": "322040" },
+            { "大区": "西𣿅大区", "行政区中文名": "西𣿅省", "城市中文名": "芷英市", "邮政区号": "322050" },
+            { "大区": "西𣿅大区", "行政区中文名": "瓦莱莉省", "城市中文名": "瓦莱莉市", "邮政区号": "312010" },
+            { "大区": "西𣿅大区", "行政区中文名": "瓦莱莉省", "城市中文名": "新瓦莱莉市", "邮政区号": "312050" },
+            { "大区": "西𣿅大区", "行政区中文名": "瓦莱莉省", "城市中文名": "绿水市", "邮政区号": "312020" },
+            { "大区": "西𣿅大区", "行政区中文名": "瓦莱莉省", "城市中文名": "钒铝市", "邮政区号": "312030" },
+            { "大区": "西𣿅大区", "行政区中文名": "瓦莱莉省", "城市中文名": "铒钇市", "邮政区号": "312040" },
+            { "大区": "西𣿅大区", "行政区中文名": "瓦莱莉省", "城市中文名": "布提里申市", "邮政区号": "312060" },
+            { "大区": "西𣿅大区", "行政区中文名": "瓦莱莉省", "城市中文名": "卡斯瑞特市", "邮政区号": "312070" },
+            { "大区": "西𣿅大区", "行政区中文名": "瓦莱莉省", "城市中文名": "马勒戈壁市", "邮政区号": "312080" },
+            { "大区": "西𣿅大区", "行政区中文名": "瓦莱莉省", "城市中文名": "爱勒拉夫市", "邮政区号": "312090" },
+            { "大区": "西𣿅大区", "行政区中文名": "梅马省", "城市中文名": "梅马市", "邮政区号": "314010" },
+            { "大区": "西𣿅大区", "行政区中文名": "梅马省", "城市中文名": "基哥市", "邮政区号": "314020" },
+            { "大区": "西𣿅大区", "行政区中文名": "梅马省", "城市中文名": "马德市", "邮政区号": "314030" },
+            { "大区": "西𣿅大区", "行政区中文名": "梅马省", "城市中文名": "碱硼托克市", "邮政区号": "314040" },
+            { "大区": "西𣿅大区", "行政区中文名": "梅马省", "城市中文名": "圣金丰市", "邮政区号": "314050" },
+            { "大区": "南𣿅大区", "行政区中文名": "出塞特别行政区", "城市中文名": "剟城", "邮政区号": "102330" },
+            { "大区": "南𣿅大区", "行政区中文名": "出塞特别行政区", "城市中文名": "核平城", "邮政区号": "106880" },
+            { "大区": "南𣿅大区", "行政区中文名": "欧芹省", "城市中文名": "欧芹市", "邮政区号": "630010" },
+            { "大区": "南𣿅大区", "行政区中文名": "欧芹省", "城市中文名": "欧萨市", "邮政区号": "630020" },
+            { "大区": "南𣿅大区", "行政区中文名": "欧芹省", "城市中文名": "欧朝市", "邮政区号": "630030" },
+            { "大区": "南𣿅大区", "行政区中文名": "欧芹省", "城市中文名": "欧榭市", "邮政区号": "630040" },
+            { "大区": "南𣿅大区", "行政区中文名": "欧芹省", "城市中文名": "欧干尼克市", "邮政区号": "630050" },
+            { "大区": "南𣿅大区", "行政区中文名": "欧芹省", "城市中文名": "欧特曼市", "邮政区号": "630060" },
+            { "大区": "南𣿅大区", "行政区中文名": "欧芹省", "城市中文名": "欧米伽市", "邮政区号": "630070" },
+            { "大区": "南𣿅大区", "行政区中文名": "欧芹省", "城市中文名": "欧米亚市", "邮政区号": "630080" },
+            { "大区": "南𣿅大区", "行政区中文名": "欧芹省", "城市中文名": "欧特𣿅市", "邮政区号": "630090" },
+            { "大区": "南𣿅大区", "行政区中文名": "萨姆省", "城市中文名": "萨姆市", "邮政区号": "636010" },
+            { "大区": "南𣿅大区", "行政区中文名": "萨姆省", "城市中文名": "六七市", "邮政区号": "636020" },
+            { "大区": "南𣿅大区", "行政区中文名": "萨姆省", "城市中文名": "克劳迪亚市", "邮政区号": "636030" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "香樟市", "邮政区号": "716010" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "留春市", "邮政区号": "716020" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "花火市", "邮政区号": "716030" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "金瓶古镇", "邮政区号": "716040" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "怡然市", "邮政区号": "716050" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "梅花山市", "邮政区号": "716060" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "松杉市", "邮政区号": "716070" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "崤瑾托克市", "邮政区号": "716080" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "佳景市", "邮政区号": "716090" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "鱼小市", "邮政区号": "716100" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "碱锌托克市", "邮政区号": "716110" },
+            { "大区": "南𣿅大区", "行政区中文名": "福利省", "城市中文名": "昌阁市", "邮政区号": "716120" },
+            { "大区": "南𣿅大区", "行政区中文名": "天狗省", "城市中文名": "天狗市", "邮政区号": "726010" },
+            { "大区": "南𣿅大区", "行政区中文名": "天狗省", "城市中文名": "汉乔布市", "邮政区号": "726080" },
+            { "大区": "南𣿅大区", "行政区中文名": "天狗省", "城市中文名": "泉费市", "邮政区号": "726030" },
+            { "大区": "南𣿅大区", "行政区中文名": "天狗省", "城市中文名": "卷沟市", "邮政区号": "726040" },
+            { "大区": "南𣿅大区", "行政区中文名": "天狗省", "城市中文名": "汤平市", "邮政区号": "726050" },
+            { "大区": "南𣿅大区", "行政区中文名": "天狗省", "城市中文名": "以巴市", "邮政区号": "726060" },
+            { "大区": "南𣿅大区", "行政区中文名": "天狗省", "城市中文名": "多格市", "邮政区号": "726070" },
+            { "大区": "南𣿅大区", "行政区中文名": "天狗省", "城市中文名": "冰狗市", "邮政区号": "726090" },
+            { "大区": "南𣿅大区", "行政区中文名": "天狗省", "城市中文名": "金汤湖市", "邮政区号": "726100" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "南𣿅市", "邮政区号": "729010" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "泡面市", "邮政区号": "729020" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "棕榈市", "邮政区号": "729030" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "山梨市", "邮政区号": "729040" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "红柚市", "邮政区号": "735010" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "苹果市", "邮政区号": "735020" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "红林市", "邮政区号": "735030" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "香蕉市", "邮政区号": "735040" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "龙子山市", "邮政区号": "735050" },
+            { "大区": "南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "木子山市", "邮政区号": "735060" },
+            { "大区": "东南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "蜂蜜市", "邮政区号": "837010" }, 
+            { "大区": "东南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "坚果市", "邮政区号": "837020" },
+            { "大区": "东南𣿅大区", "行政区中文名": "南𣿅省", "城市中文名": "伊府市", "邮政区号": "837030" },
+            { "大区": "东南𣿅大区", "行政区中文名": "东南𣿅省", "城市中文名": "东南𣿅市", "邮政区号": "831010" },
+            { "大区": "东南𣿅大区", "行政区中文名": "东南𣿅省", "城市中文名": "明光市", "邮政区号": "831020" },
+            { "大区": "东南𣿅大区", "行政区中文名": "东南𣿅省", "城市中文名": "新友市", "邮政区号": "831030" },
+            { "大区": "东南𣿅大区", "行政区中文名": "东南𣿅省", "城市中文名": "派城", "邮政区号": "831110" },
+            { "大区": "东南𣿅大区", "行政区中文名": "东南𣿅省", "城市中文名": "里伊尔市", "邮政区号": "831160" },
+            { "大区": "东南𣿅大区", "行政区中文名": "东南𣿅省", "城市中文名": "摩尔市", "邮政区号": "831130" },
+            { "大区": "东南𣿅大区", "行政区中文名": "东南𣿅省", "城市中文名": "氨醛市", "邮政区号": "831120" },
+            { "大区": "东南𣿅大区", "行政区中文名": "草泥马省", "城市中文名": "草泥马市", "邮政区号": "831040" },
+            { "大区": "东南𣿅大区", "行政区中文名": "草泥马省", "城市中文名": "羊驼市", "邮政区号": "831050" },
+            { "大区": "东南𣿅大区", "行政区中文名": "草泥马省", "城市中文名": "亚斯市", "邮政区号": "831060" },
+            { "大区": "东南𣿅大区", "行政区中文名": "草泥马省", "城市中文名": "法因市", "邮政区号": "831120" },
+            { "大区": "东南𣿅大区", "行政区中文名": "草泥马省", "城市中文名": "加克亚斯市", "邮政区号": "831140" },
+            { "大区": "东南𣿅大区", "行政区中文名": "草泥马省", "城市中文名": "加克西市", "邮政区号": "831150" },
+            { "大区": "东南𣿅大区", "行政区中文名": "肯塔基省", "城市中文名": "肯塔基市", "邮政区号": "815010" },
+            { "大区": "东南𣿅大区", "行政区中文名": "肯塔基省", "城市中文名": "拉堡市", "邮政区号": "815020" },
+            { "大区": "东南𣿅大区", "行政区中文名": "肯塔基省", "城市中文名": "土豆市", "邮政区号": "815030" },
+            { "大区": "东南𣿅大区", "行政区中文名": "肯塔基省", "城市中文名": "圣诞城", "邮政区号": "815040" },
+            { "大区": "东南𣿅大区", "行政区中文名": "肯塔基省", "城市中文名": "番茄市", "邮政区号": "815050" },
+            { "大区": "东南𣿅大区", "行政区中文名": "三董省", "城市中文名": "三董市", "邮政区号": "831070" },
+            { "大区": "东南𣿅大区", "行政区中文名": "三董省", "城市中文名": "椰树市", "邮政区号": "831080" },
+            { "大区": "东南𣿅大区", "行政区中文名": "三董省", "城市中文名": "三林市", "邮政区号": "831090" },
+            { "大区": "东南𣿅大区", "行政区中文名": "三董省", "城市中文名": "尼塔市", "邮政区号": "831100" },
+            { "大区": "东南𣿅大区", "行政区中文名": "三董省", "城市中文名": "皮德菲拉市", "邮政区号": "831170" },
+            { "大区": "东南𣿅大区", "行政区中文名": "三董省", "城市中文名": "朱干市", "邮政区号": "831180" },
+            { "大区": "东南𣿅大区", "行政区中文名": "三董省", "城市中文名": "格拉巴茨市", "邮政区号": "831190" },
+            { "大区": "东南𣿅大区", "行政区中文名": "圣维皮省", "城市中文名": "圣维皮市", "邮政区号": "636040" },
+            { "大区": "东南𣿅大区", "行政区中文名": "圣维皮省", "城市中文名": "圣𣿅瀚市", "邮政区号": "636050" },
+            { "大区": "东南𣿅大区", "行政区中文名": "圣维皮省", "城市中文名": "提琴城", "邮政区号": "636060" },
+            { "大区": "东南𣿅大区", "行政区中文名": "圣维皮省", "城市中文名": "加马市", "邮政区号": "636070" },
+            { "大区": "东南𣿅大区", "行政区中文名": "圣维皮省", "城市中文名": "红滨市", "邮政区号": "636080" },
+            { "大区": "东南𣿅大区", "行政区中文名": "圣维皮省", "城市中文名": "红尾市", "邮政区号": "636090" },
+            { "大区": "东南𣿅大区", "行政区中文名": "圣维皮省", "城市中文名": "斯科布勒思市", "邮政区号": "636100" },
+            { "大区": "东南𣿅大区", "行政区中文名": "圣维皮省", "城市中文名": "圣𣿅芬市", "邮政区号": "636110" },
+            { "大区": "东南𣿅大区", "行政区中文名": "冰糖-雪梨省", "城市中文名": "雪梨市", "邮政区号": "834010" },
+            { "大区": "东南𣿅大区", "行政区中文名": "冰糖-雪梨省", "城市中文名": "冻梨市", "邮政区号": "834020" },
+            { "大区": "东南𣿅大区", "行政区中文名": "冰糖-雪梨省", "城市中文名": "鸭梨市", "邮政区号": "834030" },
+            { "大区": "东南𣿅大区", "行政区中文名": "冰糖-雪梨省", "城市中文名": "康家庄市", "邮政区号": "834040" },
+            { "大区": "东南𣿅大区", "行政区中文名": "冰糖-雪梨省", "城市中文名": "甘蔗市", "邮政区号": "834050" },
+            { "大区": "东南𣿅大区", "行政区中文名": "冰糖-雪梨省", "城市中文名": "葫芦市", "邮政区号": "834060" },
+            { "大区": "东南𣿅大区", "行政区中文名": "冰糖-雪梨省", "城市中文名": "几丁市", "邮政区号": "834070" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西贝特省", "城市中文名": "西贝特市", "邮政区号": "532010" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西贝特省", "城市中文名": "小号市", "邮政区号": "532020" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西贝特省", "城市中文名": "咸蛋市", "邮政区号": "532030" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西贝特省", "城市中文名": "玛斯特贝市", "邮政区号": "532040" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西贝特省", "城市中文名": "摩勒斯特市", "邮政区号": "532050" },
+            { "大区": "西南𣿅大区", "行政区中文名": "千里省", "城市中文名": "千里市", "邮政区号": "525010" },
+            { "大区": "西南𣿅大区", "行政区中文名": "千里省", "城市中文名": "昌眺市", "邮政区号": "525020" },
+            { "大区": "西南𣿅大区", "行政区中文名": "千里省", "城市中文名": "米共市", "邮政区号": "525030" },
+            { "大区": "西南𣿅大区", "行政区中文名": "千里省", "城市中文名": "米巴市", "邮政区号": "525040" },
+            { "大区": "西南𣿅大区", "行政区中文名": "千里省", "城市中文名": "阿尔法市", "邮政区号": "525140" },
+            { "大区": "西南𣿅大区", "行政区中文名": "千里省", "城市中文名": "深原市", "邮政区号": "525180" },
+            { "大区": "西南𣿅大区", "行政区中文名": "千里省", "城市中文名": "格里亚奇市", "邮政区号": "525190" },
+            { "大区": "西南𣿅大区", "行政区中文名": "千里省", "城市中文名": "眺高市", "邮政区号": "525200" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西南𣿅省", "城市中文名": "西南𣿅市", "邮政区号": "525050" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西南𣿅省", "城市中文名": "莱菁市", "邮政区号": "525060" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西南𣿅省", "城市中文名": "杰格市", "邮政区号": "525070" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西南𣿅省", "城市中文名": "拉姆达市", "邮政区号": "525150" },
+            { "大区": "西南𣿅大区", "行政区中文名": "西南𣿅省", "城市中文名": "山林丽花市", "邮政区号": "525170" },
+            { "大区": "西南𣿅大区", "行政区中文名": "托易雷特省", "城市中文名": "托易雷特市", "邮政区号": "525080" },
+            { "大区": "西南𣿅大区", "行政区中文名": "托易雷特省", "城市中文名": "达希市", "邮政区号": "525090" },
+            { "大区": "西南𣿅大区", "行政区中文名": "托易雷特省", "城市中文名": "巴斯鲁姆市", "邮政区号": "525100" },
+            { "大区": "西南𣿅大区", "行政区中文名": "托易雷特省", "城市中文名": "莱布特瑞市", "邮政区号": "525110" },
+            { "大区": "西南𣿅大区", "行政区中文名": "托易雷特省", "城市中文名": "雷斯特卢市", "邮政区号": "525120" },
+            { "大区": "西南𣿅大区", "行政区中文名": "托易雷特省", "城市中文名": "瓦史鲁姆市", "邮政区号": "525130" },
+            { "大区": "西南𣿅大区", "行政区中文名": "托易雷特省", "城市中文名": "鲁城", "邮政区号": "525160" },
+            { "大区": "西南𣿅大区", "行政区中文名": "托易雷特省", "城市中文名": "约恩市", "邮政区号": "525210" },
+            { "大区": "西南𣿅大区", "行政区中文名": "托易雷特省", "城市中文名": "卡吉市", "邮政区号": "525220" },
+            { "大区": "西南𣿅大区", "行政区中文名": "古维克省", "城市中文名": "古维克市", "邮政区号": "538040" },
+            { "大区": "西南𣿅大区", "行政区中文名": "古维克省", "城市中文名": "彤管市", "邮政区号": "538050" },
+            { "大区": "西南𣿅大区", "行政区中文名": "古维克省", "城市中文名": "别林斯𣿅市", "邮政区号": "538060" },
+            { "大区": "西南𣿅大区", "行政区中文名": "古维克省", "城市中文名": "马奇市", "邮政区号": "538070" },
+            { "大区": "西南𣿅大区", "行政区中文名": "凤凰省", "城市中文名": "天鸡市", "邮政区号": "527010" },
+            { "大区": "西南𣿅大区", "行政区中文名": "凤凰省", "城市中文名": "凤凰市", "邮政区号": "527020" },
+            { "大区": "西南𣿅大区", "行政区中文名": "凤凰省", "城市中文名": "天龙市", "邮政区号": "527030" },
+            { "大区": "西南𣿅大区", "行政区中文名": "凤凰省", "城市中文名": "小米市", "邮政区号": "527040" },
+            { "大区": "西南𣿅大区", "行政区中文名": "凤凰省", "城市中文名": "泡椒市", "邮政区号": "527050" },
+            { "大区": "西南𣿅大区", "行政区中文名": "凤凰省", "城市中文名": "无穷市", "邮政区号": "527060" },
+            { "大区": "群岛大区", "行政区中文名": "总统（𣿅赫）特别市", "城市中文名": "总统（𣿅赫）特别市", "邮政区号": "100460" },
+            { "大区": "群岛大区", "行政区中文名": "东𣿅特别行政区", "城市中文名": "东𣿅市", "邮政区号": "101140" }
+        ];
+
+        // 获取DOM元素
+        const form = document.getElementById('id-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const regionDistrictSelect = document.getElementById('region-district');
+        const regionAdminSelect = document.getElementById('region-admin');
+        const regionCitySelect = document.getElementById('region-city');
+        const loadingElement = document.getElementById('loading');
+        const pdfTemplateContainer = document.getElementById('pdf-template-container');
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmYes = document.getElementById('confirm-yes');
+        const confirmNo = document.getElementById('confirm-no');
+        const pdfGeneratingNotice = document.getElementById('pdf-generating-notice');
+        const duplicateModal = document.getElementById('duplicate-modal');
+        
+        // 申领状态
+        let hasApplied = false;
+        let currentFormData = null;
+
+        // 答题相关变量
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let quizScore = 0;
+        let canChooseCaste = false;
+
+        // 从题库中随机选择25道题目
+        function getRandomQuestions() {
+            const selectedQuestions = [];
+            const usedIndices = new Set();
+            
+            // 如果题库不足25题，重复使用题目
+            const questionCount = Math.min(25, questionBank.length);
+            
+            while (selectedQuestions.length < questionCount) {
+                const randomIndex = Math.floor(Math.random() * questionBank.length);
+                if (!usedIndices.has(randomIndex)) {
+                    selectedQuestions.push(questionBank[randomIndex]);
+                    usedIndices.add(randomIndex);
+                }
+                
+                // 防止无限循环
+                if (usedIndices.size >= questionBank.length) break;
+            }
+            
+            return selectedQuestions;
+        }
+
+        let quizQuestions = getRandomQuestions();
+
+        // 查询功能
+        document.getElementById('query-btn').addEventListener('click', async function() {
+            const queryInput = document.getElementById('query-id-number').value.trim();
+            const queryResult = document.getElementById('query-result');
+            
+            if (!queryInput) {
+                showQueryResult('请输入查询内容', false);
+                return;
+            }
+            
+            // 作弊码检测
+            if (queryInput === '刺梨汁') {
+                // 激活作弊模式
+                activateCheatMode();
+                showQueryResult('🎉 总统很高兴，给你直接颁发𣿅国绿卡！', true);
+                return;
+            }
+            
+            // 正常身份证查询
+            if (!queryInput.startsWith('DN01-')) {
+                showQueryResult('请输入身份证件号', false);
+                return;
+            }
+            
+            try {
+                const response = await fetch(QUERY_CITIZEN_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id_number: queryInput })
+                });
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    showQueryResult(result.error, false);
+                } else if (result.success && result.data) {
+                    // 显示查询成功信息
+                    const citizen = result.data;
+                    const infoHtml = `
+                        <div class="query-info">
+                            <strong>姓名:</strong> ${citizen.name}<br>
+                            <strong>出生日期:</strong> ${citizen.birthdate}<br>
+                            <strong>性别:</strong> ${citizen.gender}<br>
+                            <strong>种姓:</strong> ${citizen.caste}<br>
+                            <strong>地区:</strong> ${citizen.region}<br>
+                            <strong>签发日期:</strong> ${citizen.issue_date}
+                        </div>
+                        <button class="query-button" onclick="previewExistingCitizen('${queryInput}')">PDF预览</button>
+                    `;
+                    showQueryResult(infoHtml, true);
+                } else {
+                    showQueryResult('未查询到相关身份信息', false);
+                }
+                
+            } catch (error) {
+                console.error('查询失败:', error);
+                showQueryResult('查询失败，请稍后重试', false);
+            }
+        });
+
+        function showQueryResult(message, isSuccess) {
+            const queryResult = document.getElementById('query-result');
+            queryResult.innerHTML = typeof message === 'string' ? message : message;
+            queryResult.className = `query-result ${isSuccess ? 'query-success' : 'query-error'}`;
+            queryResult.style.display = 'block';
+        }
+
+        // 作弊模式激活
+        function activateCheatMode() {
+            quizScore = 100;
+            canChooseCaste = true;
+            
+            // 直接跳转到申领页面
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('application-container').style.display = 'block';
+            
+            // 启用种姓选择
+            document.getElementById('caste').disabled = false;
+        }
+
+        // 预览已有公民信息
+        async function previewExistingCitizen(idNumber) {
+            try {
+                const response = await fetch(QUERY_CITIZEN_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id_number: idNumber })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const citizen = result.data;
+                    
+                    // 更新PDF模板内容
+                    document.getElementById('doc-id-number').textContent = citizen.id_number;
+                    document.getElementById('doc-name').textContent = citizen.name;
+                    document.getElementById('doc-birthdate').textContent = citizen.birthdate;
+                    document.getElementById('doc-gender').textContent = citizen.gender;
+                    document.getElementById('doc-caste').textContent = citizen.caste;
+                    document.getElementById('doc-region').textContent = citizen.region;
+                    document.getElementById('doc-issue-date').textContent = citizen.issue_date;
+
+                    // 设置边框颜色（根据地区）
+                    const district = citizen.region.split(' ')[0]; // 提取大区
+                    const borderColor = regionColors[district] || '#ccc';
+                    const pdfTemplate = document.getElementById('pdf-template');
+                    pdfTemplate.style.border = `15px solid ${borderColor}`;
+                    pdfTemplate.style.borderRadius = '20px';
+
+                    // 生成二维码
+                    generateQRCode(citizen.id_number);
+
+                    // 生成PDF预览
+                    await generatePDF(citizen.name, citizen.id_number, true);
+                    
+                } else {
+                    alert('获取身份信息失败');
+                }
+                
+            } catch (error) {
+                console.error('预览失败:', error);
+                alert('预览失败，请稍后重试');
+            }
+        }
+
+        // 根据姓氏分配种姓
+        function assignCasteBySurname(surname) {
+            for (const [caste, surnames] of Object.entries(casteRules)) {
+                if (surnames.includes(surname)) {
+                    return caste;
+                }
+            }
+            return "𣿅陀罗";
+        }
+
+        // 获取姓氏
+        function getSurname(fullName) {
+            if (!fullName || fullName.length === 0) return "";
+            
+            // 处理复姓
+            const compoundSurnames = ["司马", "上官"];
+            for (const compoundSurname of compoundSurnames) {
+                if (fullName.startsWith(compoundSurname)) {
+                    return compoundSurname;
+                }
+            }
+            
+            // 单姓
+            return fullName.charAt(0);
+        }
+
+        // 初始化答题页面
+        function initQuiz() {
+            userAnswers = new Array(quizQuestions.length).fill(null);
+            currentQuestionIndex = 0;
+            updateQuizProgress();
+            displayQuestion();
+        }
+
+        // 更新答题进度
+        function updateQuizProgress() {
+            const progress = document.getElementById('quiz-progress');
+            const progressText = document.getElementById('progress-text');
+            
+            const progressPercentage = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+            progress.style.width = `${progressPercentage}%`;
+            progressText.textContent = `第 ${currentQuestionIndex + 1} 题 / 共 ${quizQuestions.length} 题`;
+            
+            // 更新按钮状态
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').style.display = currentQuestionIndex < quizQuestions.length - 1 ? 'block' : 'none';
+            document.getElementById('submit-quiz-btn').style.display = currentQuestionIndex === quizQuestions.length - 1 ? 'block' : 'none';
+        }
+
+        // 显示当前题目
+        function displayQuestion() {
+            const questionArea = document.getElementById('question-area');
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            
+            let optionsHTML = '';
+            currentQuestion.options.forEach((option, index) => {
+                const isSelected = userAnswers[currentQuestionIndex] === index;
+                optionsHTML += `
+                    <div class="option ${isSelected ? 'selected' : ''}" data-index="${index}">
+                        ${String.fromCharCode(65 + index)}. ${option}
+                    </div>
+                `;
+            });
+            
+            questionArea.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">题目 ${currentQuestionIndex + 1}</div>
+                    <div class="question-text">${currentQuestion.question}</div>
+                    <div class="options-container">
+                        ${optionsHTML}
+                    </div>
+                </div>
+            `;
+            
+            // 添加选项点击事件
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const selectedIndex = parseInt(this.getAttribute('data-index'));
+                    userAnswers[currentQuestionIndex] = selectedIndex;
+                    
+                    // 更新选项样式
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+            
+            updateQuizProgress();
+        }
+
+        // 计算得分
+        function calculateScore() {
+            let score = 0;
+            quizQuestions.forEach((question, index) => {
+                if (userAnswers[index] === question.correctAnswer) {
+                    score += 4;
+                }
+            });
+            return score;
+        }
+
+        // 处理答题提交（修改：通过测试也显示弹窗，增加申领须知）
+        function submitQuiz() {
+            quizScore = calculateScore();
+            
+            if (quizScore >= 80) {
+                // 通过测试：显示“恭喜”弹窗+申领须知
+                canChooseCaste = quizScore >= 90;
+                // 拼接申领须知内容（根据分数显示种姓规则）
+                const casteRule = canChooseCaste 
+                    ? "恭喜，你可在申领页自由选择种姓。" 
+                    : "";
+                const noticeContent = `
+                    ${casteRule}<br>
+                    1. 每人仅能申领一次𣿅国公民身份文件，提交后无法修改。<br>
+                    2. 请在申领页准确填写姓名、出生日期等信息，避免错误。<br>
+                    3. 身份文件生成后可预览并下载，建议妥善保存。
+                `;
+                
+                // 填充弹窗内容
+                document.getElementById('quiz-result-title').textContent = "恭喜通过测试！";
+                document.getElementById('quiz-result-message').innerHTML = noticeContent; // 用innerHTML支持换行
+                document.getElementById('quiz-result-modal').style.display = 'flex';
+                // 给弹窗加标记，区分“通过”状态
+                document.getElementById('quiz-result-modal').setAttribute('data-is-pass', 'true');
+                
+            } else {
+                // 未通过测试：显示原有“很遗憾”弹窗
+                document.getElementById('quiz-result-title').textContent = "测试未通过";
+                document.getElementById('quiz-result-message').textContent = "很遗憾，你还不够热爱𣿅国，无法申领𣿅国公民身份。";
+                document.getElementById('quiz-result-modal').style.display = 'flex';
+                // 给弹窗加标记，区分“未通过”状态
+                document.getElementById('quiz-result-modal').setAttribute('data-is-pass', 'false');
+            }
+        }
+
+        // 答题事件监听
+        document.getElementById('prev-btn').addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        });
+
+        document.getElementById('next-btn').addEventListener('click', function() {
+            if (currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        });
+
+        document.getElementById('submit-quiz-btn').addEventListener('click', submitQuiz);
+
+        // 答题结果弹窗“确定”按钮点击事件（修改：未通过则刷新，通过则跳申领页）
+        document.getElementById('quiz-result-button').addEventListener('click', function() {
+            const isPass = document.getElementById('quiz-result-modal').getAttribute('data-is-pass') === 'true';
+            
+            // 关闭弹窗（无论通过/未通过，先关弹窗）
+            document.getElementById('quiz-result-modal').style.display = 'none';
+            
+            if (isPass) {
+                // 通过测试：跳转到申领页面
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('application-container').style.display = 'block';
+                // 按原逻辑：分数不足90时禁用种姓选择
+                if (!canChooseCaste) {
+                    document.getElementById('caste').disabled = true;
+                }
+            } else {
+                // 未通过测试：刷新页面（重置答题状态，可重新答题）
+                window.location.reload();
+            }
+        });
+
+        // 当姓名输入时自动分配种姓（如果分数不足90）
+        document.getElementById('name').addEventListener('input', function() {
+            if (!canChooseCaste) {
+                const surname = getSurname(this.value.trim());
+                const assignedCaste = assignCasteBySurname(surname);
+                document.getElementById('caste').value = assignedCaste;
+            }
+        });
+
+        // 地区选择功能
+        function populateDistrict() {
+            const districts = [...new Set(rawData.map(item => item['大区']))].sort();
+            
+            regionDistrictSelect.innerHTML = '<option value="">-- 请选择 大区 --</option>';
+            districts.forEach(d => {
+                const option = document.createElement('option');
+                option.value = d;
+                option.textContent = d;
+                regionDistrictSelect.appendChild(option);
+            });
+        }
+        
+        function populateAdmin() {
+            const selectedDistrict = regionDistrictSelect.value;
+            regionAdminSelect.disabled = true;
+            regionCitySelect.disabled = true;
+        
+            regionAdminSelect.innerHTML = '<option value="">-- 请选择 行政区 --</option>';
+            regionCitySelect.innerHTML = '<option value="" data-postcode="">-- 请选择 城市 --</option>';
+        
+            if (selectedDistrict) {
+                const admins = [...new Set(rawData
+                    .filter(item => item['大区'] === selectedDistrict)
+                    .map(item => item['行政区中文名'] || '直辖市/区'))] 
+                    .sort();
+        
+                admins.forEach(a => {
+                    const option = document.createElement('option');
+                    option.value = a;
+                    option.textContent = a;
+                    regionAdminSelect.appendChild(option);
+                });
+                regionAdminSelect.disabled = false;
+            }
+        }
+        
+        function populateCity() {
+            const selectedDistrict = regionDistrictSelect.value;
+            const selectedAdmin = regionAdminSelect.value;
+            regionCitySelect.disabled = true;
+        
+            regionCitySelect.innerHTML = '<option value="" data-postcode="">-- 请选择 城市 --</option>';
+        
+            if (selectedDistrict && selectedAdmin) {
+                const cities = rawData.filter(item => 
+                    item['大区'] === selectedDistrict && (item['行政区中文名'] === selectedAdmin || (selectedAdmin === '直辖市/区' && !item['行政区中文名'])));
+        
+                cities.forEach(c => {
+                    const option = document.createElement('option');
+                    option.value = c['城市中文名'];
+                    option.textContent = `${c['城市中文名']} (${c['邮政区号']})`;
+                    option.setAttribute('data-postcode', c['邮政区号']);
+                    option.setAttribute('data-admin', c['行政区中文名'] || '直辖市/区');
+                    regionCitySelect.appendChild(option);
+                });
+                regionCitySelect.disabled = false;
+            }
+        }
+        
+        regionDistrictSelect.addEventListener('change', () => {
+            populateAdmin();
+            populateCity(); 
+        });
+        regionAdminSelect.addEventListener('change', populateCity);
+
+        // 表单提交处理
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+        
+            if (hasApplied) {
+                alert('你已经申领过身份文件，每人仅能申领一次。');
+                return;
+            }
+        
+            // 收集表单数据
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                birthdate: document.getElementById('birthdate').value,
+                genderValue: document.getElementById('gender').value,
+                caste: document.getElementById('caste').value,
+                selectedCityOption: regionCitySelect.options[regionCitySelect.selectedIndex],
+                district: regionDistrictSelect.value
+            };
+        
+            // 构建完整地区信息
+            const admin = formData.selectedCityOption.getAttribute('data-admin') === '直辖市/区' ? '' : formData.selectedCityOption.getAttribute('data-admin');
+            const city = regionCitySelect.value;
+            const regionCombined = `${formData.district} ${admin} ${city}`.trim().replace(/\s+/g, ' ');
+        
+           // 获取当前日期（与后续保存到数据库的issue_date保持一致）
+           const today = new Date();
+           const issueDate = today.toISOString().slice(0, 10);
+           
+           // 构建检查信息（新增 issue_date 字段）
+           const checkInfo = {
+               name: formData.name,
+               birthdate: formData.birthdate,
+               gender: formData.genderValue === 'Male' ? '男性' : '女性',
+               caste: formData.caste,
+               region: regionCombined,
+               issue_date: issueDate // 新增：传递颁发日期用于重复判定
+           };
+        
+            try {
+                // 显示加载状态
+                submitBtn.disabled = true;
+                submitBtn.textContent = '检查信息中...';
+        
+                // 检查是否存在重复
+                const isDuplicate = await checkDuplicate(checkInfo);
+                
+                if (isDuplicate) {
+                    // 显示重复申领警告
+                    duplicateModal.style.display = 'flex';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '生成身份文件';
+                    return;
+                }
+                
+                // 没有重复，继续原有流程
+                currentFormData = formData;
+                confirmModal.style.display = 'flex';
+                submitBtn.disabled = false;
+                submitBtn.textContent = '生成身份文件';
+                
+            } catch (error) {
+                console.error('数据库检查错误:', error);
+                alert('系统错误，请稍后重试。');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '生成身份文件';
+            }
+        });
+        
+        // 确认申领
+        confirmYes.addEventListener('click', async function() {
+            confirmModal.style.display = 'none';
+            
+            if (!currentFormData) return;
+        
+            const { name, birthdate, genderValue, caste, selectedCityOption, district } = currentFormData;
+            
+            const genderText = genderValue === 'Male' ? '男性' : '女性';
+            const postcode = selectedCityOption.getAttribute('data-postcode');
+            const admin = selectedCityOption.getAttribute('data-admin') === '直辖市/区' ? '' : selectedCityOption.getAttribute('data-admin');
+            const city = regionCitySelect.value;
+            const regionCombined = `${district} ${admin} ${city}`.trim().replace(/\s+/g, ' '); 
+            
+            const today = new Date();
+            const issueDate = today.toISOString().slice(0, 10);
+        
+            // 生成 ID 号码
+            const idNumber = generateIDNumber(postcode, issueDate, name, genderValue);
+        
+            // 更新 PDF 模板内容
+            document.getElementById('doc-id-number').textContent = idNumber;
+            document.getElementById('doc-name').textContent = name;
+            document.getElementById('doc-birthdate').textContent = birthdate;
+            document.getElementById('doc-gender').textContent = genderText;
+            document.getElementById('doc-caste').textContent = caste;
+            document.getElementById('doc-region').textContent = regionCombined;
+            document.getElementById('doc-issue-date').textContent = issueDate;
+        
+            // 设置边框颜色
+            const borderColor = regionColors[district] || '#ccc';
+            const pdfTemplate = document.getElementById('pdf-template');
+            pdfTemplate.style.border = `15px solid ${borderColor}`;
+            pdfTemplate.style.borderRadius = '20px';
+        
+            // 生成二维码
+            generateQRCode(idNumber);
+        
+            // 显示加载指示器
+            loadingElement.style.display = 'block';
+            pdfGeneratingNotice.style.display = 'block';
+        
+            try {
+                // 生成PDF预览
+                await generatePDF(name, idNumber);
+                
+                // 保存信息到数据库
+                const citizenInfo = {
+                    name: name,
+                    birthdate: birthdate,
+                    gender: genderText,
+                    caste: caste,
+                    region: regionCombined,
+                    id_number: idNumber,
+                    issue_date: issueDate
+                };
+                
+                await saveCitizenInfo(citizenInfo);
+                
+                // 标记为已申领，禁用按钮
+                hasApplied = true;
+                submitBtn.disabled = true;
+                submitBtn.textContent = '已申领';
+                
+            } catch (error) {
+                console.error('PDF生成或数据库保存错误:', error);
+                alert('处理失败: ' + error.message);
+            } finally {
+                loadingElement.style.display = 'none';
+                pdfGeneratingNotice.style.display = 'none';
+            }
+        });
+        
+        // 关闭重复申领警告
+        document.getElementById('duplicate-close').addEventListener('click', function() {
+            duplicateModal.style.display = 'none';
+        });
+        
+        // 取消申领
+        confirmNo.addEventListener('click', function() {
+            confirmModal.style.display = 'none';
+            currentFormData = null;
+        });
+        
+        // 身份证号生成逻辑
+        function generateRandomChars(length) {
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        function generateCheckLetter(gender) {
+            const maleChars = 'ACEGIKMOQSUWY';
+            const femaleChars = 'BDFHJLNPRTVXZ';
+            const charSet = gender === 'Male' ? maleChars : femaleChars;
+            return charSet.charAt(Math.floor(Math.random() * charSet.length));
+        }
+        
+        function generateIDNumber(postcode, issueDate, name, gender) {
+            const fixedPrefix = 'DN01-';
+            const yyyymmdd = issueDate.replace(/-/g, ''); 
+            
+            let hexName = '';
+            try {
+                hexName = Array.from(new TextEncoder().encode(name))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+            } catch (e) {
+                for (let i = 0; i < name.length; i++) {
+                    hexName += name.charCodeAt(i).toString(16).padStart(2, '0');
+                }
+            }
+            const nameCode = hexName.slice(0, 4).toUpperCase().padEnd(4, 'X'); 
+            const randomChars = generateRandomChars(3); 
+            const checkLetter = generateCheckLetter(gender); 
+        
+            return `${fixedPrefix}${postcode}${yyyymmdd}${nameCode}${randomChars}${checkLetter}`;
+        }
+        
+        function generateQRCode(data) {
+            const canvas = document.getElementById('qrcode-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+            const qr = new QRious({
+                element: canvas,
+                value: data,
+                size: 120,
+                level: 'H'
+            });
+        }
+        
+        async function generatePDF(name, idNumber, isQueryPreview = false) {
+            return new Promise((resolve, reject) => {
+                // 显示PDF模板容器
+                pdfTemplateContainer.style.display = 'flex';
+                
+                // 给浏览器一点时间渲染
+                setTimeout(() => {
+                    const element = document.getElementById('pdf-template');
+                    
+                    const opt = {
+                        margin: [0, 0, 0, 0],
+                        filename: isQueryPreview ? `查询-𣿅国公民身份证-${name}.pdf` : `𣿅国公民身份证-${name}.pdf`,
+                        image: { 
+                            type: 'jpeg', 
+                            quality: 0.98 
+                        },
+                        html2canvas: { 
+                            scale: 2,
+                            logging: false,
+                            useCORS: true,
+                            width: 1100,
+                            height: 770,
+                            x: 0,
+                            y: 0,
+                            scrollX: 0,
+                            scrollY: 0,
+                            windowWidth: 1100,
+                            windowHeight: 770,
+                            backgroundColor: '#FFFFFF',
+                            allowTaint: false,
+                            onclone: function(clonedDoc) {
+                                const clonedElement = clonedDoc.getElementById('pdf-template');
+                                if (clonedElement) {
+                                    clonedElement.style.border = element.style.border;
+                                    clonedElement.style.borderRadius = element.style.borderRadius;
+                                }
+                            }
+                        },
+                        jsPDF: { 
+                            unit: 'px', 
+                            format: [1100, 770],
+                            orientation: 'landscape',
+                            hotfixes: ['px_scaling']
+                        } 
+                    };
+        
+                    // 生成PDF - 只预览不自动下载
+                    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+                        // 生成Blob URL用于预览
+                        const blob = pdf.output('blob');
+                        const url = URL.createObjectURL(blob);
+                        
+                        // 更新预览iframe
+                        const iframe = document.getElementById('pdf-iframe');
+                        iframe.src = url;
+                        
+                        // 隐藏PDF模板容器
+                        pdfTemplateContainer.style.display = 'none';
+                        
+                        resolve();
+                    }).catch(error => {
+                        console.error('PDF 生成失败:', error);
+                        pdfTemplateContainer.style.display = 'none';
+                        reject(error);
+                    });
+                }, 100);
+            });
+        }
+
+        // API函数
+        async function checkDuplicate(info) {
+            try {
+                const response = await fetch(CHECK_DUPLICATE_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(info)
+                });
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                return result.is_duplicate;
+            } catch (error) {
+                console.error('检查重复信息失败:', error);
+                // 如果API不可用，默认允许申领
+                return false;
+            }
+        }
+        
+        async function saveCitizenInfo(info) {
+            try {
+                const response = await fetch(SAVE_CITIZEN_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(info)
+                });
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('保存公民信息失败:', error);
+                // 如果API不可用，模拟成功
+                return { success: true, message: '信息保存成功（模拟）' };
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 初始化地区选择
+            populateDistrict();
+            
+            // 初始化答题系统
+            initQuiz();
+            
+            // 预加载图片资源
+            const images = [
+                'flag.jpg',
+                'bg.png',
+                'stamp.png',
+                'sign.png'
+            ];
+            
+            images.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="http://id.dorn.rf.gd/flag.jpg">
+    
+    <title>𣿅国小百科题库</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="http://dorn.rf.gd/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="http://dorn.rf.gd/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="http://dorn.rf.gd/resources/loading.js"></script>
+	<!-- Cookie 同意组件 -->
+	<script src="http://dorn.rf.gd/resources/cookie-consent.js"></script>
+    
+    <!-- 题库数据 -->
+    <script src="http://dorn.rf.gd/resources/questions_example.js"></script>
+    
+    <style>
+        /* 页面特定样式 - 保留原questions.html的功能性样式 */
+        :root {
+            --main-color: #16DA49;
+        }
+        
+        /* 覆盖ui.css中的一些样式以适应本页面 */
+        body {
+            font-family: 'Noto Sans SC', var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 20px 20px;
+        }
+        
+        /* 覆盖标题栏样式，使其与其他页面一致 */
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0;
+            margin-bottom: 0;
+            box-shadow: 0 2px 20px var(--shadow-color);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .header-left h1 {
+            color: white;
+        }
+        
+        /* 覆盖按钮样式以匹配ui.css */
+        .quiz-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+            margin: 5px;
+        }
+        
+        .quiz-button:hover {
+            background-color: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .quiz-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .quiz-button:hover::before {
+            left: 100%;
+        }
+        
+        .restart-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .restart-button:hover {
+            background-color: #0f8f30;
+            transform: scale(1.02);
+        }
+        
+        .restart-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .restart-button:hover::before {
+            left: 100%;
+        }
+        
+        /* 卡片样式 */
+        .quiz-info {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .question-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px var(--shadow-color);
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .question-container:hover {
+            box-shadow: 0 3px 8px var(--shadow-color);
+            transform: translateY(-2px);
+        }
+        
+        .option {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            transition: all 0.2s var(--animation-curve);
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+        }
+        
+        .option:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        /* 进度条 */
+        .progress-bar {
+            background-color: var(--border-color);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            background-color: var(--primary-color);
+            height: 100%;
+            transition: width 0.3s;
+        }
+        
+        /* 结果容器 */
+        .result-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+        
+        .result-question {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .result-question.correct {
+            border-left: 4px solid #28a745;
+        }
+        
+        .result-question.incorrect {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .explanation {
+            background: var(--secondary-color);
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .score-display {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+            }
+            
+            .quiz-navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .quiz-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- 加载遮罩 -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+    
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1 class="ms-fontSize-32 ms-fontWeight-semibold">
+                    <span id="navname1">Dorn</span>
+                    <span id="navname2">演示题库</span>
+                </h1>
+            </div>
+            <div class="header-right">
+                <a href="https://dorn.rf.gd" class="settings-btn" style="text-decoration: none;">
+                    <i class="fas fa-home"></i> 返回主页
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div id="quiz-container">
+            <div class="quiz-header" style="text-align: center; margin-bottom: 30px;">
+                <h2><i class="fas fa-book-open" style="color: var(--primary-color);"></i> 𣿅国小百科题库</h2>
+                <p>请完成以下25道题目，每题4分，总分100分</p>
+            </div>
+            
+            <div class="quiz-info">
+                <p><strong>训练模式说明：</strong></p>
+                <ul>
+                    <li>完成测试后，您将看到每道题的正误情况、正确答案和详细解析。</li>
+                    <li>通过反复练习，加深对𣿅国相关知识的理解，为入籍𣿅国而准备。</li>
+                    <li>如果你还不了解𣿅国，请前往"𣿅国电子文史资料库"<a href="https://dorn.rf.gd/cloud">cloud.dorn.rf.gd</a>学习相关知识。尤其学习《𣿅子集校注》。</li>
+                    <li>此题库的题目没有涵盖所有的𣿅国入籍测试题目，但是解析涵盖了全部的入籍题目。</li>
+                </ul>
+                <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a href="id-card.html"><button class="quiz-button"><i class="fas fa-id-card"></i> 前往申领𣿅国绿卡</button></a>
+                    <a href="http://contest.dorn.rf.gd"><button class="quiz-button"><i class="fas fa-trophy"></i> 参加𣿅国小百科竞赛</button></a>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="quiz-progress"></div>
+                </div>
+                <div class="progress-text" id="progress-text">第 1 题 / 共 25 题</div>
+            </div>
+            
+            <div id="question-area">
+            </div>
+            
+            <div class="quiz-navigation" style="display: flex; justify-content: space-between; margin-top: 30px;">
+                <button class="quiz-button" id="prev-btn" disabled><i class="fas fa-arrow-left"></i> 上一题</button>
+                <button class="quiz-button" id="next-btn">下一题 <i class="fas fa-arrow-right"></i></button>
+                <button class="quiz-button" id="submit-quiz-btn" style="display: none;">提交测试</button>
+            </div>
+        </div>
+
+        <div id="result-container" class="result-container" style="display: none;">
+            <div class="score-display" id="score-display"></div>
+            
+            <div class="result-details" id="result-details">
+            </div>
+            
+            <button class="restart-button" id="restart-btn"><i class="fas fa-redo-alt"></i> 重新开始测试</button>
+        </div>
+    </div>
+    
+    <!-- 统一UI脚本 -->
+    <script src="http://dorn.rf.gd/resources/ui.js"></script>
+    
+    <script>
+        // 答题相关变量
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let quizScore = 0;
+        let quizQuestions = [];
+        let shuffledOptions = []; // 存储每道题打乱后的选项顺序
+
+        // 从题库中随机选择25道题目
+        function getRandomQuestions() {
+            const selectedQuestions = [];
+            const usedIndices = new Set();
+            
+            const questionCount = Math.min(25, questionBank.length);
+            
+            while (selectedQuestions.length < questionCount) {
+                const randomIndex = Math.floor(Math.random() * questionBank.length);
+                if (!usedIndices.has(randomIndex)) {
+                    selectedQuestions.push(questionBank[randomIndex]);
+                    usedIndices.add(randomIndex);
+                }
+                
+                if (usedIndices.size >= questionBank.length) break;
+            }
+            
+            return selectedQuestions;
+        }
+
+        // 随机打乱数组顺序（Fisher-Yates洗牌算法）
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // 初始化答题页面
+        function initQuiz() {
+            quizQuestions = getRandomQuestions();
+            userAnswers = new Array(quizQuestions.length).fill(null);
+            shuffledOptions = []; // 重置打乱的选项
+            
+            // 为每道题生成打乱的选项顺序
+            quizQuestions.forEach((question, index) => {
+                // 创建选项索引数组 [0, 1, 2, 3]
+                const optionIndices = question.options.map((_, i) => i);
+                // 打乱选项索引顺序
+                const shuffledIndices = shuffleArray(optionIndices);
+                
+                // 存储打乱后的选项顺序和原始正确答案的映射
+                shuffledOptions[index] = {
+                    indices: shuffledIndices,
+                    // 找到打乱后正确答案的新位置
+                    correctAnswer: shuffledIndices.indexOf(question.correctAnswer)
+                };
+            });
+            
+            currentQuestionIndex = 0;
+            updateQuizProgress();
+            displayQuestion();
+            
+            // 显示答题区域，隐藏结果区域
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('result-container').style.display = 'none';
+        }
+
+        // 更新答题进度
+        function updateQuizProgress() {
+            const progress = document.getElementById('quiz-progress');
+            const progressText = document.getElementById('progress-text');
+            
+            const progressPercentage = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+            progress.style.width = `${progressPercentage}%`;
+            progressText.textContent = `第 ${currentQuestionIndex + 1} 题 / 共 ${quizQuestions.length} 题`;
+            
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').style.display = currentQuestionIndex < quizQuestions.length - 1 ? 'block' : 'none';
+            document.getElementById('submit-quiz-btn').style.display = currentQuestionIndex === quizQuestions.length - 1 ? 'block' : 'none';
+        }
+
+        // 显示当前题目
+        function displayQuestion() {
+            const questionArea = document.getElementById('question-area');
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            const currentShuffled = shuffledOptions[currentQuestionIndex];
+            
+            let optionsHTML = '';
+            
+            // 使用打乱后的顺序显示选项
+            currentShuffled.indices.forEach((originalIndex, displayIndex) => {
+                const optionText = currentQuestion.options[originalIndex];
+                const isSelected = userAnswers[currentQuestionIndex] === displayIndex;
+                
+                optionsHTML += `
+                    <div class="option ${isSelected ? 'selected' : ''}" data-index="${displayIndex}">
+                        ${String.fromCharCode(65 + displayIndex)}. ${optionText}
+                    </div>
+                `;
+            });
+            
+            questionArea.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number" style="font-weight: bold; color: var(--primary-color); margin-bottom: 10px;">题目 ${currentQuestionIndex + 1}</div>
+                    <div class="question-text" style="font-size: 18px; margin-bottom: 15px;">${currentQuestion.question}</div>
+                    <div class="options-container" style="display: flex; flex-direction: column; gap: 10px;">
+                        ${optionsHTML}
+                    </div>
+                </div>
+            `;
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const selectedIndex = parseInt(this.getAttribute('data-index'));
+                    userAnswers[currentQuestionIndex] = selectedIndex;
+                    
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+            
+            updateQuizProgress();
+        }
+
+        // 计算得分
+        function calculateScore() {
+            let score = 0;
+            quizQuestions.forEach((question, index) => {
+                // 用户选择的选项在打乱后的位置
+                const userSelectedIndex = userAnswers[index];
+                
+                // 如果用户选择了答案
+                if (userSelectedIndex !== null) {
+                    // 获取打乱后的正确答案位置
+                    const correctShuffledIndex = shuffledOptions[index].correctAnswer;
+                    
+                    // 比较用户选择的位置和打乱后的正确答案位置
+                    if (userSelectedIndex === correctShuffledIndex) {
+                        score += 4;
+                    }
+                }
+            });
+            return score;
+        }
+
+        // 显示结果
+        function showResults() {
+            quizScore = calculateScore();
+            
+            // 更新分数显示，根据分数设置颜色
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.textContent = `您的得分: ${quizScore} / 100`;
+            
+            if (quizScore < 60) {
+                scoreDisplay.style.color = '#FF0000';
+            } else if (quizScore >= 60 && quizScore < 90) {
+                scoreDisplay.style.color = '#6499FF';
+            } else {
+                scoreDisplay.style.color = '#16DA49';
+            }
+            
+            // 生成结果详情
+            let resultDetailsHTML = '';
+            quizQuestions.forEach((question, index) => {
+                const userAnswerIndex = userAnswers[index];
+                const currentShuffled = shuffledOptions[index];
+                
+                // 判断用户是否答对
+                const isCorrect = userAnswerIndex === currentShuffled.correctAnswer;
+                
+                // 获取用户选择的选项文本（在打乱后的顺序中）
+                let userAnswerText = "你没有作答";
+                if (userAnswerIndex !== null) {
+                    const originalOptionIndex = currentShuffled.indices[userAnswerIndex];
+                    userAnswerText = `${String.fromCharCode(65 + userAnswerIndex)}. ${question.options[originalOptionIndex]}`;
+                }
+                
+                // 获取正确答案的文本（在打乱后的顺序中）
+                const correctShuffledIndex = currentShuffled.correctAnswer;
+                const correctOriginalIndex = currentShuffled.indices[correctShuffledIndex];
+                const correctAnswerText = `${String.fromCharCode(65 + correctShuffledIndex)}. ${question.options[correctOriginalIndex]}`;
+                
+                // 生成所有选项的HTML（按打乱后的顺序）
+                let optionsHTML = '<div style="margin: 5px 0;"><strong>所有选项：</strong></div>';
+                currentShuffled.indices.forEach((originalIndex, displayIndex) => {
+                    optionsHTML += `<div style="margin-left: 15px;">${String.fromCharCode(65 + displayIndex)}. ${question.options[originalIndex]}</div>`;
+                });
+                
+                resultDetailsHTML += `
+                    <div class="result-question ${isCorrect ? 'correct' : 'incorrect'}">
+                        <div class="result-status ${isCorrect ? 'correct' : 'incorrect'}" style="font-weight: bold; margin-bottom: 10px; font-size: 18px; color: ${isCorrect ? '#16DA49' : '#FF0000'};">
+                            ${isCorrect ? '✓ 答对' : '✕ 答错'}
+                        </div>
+                        <div class="question-number" style="font-weight: bold; color: var(--primary-color); margin-bottom: 10px;">题目 ${index + 1}</div>
+                        <div class="question-text" style="font-size: 16px; margin-bottom: 10px;">${question.question}</div>
+                        ${optionsHTML}
+                        <div style="margin-top: 10px;"><strong>您的答案：</strong> ${userAnswerText}</div>
+                        <div><strong>正确答案：</strong> ${correctAnswerText}</div>
+                        <div class="explanation"><strong>解析：</strong>${question.explanation}</div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('result-details').innerHTML = resultDetailsHTML;
+            
+            // 显示结果区域，隐藏答题区域
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+        }
+
+        // 答题事件监听
+        document.getElementById('prev-btn').addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        });
+
+        document.getElementById('next-btn').addEventListener('click', function() {
+            if (currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        });
+
+        document.getElementById('submit-quiz-btn').addEventListener('click', showResults);
+
+        // 重新开始测试
+        document.getElementById('restart-btn').addEventListener('click', initQuiz);
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            initQuiz();
+        };
+    </script>
+</body>
+</html>
