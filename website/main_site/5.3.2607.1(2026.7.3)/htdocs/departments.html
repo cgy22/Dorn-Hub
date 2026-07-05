@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+    <title>𣿅国国家机构树状图</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <!-- Cookie 同意组件 -->
+    <script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <!-- Turnstile 统一管理模块 -->
+    <script src="https://dornhub.eu.org/resources/turnstile.js"></script>
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    
+    <!-- 部门数据（绝对地址） -->
+    <script src="https://dornhub.eu.org/resources/departments.js"></script>
+    
+    <style>
+        /* ==================== 树状图专用样式 ==================== */
+        .dept-tree {
+            width: 100%;
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        
+        .dept-node {
+            margin-bottom: 0;
+            list-style: none;
+        }
+        
+        .dept-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-speed) var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .dept-card:hover {
+            background-color: var(--card-hover-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+        
+        /* 搜索高亮 */
+        .search-highlight {
+            background-color: #ffeb3b;
+            color: #1a1a1a;
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+        
+        body.dark .search-highlight {
+            background-color: #ffc107;
+            color: #1a1a1a;
+        }
+        
+        .dept-header-expand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            gap: 12px;
+        }
+        
+        .dept-header-detail {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 12px;
+            cursor: pointer;
+        }
+        
+        .dept-info {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .dept-icon {
+            font-size: 24px;
+            color: var(--primary-color);
+            min-width: 32px;
+            text-align: center;
+        }
+        
+        .dept-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .dept-func {
+            font-size: 13px;
+            color: var(--text-color);
+            opacity: 0.7;
+            background: var(--secondary-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            max-width: 500px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .dept-expand-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all var(--transition-speed) var(--animation-curve);
+            color: var(--primary-color);
+        }
+        
+        .dept-expand-btn:hover {
+            background: var(--secondary-color);
+        }
+        
+        .dept-expand-icon {
+            transition: transform var(--transition-speed) var(--animation-curve);
+        }
+        
+        .dept-expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+        
+        .dept-children {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows var(--transition-speed) var(--animation-curve);
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        
+        .dept-children.expanded {
+            grid-template-rows: 1fr;
+        }
+        
+        .dept-children-inner {
+            overflow: hidden;
+        }
+        
+        .dept-children .dept-node {
+            margin-left: 24px;
+            padding-left: 20px;
+            border-left: 2px solid var(--border-color);
+            position: relative;
+        }
+        
+        .dept-children .dept-node::before {
+            content: '';
+            position: absolute;
+            left: -2px;
+            top: 20px;
+            width: 12px;
+            height: 2px;
+            background: var(--border-color);
+        }
+        
+        .dept-card.leaf .dept-expand-btn {
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .root-node > .dept-card {
+            background: linear-gradient(135deg, 
+                rgba(var(--primary-color-rgb, 22, 218, 73), 0.05) 0%,
+                var(--card-bg) 100%);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .dept-details {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows var(--transition-speed) var(--animation-curve);
+            background: var(--secondary-color);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .dept-details.visible {
+            grid-template-rows: 1fr;
+        }
+        
+        .dept-details-inner {
+            overflow: hidden;
+            padding: 0 20px;
+        }
+        
+        .dept-details.visible .dept-details-inner {
+            padding: 16px 20px;
+        }
+        
+        .dept-details-section {
+            margin-bottom: 16px;
+        }
+        
+        .dept-details-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .dept-details-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .staff-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .staff-item {
+            background: var(--card-bg);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .staff-title {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .staff-name {
+            color: var(--text-color);
+            margin-left: 6px;
+        }
+        
+        .staff-name.empty {
+            color: var(--text-color);
+            opacity: 0.5;
+            font-style: italic;
+        }
+        
+        .staff-note {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-left: 6px;
+        }
+        
+        .powers-list {
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        .powers-list li {
+            margin: 4px 0;
+            line-height: 1.5;
+        }
+        
+        /* 搜索框样式 */
+        .search-container {
+            margin-bottom: 24px;
+        }
+        
+        .search-box-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 14px 20px;
+            padding-right: 50px;
+            font-size: 16px;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            color: var(--text-color);
+            transition: all var(--transition-speed) var(--animation-curve);
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(22, 218, 73, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-top: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            display: none;
+        }
+        
+        .search-suggestions.active {
+            display: block;
+        }
+        
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            transition: background var(--transition-speed);
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+            background: var(--secondary-color);
+        }
+        
+        .suggestion-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .suggestion-path {
+            font-size: 11px;
+            opacity: 0.6;
+            font-family: monospace;
+        }
+        
+        .suggestion-preview {
+            font-size: 12px;
+            opacity: 0.8;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .search-result-stats {
+            text-align: center;
+            padding: 8px;
+            font-size: 12px;
+            opacity: 0.6;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .no-results {
+            padding: 24px;
+            text-align: center;
+            opacity: 0.6;
+        }
+        
+        .floating-buttons {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1000;
+        }
+        
+        .float-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transition: all var(--transition-speed) var(--animation-curve);
+        }
+        
+        .float-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .float-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .back-to-top {
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-speed) var(--animation-curve);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .tree-stats {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px 20px;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+        
+        .stats-left {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stats-left span {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .clear-search-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            transition: background var(--transition-speed);
+        }
+        
+        .clear-search-btn:hover {
+            background: var(--secondary-color);
+        }
+        
+        .tree-loading {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .dept-header-expand {
+                flex-wrap: wrap;
+            }
+            .dept-info {
+                flex-wrap: wrap;
+            }
+            .dept-func {
+                white-space: normal;
+                max-width: 100%;
+            }
+            .dept-children .dept-node {
+                margin-left: 12px;
+                padding-left: 12px;
+            }
+            .floating-buttons {
+                bottom: 20px;
+                right: 20px;
+            }
+            .float-btn {
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+            .tree-stats {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dept-card {
+            animation: fadeIn 0.3s var(--animation-curve);
+        }
+        
+        /* 闪烁动画用于定位 */
+        @keyframes blink {
+            0% { background-color: rgba(22, 218, 73, 0); border-left-color: var(--primary-color); }
+            50% { background-color: rgba(22, 218, 73, 0.2); border-left-color: #ffeb3b; }
+            100% { background-color: rgba(22, 218, 73, 0); border-left-color: var(--primary-color); }
+        }
+        
+        .highlight-flash {
+            animation: blink 0.8s ease-in-out 2;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 加载遮罩 -->
+<div id="loading-mask">
+    <div class="spinner-text">
+        <span id="loading-text-1">Dorn</span>
+        <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+    </div>
+    <br>
+    <p>好东西就要来了……</p>
+    <br>
+    <div class="loading-spinner"></div>
+    <br>
+    <br>
+    <button class="btn" id="stop-button">
+        <i class="fas fa-stop-circle"></i> 中断加载
+    </button>
+    <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+</div>
+
+<div class="container">
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1>
+                    <span id="navname1">𣿅国</span>
+                    <span id="navname2">国家机构树状图</span>
+                    <span class="insider-badge" id="insiderBadge">Insider</span>
+                </h1>
+            </div>
+            <div class="header-right">
+                <!-- LoginModule 会自动注入下拉菜单到这里 -->
+                <a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none;">
+                    <i class="fas fa-home"></i> 主页
+                </a>
+            </div>
+        </div>
+    </header>
+    
+    <br><br><br>
+    
+    <div class="section-container">
+        <div class="section-title">
+            <h2><i class="fas fa-sitemap"></i> 国家机构组织架构</h2>
+            <div class="section-buttons">
+                <button class="btn btn-secondary" id="semiExpandBtn">
+                    <i class="fas fa-arrow-down"></i> 半展开
+                </button>
+                <button class="btn btn-secondary" id="expandAllBtn">
+                    <i class="fas fa-expand-alt"></i> 完全展开
+                </button>
+                <button class="btn btn-secondary" id="collapseAllBtn">
+                    <i class="fas fa-compress-alt"></i> 全部收起
+                </button>
+            </div>
+        </div>
+        
+        <!-- 搜索框卡片 -->
+        <div class="search-container">
+            <div class="search-box-wrapper">
+                <input type="text" class="search-box" id="searchInput" placeholder="搜索部门、职能、工作人员、权力..." autocomplete="off">
+                <i class="fas fa-search search-icon"></i>
+                <div class="search-suggestions" id="searchSuggestions"></div>
+            </div>
+        </div>
+        
+        <div class="tree-stats">
+            <div class="stats-left">
+                <i class="fas fa-building"></i> 部门总数: <span id="totalDepts">0</span>
+                <i class="fas fa-level-down-alt"></i> 最大层级: <span id="maxDepth">0</span>
+            </div>
+            <div id="searchStats" style="display: none;">
+                <i class="fas fa-search"></i> 搜索结果: <span id="resultCount">0</span> 个匹配
+                <button class="clear-search-btn" id="clearSearchBtn"><i class="fas fa-times"></i> 清除高亮</button>
+            </div>
+        </div>
+        
+        <div class="tree-container" id="treeContainer">
+            <div class="tree-loading">
+                <i class="fas fa-spinner fa-spin"></i> 加载部门数据...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 右下角悬浮按钮 -->
+<div class="floating-buttons">
+    <button class="float-btn" id="floatSemiExpand" title="半展开（展开所有部门，不展开详细信息）">
+        <i class="fas fa-arrow-down"></i>
+    </button>
+    <button class="float-btn" id="floatExpandAll" title="完全展开（展开所有部门及详细信息）">
+        <i class="fas fa-expand-alt"></i>
+    </button>
+    <button class="float-btn" id="floatCollapseAll" title="全部收起">
+        <i class="fas fa-compress-alt"></i>
+    </button>
+    <button class="float-btn back-to-top" id="backToTop" title="回到顶部">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+</div>
+
+<!-- 统一UI脚本 -->
+<script src="https://dornhub.eu.org/resources/login.js"></script>
+
+<script>
+// ==================== 搜索相关函数 ====================
+let allNodes = []; // 存储所有节点信息用于搜索
+let currentSearchTerm = '';
+let currentHighlightedElement = null;
+
+// 收集所有节点的文本内容用于搜索
+function collectAllNodes(node, path = '') {
+    const currentPath = path ? path + ' → ' + node.name : node.name;
+    const nodeInfo = {
+        name: node.name,
+        func: node.func || '',
+        staff: (node.staff || []).map(s => `${s.title}${s.name ? ' ' + s.name : ''}${s.note ? ' (' + s.note + ')' : ''}`).join('; '),
+        powers: (node.powers || []).join('; '),
+        icon: node.icon,
+        path: currentPath,
+        element: null,
+        cardElement: null,
+        detailsElement: null,
+        nodeData: node
+    };
+    allNodes.push(nodeInfo);
+    
+    if (node.children) {
+        for (let child of node.children) {
+            collectAllNodes(child, currentPath);
+        }
+    }
+}
+
+// 搜索匹配
+function searchNodes(keyword) {
+    if (!keyword.trim()) return [];
+    const lowerKeyword = keyword.toLowerCase();
+    return allNodes.filter(node => {
+        return node.name.toLowerCase().includes(lowerKeyword) ||
+               node.func.toLowerCase().includes(lowerKeyword) ||
+               node.staff.toLowerCase().includes(lowerKeyword) ||
+               node.powers.toLowerCase().includes(lowerKeyword);
+    }).map(node => ({
+        ...node,
+        matchFields: getMatchFields(node, lowerKeyword)
+    }));
+}
+
+function getMatchFields(node, keyword) {
+    const fields = [];
+    if (node.name.toLowerCase().includes(keyword)) fields.push('部门名称');
+    if (node.func.toLowerCase().includes(keyword)) fields.push('职能');
+    if (node.staff.toLowerCase().includes(keyword)) fields.push('工作人员');
+    if (node.powers.toLowerCase().includes(keyword)) fields.push('权力');
+    return fields;
+}
+
+// 获取匹配预览文本
+function getPreviewText(node, keyword) {
+    const kw = keyword.toLowerCase();
+    let preview = '';
+    if (node.name.toLowerCase().includes(kw)) {
+        preview = node.name;
+    } else if (node.func.toLowerCase().includes(kw)) {
+        preview = node.func.substring(0, 80);
+    } else if (node.staff.toLowerCase().includes(kw)) {
+        preview = node.staff.substring(0, 80);
+    } else if (node.powers.toLowerCase().includes(kw)) {
+        preview = node.powers.substring(0, 80);
+    }
+    return preview + (preview.length >= 80 ? '...' : '');
+}
+
+// 显示搜索建议
+function showSuggestions(results) {
+    const suggestionsDiv = document.getElementById('searchSuggestions');
+    if (!results.length) {
+        suggestionsDiv.innerHTML = '<div class="no-results"><i class="fas fa-search"></i> 未找到匹配结果</div>';
+        suggestionsDiv.classList.add('active');
+        return;
+    }
+    
+    let html = `<div class="search-result-stats">找到 ${results.length} 个匹配部门</div>`;
+    results.forEach((result, index) => {
+        const matchFields = result.matchFields.join('、');
+        html += `
+            <div class="suggestion-item" data-index="${index}" data-path="${escapeHtml(result.path)}">
+                <div class="suggestion-title">
+                    <i class="fas ${result.icon || 'fa-building'}"></i>
+                    ${escapeHtml(result.name)}
+                    <span class="suggestion-path">${escapeHtml(result.path)}</span>
+                </div>
+                <div class="suggestion-preview">
+                    匹配: ${matchFields} | ${escapeHtml(getPreviewText(result, currentSearchTerm))}
+                </div>
+            </div>
+        `;
+    });
+    suggestionsDiv.innerHTML = html;
+    suggestionsDiv.classList.add('active');
+    
+    // 绑定点击事件
+    document.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const path = item.getAttribute('data-path');
+            const matchedNode = allNodes.find(n => n.path === path);
+            if (matchedNode) {
+                jumpToNode(matchedNode);
+            }
+            suggestionsDiv.classList.remove('active');
+            document.getElementById('searchInput').value = '';
+            currentSearchTerm = '';
+        });
+    });
+}
+
+// 跳转到指定节点
+function jumpToNode(nodeInfo) {
+    // 先找到对应的DOM元素
+    const allDeptCards = document.querySelectorAll('.dept-card');
+    let targetCard = null;
+    for (let card of allDeptCards) {
+        const nameSpan = card.querySelector('.dept-name');
+        if (nameSpan && nameSpan.textContent === nodeInfo.name) {
+            // 需要通过路径确认是同一个
+            let parentPath = getParentPathFromCard(card);
+            if (parentPath === nodeInfo.path || nodeInfo.path.endsWith(' → ' + nodeInfo.name)) {
+                targetCard = card;
+                break;
+            }
+        }
+    }
+    
+    if (!targetCard) {
+        // 尝试通过名称找到第一个匹配的
+        const allNameSpans = document.querySelectorAll('.dept-name');
+        for (let span of allNameSpans) {
+            if (span.textContent === nodeInfo.name) {
+                targetCard = span.closest('.dept-card');
+                break;
+            }
+        }
+    }
+    
+    if (targetCard) {
+        // 展开所有父级
+        expandParents(targetCard);
+        // 展开详细信息
+        const detailsDiv = targetCard.querySelector('.dept-details');
+        if (detailsDiv && !detailsDiv.classList.contains('visible')) {
+            detailsDiv.classList.add('visible');
+        }
+        // 滚动到视图
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // 添加闪烁效果
+        targetCard.classList.add('highlight-flash');
+        setTimeout(() => {
+            targetCard.classList.remove('highlight-flash');
+        }, 1600);
+        
+        if (window.UI?.success) UI.success(`已定位到：${nodeInfo.name}`);
+    } else {
+        if (window.UI?.error) UI.error('无法定位到该部门，请尝试刷新页面');
+    }
+}
+
+// 获取卡片对应的路径
+function getParentPathFromCard(card) {
+    let path = [];
+    let current = card;
+    while (current) {
+        const nameSpan = current.querySelector('.dept-name');
+        if (nameSpan) path.unshift(nameSpan.textContent);
+        // 向上查找父级
+        let parent = current.closest('.dept-node')?.parentElement?.closest('.dept-node');
+        if (parent) {
+            current = parent.querySelector('.dept-card');
+        } else {
+            break;
+        }
+    }
+    return path.join(' → ');
+}
+
+// 展开所有父级
+function expandParents(card) {
+    let parent = card.closest('.dept-node')?.parentElement?.closest('.dept-node');
+    while (parent) {
+        const parentCard = parent.querySelector('.dept-card');
+        if (parentCard) {
+            const expandBtn = parentCard.querySelector('.dept-expand-btn');
+            const childrenId = expandBtn?.getAttribute('data-expand-target');
+            if (childrenId) {
+                const childrenDiv = document.getElementById(childrenId);
+                if (childrenDiv && !childrenDiv.classList.contains('expanded')) {
+                    childrenDiv.classList.add('expanded');
+                    const icon = expandBtn.querySelector('.dept-expand-icon');
+                    if (icon) icon.classList.add('rotated');
+                }
+            }
+        }
+        parent = parent.parentElement?.closest('.dept-node');
+    }
+}
+
+// 清除高亮
+function clearHighlights() {
+    if (currentHighlightedElement) {
+        currentHighlightedElement.classList.remove('highlight-flash');
+        currentHighlightedElement = null;
+    }
+    const searchStats = document.getElementById('searchStats');
+    searchStats.style.display = 'none';
+    document.getElementById('searchInput').value = '';
+    currentSearchTerm = '';
+    const suggestionsDiv = document.getElementById('searchSuggestions');
+    suggestionsDiv.classList.remove('active');
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+}
+
+// ==================== 树状图渲染 ====================
+(function() {
+    let treeContainer = document.getElementById('treeContainer');
+    let totalDeptsSpan = document.getElementById('totalDepts');
+    let maxDepthSpan = document.getElementById('maxDepth');
+    let totalCount = 0, maxDepth = 0;
+    
+    function renderDetails(dept) {
+        let html = '';
+        if (dept.staff?.length) {
+            html += '<div class="dept-details-section"><div class="dept-details-title"><i class="fas fa-user-tie"></i> 工作人员</div><div class="staff-list">';
+            for (let s of dept.staff) {
+                let nameDisplay = (!s.name || s.name === '') ? '<span class="staff-name empty"></span>' : `<span class="staff-name">${escapeHtml(s.name)}</span>`;
+                html += `<div class="staff-item"><span class="staff-title">${escapeHtml(s.title)}</span>${nameDisplay}${s.note ? `<span class="staff-note">${escapeHtml(s.note)}</span>` : ''}</div>`;
+            }
+            html += '</div></div>';
+        }
+        if (dept.powers?.length) {
+            html += '<div class="dept-details-section"><div class="dept-details-title"><i class="fas fa-gavel"></i> 掌管权力</div><ul class="powers-list">';
+            for (let p of dept.powers) html += `<li>${escapeHtml(p)}</li>`;
+            html += '</ul></div>';
+        }
+        return html;
+    }
+    
+    function renderNode(dept, depth = 0, isRoot = false) {
+        totalCount++;
+        if (depth > maxDepth) maxDepth = depth;
+        const hasChildren = dept.children?.length > 0;
+        const nodeId = 'n_' + Math.random().toString(36).substr(2, 8);
+        const childrenId = 'c_' + nodeId;
+        
+        let html = `<li class="dept-node ${isRoot ? 'root-node' : ''}" data-dept-name="${escapeHtml(dept.name).replace(/"/g, '&quot;')}">`;
+        html += `<div class="dept-card ${!hasChildren ? 'leaf' : ''}" data-node-id="${nodeId}">`;
+        html += `<div class="dept-header-expand">`;
+        html += `<div class="dept-header-detail"><div class="dept-info">`;
+        html += `<i class="fas ${dept.icon || 'fa-building'} dept-icon"></i>`;
+        html += `<span class="dept-name">${escapeHtml(dept.name)}</span>`;
+        if (dept.func) html += `<span class="dept-func">${escapeHtml(dept.func)}</span>`;
+        html += `</div></div>`;
+        if (hasChildren) {
+            html += `<div class="dept-expand-btn" data-expand-target="${childrenId}"><i class="fas fa-chevron-down dept-expand-icon"></i></div>`;
+        } else {
+            html += `<div class="dept-expand-btn" style="visibility:hidden;"></div>`;
+        }
+        html += `</div>`;
+        
+        const detailsHtml = renderDetails(dept);
+        if (detailsHtml) {
+            html += `<div class="dept-details" data-details="${nodeId}"><div class="dept-details-inner">${detailsHtml}</div></div>`;
+        }
+        html += `</div>`;
+        
+        if (hasChildren) {
+            html += `<ul class="dept-children" id="${childrenId}"><li class="dept-children-inner"><ul class="dept-tree" style="padding-left:0;">`;
+            for (let child of dept.children) html += renderNode(child, depth + 1);
+            html += `</ul></li></ul>`;
+        }
+        html += `</li>`;
+        return html;
+    }
+    
+    function renderTree() {
+        if (typeof departmentsData === 'undefined') {
+            treeContainer.innerHTML = '<div class="tree-loading">部门数据加载失败，请刷新页面</div>';
+            return;
+        }
+        totalCount = 0; maxDepth = 0;
+        let html = '<ul class="dept-tree">' + renderNode(departmentsData, 0, true) + '</ul>';
+        treeContainer.innerHTML = html;
+        totalDeptsSpan.textContent = totalCount;
+        maxDepthSpan.textContent = maxDepth;
+        
+        // 收集所有节点用于搜索
+        allNodes = [];
+        collectAllNodes(departmentsData);
+        
+        // 绑定节点到元素
+        document.querySelectorAll('.dept-card').forEach(card => {
+            const nameSpan = card.querySelector('.dept-name');
+            if (nameSpan) {
+                const nodeName = nameSpan.textContent;
+                const foundNode = allNodes.find(n => n.name === nodeName);
+                if (foundNode) {
+                    foundNode.cardElement = card;
+                    foundNode.detailsElement = card.querySelector('.dept-details');
+                }
+            }
+        });
+        
+        document.querySelectorAll('.dept-expand-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                let targetId = btn.getAttribute('data-expand-target');
+                let children = document.getElementById(targetId);
+                if (children) {
+                    children.classList.toggle('expanded');
+                    let icon = btn.querySelector('.dept-expand-icon');
+                    if (icon) icon.classList.toggle('rotated', children.classList.contains('expanded'));
+                }
+            };
+        });
+        document.querySelectorAll('.dept-header-detail').forEach(header => {
+            header.onclick = (e) => {
+                e.stopPropagation();
+                let card = header.closest('.dept-card');
+                let nodeId = card?.getAttribute('data-node-id');
+                if (nodeId) {
+                    let details = card.querySelector(`.dept-details[data-details="${nodeId}"]`);
+                    if (details) details.classList.toggle('visible');
+                }
+            };
+        });
+        
+        // 初始状态：完全展开所有部门
+        setTimeout(() => {
+            document.querySelectorAll('.dept-children').forEach(c => c.classList.add('expanded'));
+            document.querySelectorAll('.dept-expand-icon').forEach(i => i.classList.add('rotated'));
+            document.querySelectorAll('.dept-details').forEach(d => d.classList.remove('visible'));
+        }, 50);
+    }
+    
+    // 半展开
+    function semiExpand() {
+        document.querySelectorAll('.dept-children').forEach(c => c.classList.add('expanded'));
+        document.querySelectorAll('.dept-expand-icon').forEach(i => i.classList.add('rotated'));
+        document.querySelectorAll('.dept-details').forEach(d => d.classList.remove('visible'));
+        if (window.UI?.success) UI.success('已半展开（所有部门已展开，详细信息已收起）');
+    }
+    
+    // 完全展开
+    function expandAll() {
+        document.querySelectorAll('.dept-children').forEach(c => c.classList.add('expanded'));
+        document.querySelectorAll('.dept-expand-icon').forEach(i => i.classList.add('rotated'));
+        document.querySelectorAll('.dept-details').forEach(d => d.classList.add('visible'));
+        if (window.UI?.success) UI.success('已完全展开所有部门及详细信息');
+    }
+    
+    // 全部收起
+    function collapseAll() {
+        document.querySelectorAll('.dept-children').forEach(c => c.classList.remove('expanded'));
+        document.querySelectorAll('.dept-expand-icon').forEach(i => i.classList.remove('rotated'));
+        document.querySelectorAll('.dept-details').forEach(d => d.classList.remove('visible'));
+        if (window.UI?.success) UI.success('已全部收起');
+    }
+    
+    // 搜索输入处理
+    const searchInput = document.getElementById('searchInput');
+    const searchStats = document.getElementById('searchStats');
+    const resultCountSpan = document.getElementById('resultCount');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const suggestionsDiv = document.getElementById('searchSuggestions');
+    
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+        currentSearchTerm = e.target.value;
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            if (currentSearchTerm.trim().length > 0) {
+                const results = searchNodes(currentSearchTerm);
+                showSuggestions(results);
+                searchStats.style.display = 'flex';
+                resultCountSpan.textContent = results.length;
+            } else {
+                suggestionsDiv.classList.remove('active');
+                searchStats.style.display = 'none';
+            }
+        }, 200);
+    });
+    
+    // 点击外部关闭建议
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-box-wrapper')) {
+            suggestionsDiv.classList.remove('active');
+        }
+    });
+    
+    clearSearchBtn.addEventListener('click', () => {
+        clearHighlights();
+        suggestionsDiv.classList.remove('active');
+        searchInput.value = '';
+        currentSearchTerm = '';
+        searchStats.style.display = 'none';
+        if (window.UI?.info) UI.info('已清除搜索高亮');
+    });
+    
+    // 键盘导航
+    let selectedIndex = -1;
+    searchInput.addEventListener('keydown', (e) => {
+        const items = document.querySelectorAll('.suggestion-item');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            updateSelectedItem(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectedIndex = Math.max(selectedIndex - 1, -1);
+            updateSelectedItem(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (selectedIndex >= 0 && items[selectedIndex]) {
+                items[selectedIndex].click();
+            } else if (currentSearchTerm.trim()) {
+                const results = searchNodes(currentSearchTerm);
+                if (results.length) {
+                    jumpToNode(results[0]);
+                    suggestionsDiv.classList.remove('active');
+                    searchInput.value = '';
+                    currentSearchTerm = '';
+                    searchStats.style.display = 'none';
+                }
+            }
+        } else if (e.key === 'Escape') {
+            suggestionsDiv.classList.remove('active');
+            selectedIndex = -1;
+        }
+    });
+    
+    function updateSelectedItem(items) {
+        items.forEach((item, idx) => {
+            if (idx === selectedIndex) {
+                item.classList.add('selected');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('selected');
+            }
+        });
+    }
+    
+    renderTree();
+    
+    // 绑定按钮
+    document.getElementById('semiExpandBtn')?.addEventListener('click', semiExpand);
+    document.getElementById('expandAllBtn')?.addEventListener('click', expandAll);
+    document.getElementById('collapseAllBtn')?.addEventListener('click', collapseAll);
+    document.getElementById('floatSemiExpand')?.addEventListener('click', semiExpand);
+    document.getElementById('floatExpandAll')?.addEventListener('click', expandAll);
+    document.getElementById('floatCollapseAll')?.addEventListener('click', collapseAll);
+    
+    let backBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (backBtn) backBtn.classList.toggle('visible', window.scrollY > 300);
+    });
+    backBtn?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+})();
+
+// ==================== 初始化 LoginModule ====================
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化 LoginModule
+    if (typeof LoginModule !== 'undefined' && LoginModule.init) {
+        LoginModule.init('.header-right');
+    }
+    
+    // 监听登录事件
+    document.addEventListener('userLoggedIn', function(e) {
+        if (window.UI && UI.success) {
+            UI.success('登录成功！');
+        }
+    });
+    
+    document.addEventListener('userLoggedOut', function() {
+        if (window.UI && UI.info) {
+            UI.info('已退出登录');
+        }
+    });
+    
+    // 检查已有登录状态
+    if (typeof LoginModule !== 'undefined' && LoginModule.isLoggedIn()) {
+        // 显示 Insider 徽章
+        document.querySelectorAll('.insider-badge').forEach(b => b.style.display = 'inline-block');
+    }
+    
+    
+    // 隐藏加载遮罩
+    setTimeout(function() {
+        const loadingMask = document.getElementById('loading-mask');
+        if (loadingMask) {
+            loadingMask.style.opacity = '0';
+            setTimeout(function() {
+                loadingMask.style.display = 'none';
+            }, 300);
+        }
+    }, 800);
+});
+</script>
+</body>
+</html>

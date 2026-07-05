@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="用户在此处进入Dorn Hub的个人中心。Dorn Hub是大𣿅子IP的核心数字平台，也是用户进入𣿅国世界的第一道大门。">
+
+    <link rel="icon" href="SatornhLogo.png">
+    <title>个人中心 - Dorn Hub</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+	<!-- Cookie 同意组件 -->
+	<script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+	<!-- Cloudflare Turnstile -->
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+	<!-- Turnstile 统一管理模块 - 必须在页面加载前引入 -->
+	<script src="/resources/turnstile.js"></script>
+    
+    <style>
+        /* 页面特定样式 - 保留原account.html的功能性样式 */
+        :root {
+            --main-color: #16DA49;
+        }
+        
+        /* 覆盖ui.css中的一些样式以适应本页面 */
+        body {
+            font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 20px;
+        }
+        
+        /* 覆盖标题栏样式，使其与其他页面一致 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .back-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .back-btn:hover {
+            background: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .back-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .back-btn:hover::before {
+            left: 100%;
+        }
+        
+        /* 用户信息卡片 */
+        .user-info-card {
+            padding: 30px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px;
+            border-radius: 4px;
+            transition: all 0.2s var(--animation-curve);
+        }
+        
+        .info-item:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        /* 导航标签 */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s var(--animation-curve);
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(var(--primary-color-rgb), 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .nav-tab:hover::before {
+            left: 100%;
+        }
+        
+        .nav-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .nav-tab:hover:not(.disabled) {
+            background: var(--secondary-color);
+        }
+        
+        .nav-tab.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 内容区域 */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s var(--animation-curve);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+            transform: scale(1.01);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s var(--animation-curve);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .btn-danger {
+            background: #d13438;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #b02a2e;
+            transform: scale(1.05);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--text-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border-color);
+            transform: scale(1.05);
+        }
+        
+        /* 签到按钮 */
+        .checkin-btn {
+            background: linear-gradient(135deg, #16DA49, #20EE66);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s var(--animation-curve);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(22, 218, 73, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .checkin-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .checkin-btn:hover::before {
+            left: 100%;
+        }
+        
+        .checkin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(22, 218, 73, 0.4);
+        }
+        
+        .checkin-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .checkin-btn:disabled::before {
+            display: none;
+        }
+        
+        /* 通知样式 */
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .notification-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.2s var(--animation-curve);
+        }
+        
+        .notification-item:hover {
+            background-color: var(--secondary-color);
+            transform: translateX(5px);
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #d13438;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s var(--animation-curve);
+        }
+        
+        .delete-btn:hover {
+            background: rgba(209, 52, 56, 0.1);
+            transform: scale(1.1);
+        }
+        
+        /* 模态框样式 */
+        .modal-content {
+            max-width: 500px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* 设置选项样式 */
+        .setting-group {
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        .setting-group h4 {
+            margin: 0 0 15px 0;
+            color: var(--primary-color);
+        }
+        
+        .toggle-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: var(--secondary-color);
+            border-radius: 6px;
+            transition: all 0.2s var(--animation-curve);
+        }
+        
+        .toggle-group:hover {
+            background: var(--border-color);
+        }
+        
+        .toggle-label {
+            font-weight: 500;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s var(--animation-curve);
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s var(--animation-curve);
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* 颜色选项 */
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .color-option {
+            height: 40px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-option.active {
+            border-color: var(--text-color);
+            transform: scale(1.05);
+        }
+        
+        /* 主题选项 */
+        .theme-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .theme-option {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s var(--animation-curve);
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .theme-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .theme-option.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+        
+        /* Cookie 警告样式 */
+        .cookie-warning {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(209, 52, 56, 0.1);
+            border-left: 3px solid #d13438;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #d13438;
+            animation: fadeIn 0.3s var(--animation-curve);
+        }
+        
+        .cookie-warning i {
+            margin-right: 8px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+            }
+            
+            .user-info-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .nav-tab {
+                text-align: left;
+            }
+            
+            .color-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .theme-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- 加载遮罩 -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+    
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                返回主页
+            </a>
+            <h1><i class="fas fa-user-circle" style="color: var(--primary-color);"></i> 个人中心</h1>
+        </div>
+
+        <!-- 用户信息 -->
+        <div class="user-info-card section-container" id="userInfoCard">
+            <div class="info-item">
+                <span class="info-label"><i class="fas fa-smile"></i> 昵称</span>
+                <span class="info-value" id="userNickname">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label"><i class="fas fa-user"></i> 用户名</span>
+                <span class="info-value" id="userName">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label"><i class="fas fa-certificate"></i> 认证</span>
+                <span class="info-value" id="userCertification">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label"><i class="fas fa-star"></i> 账号等级</span>
+                <span class="info-value" id="userLevel">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label"><i class="fas fa-calendar-alt"></i> 账号创建日期</span>
+                <span class="info-value" id="userCreateDate">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label"><i class="fas fa-coins"></i> 资金</span>
+                <span class="info-value" id="userFunds">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label"><i class="fas fa-history"></i> 上一次登录</span>
+                <span class="info-value" id="userLastLogin">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label"><i class="fas fa-calendar-check"></i> 成为公民天数</span>
+                <span class="info-value" id="userCitizenDays">-</span>
+            </div>
+        </div>
+
+        <!-- 签到按钮 -->
+        <div style="text-align: center; margin-bottom: 30px;">
+            <button class="checkin-btn" id="checkinBtn">
+                <i class="fas fa-calendar-check"></i>
+                每日签到
+            </button>
+            <div id="checkinResult" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- 导航标签 -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="notifications"><i class="fas fa-bell"></i> 通知中心</button>
+            <button class="nav-tab" data-tab="account"><i class="fas fa-user-cog"></i> 账号操作</button>
+            <button class="nav-tab" data-tab="settings"><i class="fas fa-paint-brush"></i> 个性化设置</button>
+            <button class="nav-tab disabled"><i class="fas fa-users"></i> 认识他人</button>
+            <button class="nav-tab" data-tab="contact"><i class="fas fa-envelope"></i> 联系我们</button>
+        </div>
+        
+        <!-- 通知中心 -->
+        <div class="tab-content active" id="notifications-tab">
+            <div class="setting-group section-container">
+                <h4>总通知</h4>
+                <div class="notification-list section-container" id="globalNotifications">
+                    <!-- 总通知将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            
+            <div class="setting-group section-container">
+                <h4>个人通知</h4>
+                <button class="btn btn-primary" id="enableNotificationsBtn" style="margin-bottom: 15px;">
+                    <i class="fas fa-bell"></i>
+                    开通个人通知
+                </button>
+                <div class="notification-list section-container" id="personalNotifications">
+                    <!-- 个人通知将通过JavaScript动态生成 -->
+                </div>
+                <button class="btn btn-secondary" id="clearPersonalNotificationsBtn" style="margin-top: 10px;">
+                    <i class="fas fa-trash"></i>
+                    清除所有个人通知
+                </button>
+            </div>
+        </div>
+        
+        <!-- 标签内容 -->
+        <div id="tabContent">
+            <!-- 账号操作 -->
+            <div class="tab-content" id="account-tab">
+                <div class="setting-group section-container">
+                    <h4><i class="fas fa-edit"></i> 修改昵称</h4>
+                    <div class="form-group">
+                        <input type="text" id="newNickname" placeholder="输入新昵称">
+                        <button class="btn btn-primary" style="margin-top: 10px;" id="updateNicknameBtn">
+                            <i class="fas fa-save"></i>
+                            更新昵称
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-group section-container">
+                    <h4><i class="fas fa-key"></i> 重新设置密码</h4>
+                    <div class="form-group">
+                        <input type="password" id="currentPassword" placeholder="当前密码">
+                        <input type="password" id="newPassword" placeholder="新密码" style="margin-top: 10px;">
+                        <input type="password" id="confirmPassword" placeholder="确认新密码" style="margin-top: 10px;">
+                        <button class="btn btn-primary" style="margin-top: 10px;" id="updatePasswordBtn">
+                            <i class="fas fa-key"></i>
+                            更新密码
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="setting-group section-container">
+                    <h4><i class="fas fa-envelope"></i> 备用邮箱设置</h4>
+                    <div class="form-group">
+                        <label for="userEmail">当前邮箱</label>
+                        <input type="text" id="userEmail" readonly style="background: var(--secondary-color);" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="newEmail">新邮箱 <span style="color: #666; font-size: 12px;">(选填，用于找回密码)</span></label>
+                        <input type="email" id="newEmail" placeholder="请输入新邮箱地址">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmEmail">确认邮箱</label>
+                        <input type="email" id="confirmEmail" placeholder="请再次输入邮箱地址">
+                    </div>
+                    <button class="btn btn-primary" id="updateEmailBtn" style="margin-top: 10px;">
+                        <i class="fas fa-save"></i> 更新邮箱
+                    </button>
+                    <button class="btn btn-danger" id="removeEmailBtn" style="margin-top: 10px; margin-left: 10px;">
+                        <i class="fas fa-trash"></i> 清空邮箱
+                    </button>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 12px;">
+                        <i class="fas fa-info-circle"></i> 邮箱仅用于密码找回。注意：我们并不强制收集你的邮箱地址，也不会验证你邮箱地址的真实性，但如果你没有填写准确的邮箱地址，你将无法重置密码。这意味着如果你忘记了账号密码，你将永远无法找回。你不能通过联系管理员的方式人工重置密码，因为我们无法验证你身份的真实性。
+                    </p>
+                </div>
+                
+                <div class="setting-group section-container">
+                    <h4><i class="fas fa-cookie-bite"></i> Cookie 偏好设置</h4>
+                    <div style="margin-bottom: 15px;">
+                        <div class="toggle-group">
+                            <span class="toggle-label">功能 Cookie</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="functionalCookiesToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-group">
+                            <span class="toggle-label">分析 Cookie (Google Analytics)</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="analyticsCookiesToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div id="cookieWarning" class="cookie-warning" style="display: none;">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            <span id="cookieWarningText"></span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-primary" id="saveCookiePrefsBtn" style="flex: 1;">
+                            <i class="fas fa-save"></i> 保存偏好设置
+                        </button>
+                        <button class="btn btn-secondary" id="resetCookiePrefsBtn" style="flex: 1;">
+                            <i class="fas fa-undo"></i> 重置为默认
+                        </button>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 12px;">
+                        <i class="fas fa-info-circle"></i> 功能 Cookie 用于记住您的主题颜色、固定网站等个性化设置。分析 Cookie 用于帮助我们了解网站使用情况，改进用户体验。
+                    </p>
+                </div>
+                
+                <div class="setting-group section-container">
+                    <h4 style="color: #d13438;"><i class="fas fa-exclamation-triangle"></i> 危险操作</h4>
+                    <button class="btn btn-danger" id="deleteAccountBtn">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        放弃𣿅国身份
+                    </button>
+                    <p style="font-size: 12px; color: #666; margin-top: 8px;">
+                        此操作将永久关闭您的账号，无法恢复
+                    </p>
+                </div>
+            </div>
+
+            <!-- 个性化设置 -->
+            <div class="tab-content" id="settings-tab">
+                <div class="setting-group section-container">
+                    <h4>配色方案</h4>
+                    <div class="color-options">
+                        <div class="color-option active" style="background-color:#16DA49;" data-color="#16DA49" title="𣿅国绿"></div>
+                        <div class="color-option" style="background-color:#6499FF;" data-color="#6499FF" title="大江蓝"></div>
+                        <div class="color-option" style="background-color:#A51515;" data-color="#A51515" title="秋茗红"></div>
+                        <div class="color-option" style="background-color:#349DA5;" data-color="#349DA5" title="铁山青"></div>
+                        <div class="color-option" style="background-color:#FFB500;" data-color="#FFB500" title="凤凰金"></div>
+                        <div class="color-option" style="background-color:#DA70D6;" data-color="#DA70D6" title="兰花紫"></div>
+                        <div class="color-option" style="background-color:#FF69B4;" data-color="#FF69B4" title="梨花粉"></div>
+                        <div class="color-option" style="background-color:#0078d4;" data-color="#0078d4" title="深蓝色"></div>
+                    </div>
+                </div>
+
+                <div class="setting-group section-container">
+                    <h4>明暗模式</h4>
+                    <div class="theme-options">
+                        <div class="theme-option active" data-theme="light">浅色</div>
+                        <div class="theme-option" data-theme="dark">深色</div>
+                        <div class="theme-option" data-theme="auto">跟随系统</div>
+                    </div>
+                </div>
+
+                <div class="setting-group section-container">
+                    <h4>显示选项</h4>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示固定网站栏</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showPinnedToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示网址导航</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showNavigationToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示公告栏</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showAnnouncementToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 联系我们 -->
+            <div class="tab-content" id="contact-tab">
+                <div class="setting-group section-container">
+                    <h4>反馈建议</h4>
+                    <div class="form-group">
+                        <label for="feedbackContent">反馈内容 (最多200字)</label>
+                        <textarea id="feedbackContent" placeholder="请输入您的反馈或建议..." maxlength="200"></textarea>
+                        <div style="text-align: right; font-size: 12px; color: #666;">
+                            <span id="charCount">0</span>/200
+                        </div>
+                        <button class="btn btn-primary" id="submitFeedbackBtn" style="margin-top: 10px;">
+                            <i class="fas fa-paper-plane"></i>
+                            提交反馈
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 登录模态框 - data-turnstile 属性让 turnstile.js 自动接管 -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>登录</h2>
+                <button class="close-btn" id="closeLoginBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm" data-turnstile="#loginTurnstileContainer">
+                    <div class="form-group">
+                        <label for="idNumber">𣿅国身份证号</label>
+                        <input type="text" id="idNumber" placeholder="请输入𣿅国身份证号">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" id="password" placeholder="请输入密码">
+                    </div>
+                    <div style="text-align: left; margin: 10px 0;">
+                        <a href="https://dornhub.eu.org/forgot-password.html" style="color: var(--primary-color); text-decoration: none; font-size: 13px;">
+                            <i class="fas fa-key"></i> 忘记密码？！
+                        </a>
+                    </div>
+                    <div style="text-align: left; margin: 10px 0;">
+                        <a href="https://dornhub.eu.org/gov-services/id/index.html" style="color: var(--primary-color); text-decoration: none; font-size: 13px;">
+                            <i class="fas fa-user-plus"></i> 还没有账号？点此注册
+                        </a>
+                    </div>
+                    
+                    <!-- Turnstile 容器 -->
+                    <div id="loginTurnstileContainer"></div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">登录</button>
+                        <button type="button" class="btn btn-secondary" id="cancelLoginBtn">取消</button>
+                    </div>
+                    <div id="loginMessage" style="margin-top: 15px; text-align: center;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 放弃身份确认模态框 -->
+    <div class="modal" id="deleteAccountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="deleteModalTitle"><i class="fas fa-exclamation-triangle" style="color: #d13438;"></i> 放弃身份确认</h3>
+                <button class="close-btn" id="closeDeleteModalBtn">&times;</button>
+            </div>
+            <div class="modal-body" id="deleteModalBody">
+                <!-- 内容将通过JavaScript动态生成 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDeleteBtn">取消放弃</button>
+                <button class="btn btn-danger" id="continueDeleteBtn">继续放弃</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    
+    <script>
+        // 全局变量
+        let currentUser = null;
+        let isLoggedIn = false;
+        let deletionStep = 0;
+        let currentTheme = localStorage.getItem('theme') || 'auto';
+        let currentColor = localStorage.getItem('primaryColor') || '#16DA49';
+        let showPinned = localStorage.getItem('showPinned') !== 'false';
+        let showNavigation = localStorage.getItem('showNavigation') !== 'false';
+        let showAnnouncement = localStorage.getItem('showAnnouncement') !== 'false';
+        
+        // 页面加载
+        document.addEventListener('DOMContentLoaded', function() {
+            initEventListeners();
+            applySavedSettings();
+            loadCookiePreferences();
+            initCookieEventListeners();
+            
+            // 检查登录状态并显示弹窗
+            checkAndShowLogin();
+        });
+        
+        // 检查并显示登录弹窗
+        function checkAndShowLogin() {
+            const savedUser = localStorage.getItem('currentUser');
+            const savedLoginStatus = localStorage.getItem('isLoggedIn');
+            
+            if (savedUser && savedLoginStatus === 'true') {
+                currentUser = JSON.parse(savedUser);
+                isLoggedIn = true;
+                updateUserInfo();
+                loadNotifications();
+                loadCheckinStatus();
+                loadUserEmail();
+                loadUserSettings();
+            } else {
+                // 未登录，立即显示登录弹窗
+                showLoginModal();
+            }
+        }
+        
+        // 显示登录模态框
+        function showLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (!modal) return;
+            
+            modal.style.display = 'flex';
+            // Turnstile 容器会被 turnstile.js 自动初始化
+        }
+        
+        // 关闭登录模态框
+        function closeLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) modal.style.display = 'none';
+            
+            // 清空表单
+            const idNumber = document.getElementById('idNumber');
+            const password = document.getElementById('password');
+            const msg = document.getElementById('loginMessage');
+            if (idNumber) idNumber.value = '';
+            if (password) password.value = '';
+            if (msg) msg.textContent = '';
+            
+            // 重置 Turnstile
+            const container = document.getElementById('loginTurnstileContainer');
+            if (container && typeof TurnstileManager !== 'undefined') {
+                TurnstileManager.reset(container);
+            }
+        }
+        
+        // 更新用户信息显示
+        function updateUserInfo() {
+            if (!currentUser) return;
+        
+            const nickEl = document.getElementById('userNickname');
+            const nameEl = document.getElementById('userName');
+            const certEl = document.getElementById('userCertification');
+            const dateEl = document.getElementById('userCreateDate');
+            const fundsEl = document.getElementById('userFunds');
+            const lastEl = document.getElementById('userLastLogin');
+            const levelEl = document.getElementById('userLevel');
+            const daysEl = document.getElementById('userCitizenDays');
+            
+            if (nickEl) nickEl.textContent = currentUser.nickname || currentUser.name;
+            if (nameEl) nameEl.textContent = currentUser.name;
+            if (certEl) certEl.textContent = currentUser.certification || '普通公民';
+            if (dateEl) dateEl.textContent = currentUser.issue_date || '-';
+            if (fundsEl) fundsEl.textContent = (currentUser.funds || 50.00) + ' 𣿅元';
+            if (lastEl) lastEl.textContent = currentUser.last_login || '从未登录';
+            if (levelEl) levelEl.textContent = (currentUser.level || 1) + ' 级';
+            
+            if (currentUser.issue_date && daysEl) {
+                const issueDate = new Date(currentUser.issue_date);
+                const today = new Date();
+                const diffTime = Math.abs(today - issueDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                daysEl.textContent = diffDays + ' 天';
+            } else if (daysEl) {
+                daysEl.textContent = '-';
+            }
+        }
+        
+        // 加载用户设置
+        function loadUserSettings() {
+            if (!isLoggedIn || !currentUser) return;
+            fetch(`https://dornhub.eu.org/php/user_settings.php?id_number=${currentUser.id_number}&type=settings`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const userSettings = data.data;
+                        if (userSettings.theme) {
+                            currentTheme = userSettings.theme;
+                            applyTheme(currentTheme);
+                        }
+                        if (userSettings.primary_color) {
+                            currentColor = userSettings.primary_color;
+                            applyColor(currentColor);
+                        }
+                        if (userSettings.show_pinned !== undefined) {
+                            showPinned = Boolean(userSettings.show_pinned);
+                            const showPinnedToggle = document.getElementById('showPinnedToggle');
+                            if (showPinnedToggle) showPinnedToggle.checked = showPinned;
+                            localStorage.setItem('showPinned', showPinned);
+                        }
+                        if (userSettings.show_navigation !== undefined) {
+                            showNavigation = Boolean(userSettings.show_navigation);
+                            const showNavigationToggle = document.getElementById('showNavigationToggle');
+                            if (showNavigationToggle) showNavigationToggle.checked = showNavigation;
+                            localStorage.setItem('showNavigation', showNavigation);
+                        }
+                        if (userSettings.show_announcement !== undefined) {
+                            showAnnouncement = Boolean(userSettings.show_announcement);
+                            const showAnnouncementToggle = document.getElementById('showAnnouncementToggle');
+                            if (showAnnouncementToggle) showAnnouncementToggle.checked = showAnnouncement;
+                            localStorage.setItem('showAnnouncement', showAnnouncement);
+                        }
+                        updateActiveOptions();
+                    }
+                })
+                .catch(() => {
+                    // 使用本地存储的值
+                    const showPinnedToggle = document.getElementById('showPinnedToggle');
+                    const showNavigationToggle = document.getElementById('showNavigationToggle');
+                    const showAnnouncementToggle = document.getElementById('showAnnouncementToggle');
+                    if (showPinnedToggle) showPinnedToggle.checked = showPinned;
+                    if (showNavigationToggle) showNavigationToggle.checked = showNavigation;
+                    if (showAnnouncementToggle) showAnnouncementToggle.checked = showAnnouncement;
+                    updateActiveOptions();
+                });
+        }
+        
+        // 保存设置
+        function saveSettings() {
+            if (!isLoggedIn) return;
+        
+            const settings = {
+                action: 'save_settings',
+                id_number: currentUser.id_number,
+                theme: currentTheme,
+                primary_color: currentColor,
+                show_pinned: document.getElementById('showPinnedToggle')?.checked ? 1 : 0,
+                show_navigation: document.getElementById('showNavigationToggle')?.checked ? 1 : 0,
+                show_announcement: document.getElementById('showAnnouncementToggle')?.checked ? 1 : 0,
+                show_date: 1,
+                show_time: 1,
+                background_type: 'default',
+                search_engine: 'bing'
+            };
+        
+            fetch('https://dornhub.eu.org/php/user_settings.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            }).catch(error => console.error('保存设置请求失败:', error));
+        }
+        
+        // 加载用户邮箱
+        function loadUserEmail() {
+            if (!currentUser) return;
+            const emailField = document.getElementById('userEmail');
+            if (emailField) {
+                emailField.value = currentUser.email || '未设置';
+            }
+        }
+        
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 导航标签切换
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    if (this.classList.contains('disabled')) return;
+                    
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    const tabId = this.dataset.tab + '-tab';
+                    const tabContent = document.getElementById(tabId);
+                    if (tabContent) tabContent.classList.add('active');
+                });
+            });
+        
+            // 字符计数
+            const feedbackContent = document.getElementById('feedbackContent');
+            if (feedbackContent) {
+                feedbackContent.addEventListener('input', function() {
+                    const charSpan = document.getElementById('charCount');
+                    if (charSpan) charSpan.textContent = this.value.length;
+                });
+            }
+        
+            // 颜色选择
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    currentColor = this.dataset.color;
+                    applyColor(currentColor);
+                    if (isLoggedIn) saveSettings();
+                });
+            });
+        
+            // 主题选择
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTheme = this.dataset.theme;
+                    applyTheme(currentTheme);
+                    if (isLoggedIn) saveSettings();
+                });
+            });
+        
+            // 设置变化监听
+            const showPinnedToggle = document.getElementById('showPinnedToggle');
+            const showNavigationToggle = document.getElementById('showNavigationToggle');
+            const showAnnouncementToggle = document.getElementById('showAnnouncementToggle');
+            
+            if (showPinnedToggle) {
+                showPinnedToggle.addEventListener('change', function() {
+                    showPinned = this.checked;
+                    localStorage.setItem('showPinned', showPinned);
+                    if (isLoggedIn) saveSettings();
+                });
+            }
+            
+            if (showNavigationToggle) {
+                showNavigationToggle.addEventListener('change', function() {
+                    showNavigation = this.checked;
+                    localStorage.setItem('showNavigation', showNavigation);
+                    if (isLoggedIn) saveSettings();
+                });
+            }
+            
+            if (showAnnouncementToggle) {
+                showAnnouncementToggle.addEventListener('change', function() {
+                    showAnnouncement = this.checked;
+                    localStorage.setItem('showAnnouncement', showAnnouncement);
+                    if (isLoggedIn) saveSettings();
+                });
+            }
+            
+            // 邮箱更新按钮
+            const updateEmailBtn = document.getElementById('updateEmailBtn');
+            const removeEmailBtn = document.getElementById('removeEmailBtn');
+            if (updateEmailBtn) updateEmailBtn.addEventListener('click', updateEmail);
+            if (removeEmailBtn) removeEmailBtn.addEventListener('click', removeEmail);
+            
+            // 昵称更新按钮
+            const updateNicknameBtn = document.getElementById('updateNicknameBtn');
+            if (updateNicknameBtn) updateNicknameBtn.addEventListener('click', updateNickname);
+            
+            // 密码更新按钮
+            const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+            if (updatePasswordBtn) updatePasswordBtn.addEventListener('click', updatePassword);
+            
+            // 签到按钮
+            const checkinBtn = document.getElementById('checkinBtn');
+            if (checkinBtn) checkinBtn.addEventListener('click', performCheckin);
+            
+            // 开通个人通知按钮
+            const enableNotificationsBtn = document.getElementById('enableNotificationsBtn');
+            if (enableNotificationsBtn) enableNotificationsBtn.addEventListener('click', enableNotifications);
+            
+            // 清除个人通知按钮
+            const clearPersonalNotificationsBtn = document.getElementById('clearPersonalNotificationsBtn');
+            if (clearPersonalNotificationsBtn) clearPersonalNotificationsBtn.addEventListener('click', clearPersonalNotifications);
+            
+            // 提交反馈按钮
+            const submitFeedbackBtn = document.getElementById('submitFeedbackBtn');
+            if (submitFeedbackBtn) submitFeedbackBtn.addEventListener('click', submitFeedback);
+            
+            // 放弃身份按钮
+            const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+            if (deleteAccountBtn) deleteAccountBtn.addEventListener('click', startAccountDeletion);
+            
+            // 删除账号模态框按钮
+            const closeDeleteModalBtn = document.getElementById('closeDeleteModalBtn');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const continueDeleteBtn = document.getElementById('continueDeleteBtn');
+            if (closeDeleteModalBtn) closeDeleteModalBtn.addEventListener('click', cancelDeletion);
+            if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', cancelDeletion);
+            if (continueDeleteBtn) continueDeleteBtn.addEventListener('click', continueDeletion);
+            
+            // 登录模态框按钮
+            const cancelLoginBtn = document.getElementById('cancelLoginBtn');
+            const closeLoginBtn = document.getElementById('closeLoginBtn');
+            if (cancelLoginBtn) cancelLoginBtn.addEventListener('click', closeLoginModal);
+            if (closeLoginBtn) closeLoginBtn.addEventListener('click', closeLoginModal);
+            
+            // 登录表单 - 监听 turnstile-verified 自定义事件（由 turnstile.js 触发）
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('turnstile-verified', handleLoginSubmit);
+            }
+            
+            // 点击模态框背景关闭
+            const loginModal = document.getElementById('loginModal');
+            if (loginModal) {
+                loginModal.addEventListener('click', function(e) {
+                    if (e.target === loginModal) closeLoginModal();
+                });
+            }
+            
+            const deleteModal = document.getElementById('deleteAccountModal');
+            if (deleteModal) {
+                deleteModal.addEventListener('click', function(e) {
+                    if (e.target === deleteModal) cancelDeletion();
+                });
+            }
+        }
+        
+        // 处理登录提交（由 turnstile-verified 事件触发）
+        async function handleLoginSubmit(e) {
+            // e.detail 包含 token 信息（如果需要的话）
+            const idNumber = document.getElementById('idNumber').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginMessage = document.getElementById('loginMessage');
+            
+            if (!idNumber || !password) {
+                if (loginMessage) {
+                    loginMessage.textContent = '请输入身份证号和密码';
+                    loginMessage.style.color = '#d13438';
+                }
+                return;
+            }
+            
+            if (loginMessage) {
+                loginMessage.textContent = '登录中...';
+                loginMessage.style.color = 'var(--primary-color)';
+            }
+            
+            try {
+                const loginResponse = await fetch('https://dornhub.eu.org/php/query_citizen.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_number: idNumber, password: password })
+                });
+                
+                const loginData = await loginResponse.json();
+                
+                if (loginData.success) {
+                    currentUser = loginData.data;
+                    if (!currentUser.nickname) currentUser.nickname = currentUser.name;
+                    if (!currentUser.funds) currentUser.funds = 50.00;
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    isLoggedIn = true;
+                    
+                    closeLoginModal();
+                    updateUserInfo();
+                    loadNotifications();
+                    loadCheckinStatus();
+                    loadUserEmail();
+                    loadUserSettings();
+                    
+                    if (typeof UI !== 'undefined' && UI.success) {
+                        UI.success('登录成功！');
+                    }
+                } else {
+                    if (loginMessage) {
+                        loginMessage.textContent = loginData.error || '登录失败，请重试';
+                        loginMessage.style.color = '#d13438';
+                    }
+                    // 重置 Turnstile
+                    const container = document.getElementById('loginTurnstileContainer');
+                    if (container && typeof TurnstileManager !== 'undefined') {
+                        TurnstileManager.reset(container);
+                    }
+                }
+            } catch (error) {
+                console.error('登录请求失败:', error);
+                if (loginMessage) {
+                    loginMessage.textContent = '网络错误，请稍后重试';
+                    loginMessage.style.color = '#d13438';
+                }
+                const container = document.getElementById('loginTurnstileContainer');
+                if (container && typeof TurnstileManager !== 'undefined') {
+                    TurnstileManager.reset(container);
+                }
+            }
+        }
+        
+        // 应用保存的设置
+        function applySavedSettings() {
+            applyTheme(currentTheme);
+            applyColor(currentColor);
+            
+            // 更新激活的选项
+            document.querySelectorAll('.color-option').forEach(option => {
+                if (option.dataset.color === currentColor) {
+                    option.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.theme-option').forEach(option => {
+                if (option.dataset.theme === currentTheme) {
+                    option.classList.add('active');
+                }
+            });
+            
+            const showPinnedToggle = document.getElementById('showPinnedToggle');
+            const showNavigationToggle = document.getElementById('showNavigationToggle');
+            const showAnnouncementToggle = document.getElementById('showAnnouncementToggle');
+            
+            if (showPinnedToggle) showPinnedToggle.checked = showPinned;
+            if (showNavigationToggle) showNavigationToggle.checked = showNavigation;
+            if (showAnnouncementToggle) showAnnouncementToggle.checked = showAnnouncement;
+        }
+        
+        function updateActiveOptions() {
+            document.querySelectorAll('.color-option').forEach(option => {
+                if (option.dataset.color === currentColor) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            document.querySelectorAll('.theme-option').forEach(option => {
+                if (option.dataset.theme === currentTheme) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+        }
+        
+        // 应用主题
+        function applyTheme(theme) {
+            if (theme === 'auto') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+            localStorage.setItem('theme', theme);
+        }
+        
+        // 应用颜色
+        function applyColor(color) {
+            document.documentElement.style.setProperty('--primary-color', color);
+            localStorage.setItem('primaryColor', color);
+        }
+        
+        // 更新邮箱
+        function updateEmail() {
+            if (!isLoggedIn) return;
+            
+            const newEmail = document.getElementById('newEmail').value.trim();
+            const confirmEmail = document.getElementById('confirmEmail').value.trim();
+            
+            if (newEmail !== confirmEmail) {
+                alert('两次输入的邮箱不一致');
+                return;
+            }
+            
+            if (newEmail && !/^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(newEmail)) {
+                alert('请输入有效的邮箱地址');
+                return;
+            }
+            
+            fetch('https://dornhub.eu.org/php/update_user_info.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'update_email',
+                    id_number: currentUser.id_number,
+                    email: newEmail || null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentUser.email = newEmail || null;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    document.getElementById('userEmail').value = newEmail || '未设置';
+                    document.getElementById('newEmail').value = '';
+                    document.getElementById('confirmEmail').value = '';
+                    alert('邮箱更新成功！');
+                } else {
+                    alert('更新失败: ' + (data.error || '请稍后重试'));
+                }
+            })
+            .catch(error => {
+                console.error('更新邮箱失败:', error);
+                alert('网络错误，请稍后重试');
+            });
+        }
+        
+        // 清空邮箱
+        function removeEmail() {
+            if (!isLoggedIn) return;
+            
+            if (!confirm('确定要清空备用邮箱吗？清空后您将无法通过自助方式找回密码。')) return;
+            
+            fetch('https://dornhub.eu.org/php/update_user_info.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'update_email',
+                    id_number: currentUser.id_number,
+                    email: null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentUser.email = null;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    document.getElementById('userEmail').value = '未设置';
+                    alert('邮箱已清空');
+                } else {
+                    alert('清空失败: ' + (data.error || '请稍后重试'));
+                }
+            })
+            .catch(error => {
+                console.error('清空邮箱失败:', error);
+                alert('网络错误，请稍后重试');
+            });
+        }
+        
+        // 更新昵称
+        function updateNickname() {
+            if (!isLoggedIn) return;
+            
+            const newNickname = document.getElementById('newNickname').value.trim();
+            if (!newNickname) {
+                alert('请输入新昵称');
+                return;
+            }
+        
+            fetch('https://dornhub.eu.org/php/update_user_info.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'update_nickname',
+                    id_number: currentUser.id_number,
+                    nickname: newNickname
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentUser.nickname = newNickname;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserInfo();
+                    alert('昵称更新成功！');
+                    document.getElementById('newNickname').value = '';
+                } else {
+                    alert('昵称更新失败: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('更新昵称失败:', error);
+                alert('网络错误，请稍后重试');
+            });
+        }
+        
+        // 更新密码
+        function updatePassword() {
+            if (!isLoggedIn) return;
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+        
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('请填写所有密码字段');
+                return;
+            }
+        
+            if (newPassword !== confirmPassword) {
+                alert('新密码和确认密码不一致');
+                return;
+            }
+        
+            if (newPassword.length < 8) {
+                alert('新密码长度至少需要8位！');
+                return;
+            }
+            
+            const hasLetter = /[a-zA-Z]/.test(newPassword);
+            const hasNumber = /\d/.test(newPassword);
+            
+            if (!hasLetter || !hasNumber) {
+                alert('新密码必须同时包含字母和数字！\n示例：password123 或 Abc123456');
+                return;
+            }
+        
+            fetch('https://dornhub.eu.org/php/update_user_info.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'update_password',
+                    id_number: currentUser.id_number,
+                    current_password: currentPassword,
+                    new_password: newPassword
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('密码更新成功！');
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    alert('密码更新失败: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('更新密码失败:', error);
+                alert('网络错误，请稍后重试');
+            });
+        }
+        
+        // 开始放弃身份流程
+        function startAccountDeletion() {
+            deletionStep = 1;
+            showDeletionModal();
+        }
+        
+        function showDeletionModal() {
+            const modal = document.getElementById('deleteAccountModal');
+            const title = document.getElementById('deleteModalTitle');
+            const body = document.getElementById('deleteModalBody');
+            const continueBtn = document.getElementById('continueDeleteBtn');
+        
+            switch(deletionStep) {
+                case 1:
+                    title.textContent = '放弃身份确认 - 第1步';
+                    body.innerHTML = `<p><strong>警告：</strong>放弃𣿅国身份是永久性操作！</p><p>一旦确认放弃，您的账号将被永久关闭，无法再次登录，所有数据将被删除。</p><p>您确定要继续吗？</p>`;
+                    continueBtn.textContent = '继续放弃';
+                    break;
+                case 2:
+                    title.textContent = '放弃身份确认 - 第2步';
+                    body.innerHTML = `<p style="color: #d13438; font-weight: bold;">⚠️ 严重警告 ⚠️</p><p>这是永久性的账号关闭操作！</p><p>您将失去：</p><ul><li>所有个人数据</li><li>账户资金</li><li>公民身份</li><li>所有设置和偏好</li></ul><p>此操作不可撤销！</p>`;
+                    continueBtn.textContent = '我明白，继续放弃';
+                    break;
+                case 3:
+                    title.textContent = '放弃身份确认 - 第3步';
+                    body.innerHTML = `<p>请确认您的身份信息：</p><div style="background: var(--secondary-color); padding: 15px; border-radius: 6px; margin: 15px 0;"><p><strong>昵称：</strong>${currentUser.nickname || currentUser.name}</p><p><strong>用户名：</strong>${currentUser.name}</p><p><strong>认证：</strong>${currentUser.certification || '未认证'}</p><p><strong>身份证号：</strong>${currentUser.id_number}</p><p><strong>资金：</strong>${currentUser.funds || 50.00} 𣿅元</p><p><strong>注册日期：</strong>${currentUser.issue_date}</p><p><strong>成为公民：</strong>${calculateCitizenDays(currentUser.issue_date)} 天</p></div><p>请输入您的身份证号以确认：</p><input type="text" id="confirmIdNumber" placeholder="请输入身份证号" style="width: 100%; padding: 10px; margin: 10px 0; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">`;
+                    continueBtn.textContent = '验证身份';
+                    break;
+                case 4:
+                    title.textContent = '放弃身份确认 - 第4步';
+                    body.innerHTML = `<p style="color: #d13438; font-weight: bold;">道歉声明</p><div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 6px; margin: 15px 0; color: #856404;"><p>我，${currentUser.nickname || currentUser.name}，在此为我放弃𣿅国公民身份的行为深感羞愧和遗憾。我承认这是我个人的错误决定，我为自己辜负了𣿅国的期望而感到惭愧。我明白这将永远失去作为𣿅国公民的荣耀和特权。</p></div><p>请完整输入上面的道歉声明：</p><textarea id="apologyText" placeholder="请完整输入道歉声明" style="width: 100%; height: 100px; padding: 10px; margin: 10px 0; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;"></textarea>`;
+                    continueBtn.textContent = '确认输入';
+                    break;
+                case 5:
+                    title.textContent = '放弃身份确认 - 第5步';
+                    body.innerHTML = `<p style="color: #d13438; font-size: 18px; font-weight: bold; text-align: center;">⚠️ 最后一次警告 ⚠️</p><p style="text-align: center;">这是最后的确认步骤！</p><p style="text-align: center;">点击"确认放弃"后，您的账号将立即被永久删除！</p><p style="text-align: center; font-weight: bold;">此操作无法撤销！</p>`;
+                    continueBtn.textContent = '确认放弃';
+                    continueBtn.style.background = '#d13438';
+                    break;
+            }
+            modal.style.display = 'flex';
+        }
+        
+        function continueDeletion() {
+            switch(deletionStep) {
+                case 1:
+                case 2:
+                    deletionStep++;
+                    showDeletionModal();
+                    break;
+                case 3:
+                    const confirmIdNumber = document.getElementById('confirmIdNumber')?.value.trim();
+                    if (confirmIdNumber !== currentUser.id_number) {
+                        alert('身份证号输入错误，请重新输入');
+                        return;
+                    }
+                    deletionStep++;
+                    showDeletionModal();
+                    break;
+                case 4:
+                    const apologyText = document.getElementById('apologyText')?.value.trim();
+                    const expectedApology = `我，${currentUser.nickname || currentUser.name}，在此为我放弃𣿅国公民身份的行为深感羞愧和遗憾。我承认这是我个人的错误决定，我为自己辜负了𣿅国的期望而感到惭愧。我明白这将永远失去作为𣿅国公民的荣耀和特权。`;
+                    if (apologyText !== expectedApology) {
+                        alert('道歉声明输入不完整或不正确，请重新输入');
+                        return;
+                    }
+                    deletionStep++;
+                    showDeletionModal();
+                    break;
+                case 5:
+                    confirmFinalDeletion();
+                    break;
+            }
+        }
+        
+        function cancelDeletion() {
+            document.getElementById('deleteAccountModal').style.display = 'none';
+            deletionStep = 0;
+        }
+        
+        function confirmFinalDeletion() {
+            fetch('https://dornhub.eu.org/php/update_user_info.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'delete_account',
+                    id_number: currentUser.id_number
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('账号已成功删除');
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'index.html';
+                } else {
+                    alert('删除账号失败: ' + data.error);
+                    document.getElementById('deleteAccountModal').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('删除账号失败:', error);
+                alert('网络错误，请稍后重试');
+                document.getElementById('deleteAccountModal').style.display = 'none';
+            });
+        }
+        
+        function calculateCitizenDays(issueDate) {
+            const issue = new Date(issueDate);
+            const today = new Date();
+            const diffTime = Math.abs(today - issue);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+        
+        function enableNotifications() {
+            if (!isLoggedIn) return;
+            fetch('https://dornhub.eu.org/php/notifications.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'enable_notifications',
+                    id_number: currentUser.id_number
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('个人通知已开通！');
+                    document.getElementById('enableNotificationsBtn').style.display = 'none';
+                    loadPersonalNotifications();
+                } else {
+                    alert('开通失败: ' + data.error);
+                }
+            })
+            .catch(error => console.error('开通通知失败:', error));
+        }
+        
+        function loadNotifications() {
+            loadPersonalNotifications();
+            loadGlobalNotifications();
+        }
+        
+        function loadPersonalNotifications() {
+            if (!isLoggedIn) return;
+            fetch('https://dornhub.eu.org/php/notifications.php?id_number=' + currentUser.id_number + '&type=personal')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('personalNotifications');
+                    if (data.success && data.data && data.data.length > 0) {
+                        container.innerHTML = data.data.map(notification => `
+                            <div class="notification-item">
+                                <div class="notification-content">
+                                    <p>${escapeHtml(notification.notification_content)}</p>
+                                    <small>${new Date(notification.created_at).toLocaleString()}</small>
+                                </div>
+                                <div class="notification-actions">
+                                    <button class="delete-btn" onclick="deleteNotification(${notification.id}, 'personal')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">暂无个人通知</p>';
+                    }
+                })
+                .catch(error => console.error('加载个人通知失败:', error));
+        }
+        
+        function loadGlobalNotifications() {
+            fetch('https://dornhub.eu.org/php/notifications.php?type=global')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('globalNotifications');
+                    if (data.success && data.data && data.data.length > 0) {
+                        container.innerHTML = data.data.map(notification => `
+                            <div class="notification-item">
+                                <div class="notification-content">
+                                    <p>${escapeHtml(notification.notification_content)}</p>
+                                    <small>${new Date(notification.created_at).toLocaleString()}</small>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">暂无总通知</p>';
+                    }
+                })
+                .catch(error => console.error('加载总通知失败:', error));
+        }
+        
+        function deleteNotification(notificationId, type) {
+            if (!confirm('确定要删除这条通知吗？')) return;
+            fetch('https://dornhub.eu.org/php/notifications.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'delete_notification',
+                    notification_id: notificationId,
+                    notification_type: type
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (type === 'personal') loadPersonalNotifications();
+                    else loadGlobalNotifications();
+                } else {
+                    alert('删除失败: ' + data.error);
+                }
+            })
+            .catch(error => console.error('删除通知失败:', error));
+        }
+        
+        function clearPersonalNotifications() {
+            if (!confirm('确定要清除所有个人通知吗？此操作不可撤销！')) return;
+            fetch('https://dornhub.eu.org/php/notifications.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'clear_personal_notifications',
+                    id_number: currentUser.id_number
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('个人通知已全部清除');
+                    loadPersonalNotifications();
+                } else {
+                    alert('清除失败: ' + data.error);
+                }
+            })
+            .catch(error => console.error('清除通知失败:', error));
+        }
+        
+        function submitFeedback() {
+            if (!isLoggedIn) return;
+            const feedbackContent = document.getElementById('feedbackContent').value.trim();
+            if (!feedbackContent) {
+                alert('请输入反馈内容');
+                return;
+            }
+            if (feedbackContent.length > 200) {
+                alert('反馈内容不能超过200字');
+                return;
+            }
+            fetch('https://dornhub.eu.org/php/feedback.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_number: currentUser.id_number,
+                    nickname: currentUser.nickname || currentUser.name,
+                    name: currentUser.name,
+                    feedback_content: feedbackContent
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('反馈提交成功！感谢您的意见。');
+                    document.getElementById('feedbackContent').value = '';
+                    document.getElementById('charCount').textContent = '0';
+                } else {
+                    alert('提交失败: ' + data.error);
+                }
+            })
+            .catch(error => console.error('提交反馈失败:', error));
+        }
+        
+        function loadCheckinStatus() {
+            if (!isLoggedIn) return;
+            fetch('https://dornhub.eu.org/php/checkin.php?id_number=' + currentUser.id_number)
+                .then(response => response.json())
+                .then(data => {
+                    const checkinBtn = document.getElementById('checkinBtn');
+                    if (data.success) {
+                        if (data.checked_in_today) {
+                            checkinBtn.disabled = true;
+                            checkinBtn.innerHTML = '<i class="fas fa-check-circle"></i> 今日已签到';
+                            document.getElementById('checkinResult').innerHTML = `<p style="color: #16DA49;">今日已签到！连续签到 ${data.streak_days} 天</p>`;
+                        } else {
+                            checkinBtn.disabled = false;
+                        }
+                    }
+                })
+                .catch(error => console.error('加载签到状态失败:', error));
+        }
+        
+        function performCheckin() {
+            if (!isLoggedIn) return;
+            const checkinBtn = document.getElementById('checkinBtn');
+            checkinBtn.disabled = true;
+            fetch('https://dornhub.eu.org/php/checkin.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_number: currentUser.id_number })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentUser.funds = parseFloat(currentUser.funds || 50.00) + data.total_amount;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserInfo();
+                    document.getElementById('checkinResult').innerHTML = `<p style="color: #16DA49; font-weight: bold;"><i class="fas fa-coins"></i> +${data.total_amount.toFixed(2)}𣿅元</p><p>你已连续签到 ${data.streak_days} 天</p>`;
+                    checkinBtn.innerHTML = '<i class="fas fa-check-circle"></i> 今日已签到';
+                } else {
+                    alert('签到失败: ' + data.error);
+                    checkinBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('签到失败:', error);
+                alert('网络错误，请稍后重试');
+                checkinBtn.disabled = false;
+            });
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Cookie 偏好设置
+        function loadCookiePreferences() {
+            const consent = localStorage.getItem('cookie_consent_v2');
+            const functionalToggle = document.getElementById('functionalCookiesToggle');
+            const analyticsToggle = document.getElementById('analyticsCookiesToggle');
+            if (consent) {
+                try {
+                    const prefs = JSON.parse(consent);
+                    if (functionalToggle) functionalToggle.checked = prefs.functional !== false;
+                    if (analyticsToggle) analyticsToggle.checked = prefs.analytics !== false;
+                } catch(e) { console.error('解析 Cookie 偏好失败:', e); }
+            } else {
+                if (functionalToggle) functionalToggle.checked = true;
+                if (analyticsToggle) analyticsToggle.checked = true;
+            }
+        }
+        
+        function showCookieWarning(disabledType) {
+            const warning = document.getElementById('cookieWarning');
+            const warningText = document.getElementById('cookieWarningText');
+            if (!warning) return;
+            if (disabledType === 'functional') {
+                warningText.innerHTML = '⚠️ 禁用功能 Cookie 后，您的主题颜色、固定网站等个性化设置将丢失。页面将刷新以应用更改。';
+                warning.style.display = 'block';
+            } else if (disabledType === 'analytics') {
+                warningText.innerHTML = '⚠️ 禁用分析 Cookie 后，我们将无法收集匿名访问数据来改进网站。';
+                warning.style.display = 'block';
+            }
+        }
+        
+        function saveCookiePreferences() {
+            const functionalToggle = document.getElementById('functionalCookiesToggle');
+            const analyticsToggle = document.getElementById('analyticsCookiesToggle');
+            const preferences = {
+                functional: functionalToggle ? functionalToggle.checked : true,
+                analytics: analyticsToggle ? analyticsToggle.checked : true
+            };
+            localStorage.setItem('cookie_consent_v2', JSON.stringify(preferences));
+            if (typeof gtag !== 'undefined') {
+                gtag('consent', 'update', {
+                    'analytics_storage': preferences.analytics ? 'granted' : 'denied'
+                });
+            }
+            if (!preferences.functional) {
+                const keysToKeep = ['cookie_consent_v2', 'currentUser', 'isLoggedIn', 'theme', 'primaryColor'];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (!keysToKeep.includes(key)) localStorage.removeItem(key);
+                }
+                alert('功能 Cookie 已禁用，页面将刷新以清除所有个性化设置。');
+                location.reload();
+            } else {
+                alert('Cookie 偏好设置已保存！');
+                const warning = document.getElementById('cookieWarning');
+                if (warning) warning.style.display = 'none';
+            }
+        }
+        
+        function resetCookiePreferences() {
+            const functionalToggle = document.getElementById('functionalCookiesToggle');
+            const analyticsToggle = document.getElementById('analyticsCookiesToggle');
+            if (functionalToggle) functionalToggle.checked = true;
+            if (analyticsToggle) analyticsToggle.checked = true;
+            saveCookiePreferences();
+        }
+        
+        function initCookieEventListeners() {
+            const functionalToggle = document.getElementById('functionalCookiesToggle');
+            const analyticsToggle = document.getElementById('analyticsCookiesToggle');
+            const saveBtn = document.getElementById('saveCookiePrefsBtn');
+            const resetBtn = document.getElementById('resetCookiePrefsBtn');
+            if (functionalToggle) {
+                functionalToggle.addEventListener('change', function() {
+                    if (!this.checked) showCookieWarning('functional');
+                    else {
+                        const warning = document.getElementById('cookieWarning');
+                        if (warning && (!analyticsToggle || analyticsToggle.checked)) warning.style.display = 'none';
+                    }
+                });
+            }
+            if (analyticsToggle) {
+                analyticsToggle.addEventListener('change', function() {
+                    if (!this.checked) showCookieWarning('analytics');
+                    else {
+                        const warning = document.getElementById('cookieWarning');
+                        if (warning && (!functionalToggle || functionalToggle.checked)) warning.style.display = 'none';
+                    }
+                });
+            }
+            if (saveBtn) saveBtn.addEventListener('click', saveCookiePreferences);
+            if (resetBtn) resetBtn.addEventListener('click', resetCookiePreferences);
+        }
+    </script>
+</body>
+</html>

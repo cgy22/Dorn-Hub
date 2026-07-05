@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://dornhub.eu.org/SatornhLogo.png" type="image/png" sizes="161x161">
+    
+    <title>价值观与理念 - Dorn Hub</title>
+    <meta name="description" content="了解 Dorn Hub 的核心理念：让快乐有意义。我们相信快乐是刚需，人民喜欢的需要认真对待，快乐可以多一点意义。">
+    <meta name="keywords" content="Dorn Hub,价值观,理念,快乐有意义,𣿅国">
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    
+    <style>
+        /* ==================== 价值观页面专用样式 ==================== */
+        
+        /* 页面容器 */
+        .values-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 20px 80px;
+        }
+        
+        /* 头部占位，防止内容被 fixed header 遮挡 */
+        .header-placeholder {
+            height: 80px;
+        }
+        
+        /* ==================== 滚动动画基础样式 ==================== */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 延迟类 */
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+        .delay-4 { transition-delay: 0.4s; }
+        .delay-5 { transition-delay: 0.5s; }
+        
+        /* 主标题样式 */
+        .page-main-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .page-main-title h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #20EE66 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        /* 信念卡片 */
+        .belief-section {
+            margin-bottom: 60px;
+        }
+        
+        .belief-number {
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb, 22, 218, 73), 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .belief-section h2 {
+            font-size: 32px;
+            margin-bottom: 24px;
+            color: var(--primary-color);
+        }
+        
+        .belief-section p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-color);
+            margin-bottom: 16px;
+        }
+        
+        /* 统计数据行 */
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+            justify-content: center;
+        }
+        
+        .stat-item {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            padding: 20px;
+            background: var(--secondary-color);
+            border-radius: 16px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+        
+        /* 图片占位区域 */
+        .image-placeholder {
+            background: var(--secondary-color);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px dashed var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .image-placeholder i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .image-placeholder p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .image-placeholder.small {
+            padding: 20px;
+        }
+        
+        .image-placeholder:hover {
+            border-color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.05);
+        }
+        
+        /* 五图网格 */
+        .five-images-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .five-images-grid .image-placeholder {
+            margin: 0;
+        }
+        
+        /* 两图网格 */
+        .two-images-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        /* 案例列表样式 */
+        .case-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .case-list li {
+            margin-bottom: 30px;
+            padding-left: 0;
+        }
+        
+        .case-list h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+        
+        /* 写在最后区域 */
+        .closing-section {
+            text-align: center;
+            padding: 60px 20px;
+            margin-top: 40px;
+            background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05) 0%, rgba(var(--primary-color-rgb), 0.01) 100%);
+            border-radius: 32px;
+        }
+        
+        .closing-section h2 {
+            font-size: 36px;
+            margin-bottom: 24px;
+        }
+        
+        .closing-section p {
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+        
+        /* 返回按钮 */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 40px;
+            padding: 12px 24px;
+            background: var(--secondary-color);
+            border-radius: 40px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(-5px);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .page-main-title h1 {
+                font-size: 32px;
+            }
+            
+            .belief-section h2 {
+                font-size: 24px;
+            }
+            
+            .closing-section h2 {
+                font-size: 28px;
+            }
+            
+            .closing-section p {
+                font-size: 16px;
+            }
+            
+            .five-images-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载遮罩（与原 index.html 保持一致） -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+
+    <!-- 头部（与主页风格一致） -->
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1>
+                    <span id="navname1">Dorn</span>
+                    <span id="navname2">Hub</span>
+                </h1>
+            </div>
+            <div class="header-right">
+                <div class="datetime" id="datetime"></div>
+                <a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none;">
+                    <i class="fas fa-home"></i> 返回主页
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 头部占位 -->
+    <div class="header-placeholder"></div>
+
+    <div class="values-container">
+        <!-- 主标题 -->
+        <div class="page-main-title fade-up">
+            <h1>让快乐，有意义</h1>
+        </div>
+
+        <!-- 我们相信三件事 - 引导语 -->
+        <div class="fade-up delay-1" style="text-align: center; margin-bottom: 40px;">
+			<p style="font-size: 18px; color: var(--text-secondary);">在为社会提供积极正向情绪的同时，潜移默化地传播中国文化。</p>
+			<br><br>
+            <p style="font-size: 18px; color: var(--text-secondary);">我们相信三件事。</p>
+        </div>
+
+        <!-- 第一，快乐不是奢侈品，而是刚需 -->
+        <div class="belief-section fade-up delay-2">
+            <div class="belief-number">第一</div>
+            <h2>快乐不是奢侈品，而是刚需。</h2>
+            <p>马斯洛需求层次理论早已阐明：当生理与安全需求得到满足后，归属感、尊重与自我实现便成为人最深层的追求。游戏——这个被近7亿中国人日常参与的媒介，恰恰承载着这些需求。它让人快乐，让人解压，让人在虚拟世界中找到真实的连接。</p>
+            <p>有人会说：游戏带来的只是"代偿"，是逃避现实压力，而非真正的满足。我们承认，任何精神产品都可能被滥用。但止痛药虽不治病，却不等于没有价值——缓解症状本身就是对现实压力的善意回应。我们不反对改善现实，但我们相信，人在现实中需要喘息。</p>
+            <p>全球知名市场调研机构NIQ与游戏行业媒体GameIndustry联合发布的《2025年全球游戏力量报告》，对全球21个国家超过2.4万名玩家进行了系统调研，结果显示：</p>
+            
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-number">77%</div>
+                    <div class="stat-label">的玩家认为游戏能缓解压力</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">70%</div>
+                    <div class="stat-label">表示游戏降低了焦虑感</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">64%</div>
+                    <div class="stat-label">认同游戏缓解了孤独感</div>
+                </div>
+            </div>
+            
+            <p>社会效益不能只看"直接产出"。一个让人快乐、恢复精神的产品，其间接价值——降低心理疾病发病率、减少社会戾气、提高劳动者的情绪稳定性——可能并不低于一个"直接有益"的项目。边际价值的计算，需要把"人的精神健康"也纳入方程。</p>
+            <p>当然，数据不能代替价值判断。我们不是在说"因为多人玩所以好"，而是在说：有数亿人存在真实的情绪需求，而我们的产品在不伤害他人的前提下回应了这种需求。这才是"人民至上"应有的温度。</p>
+        </div>
+
+        <!-- 第二，人民喜欢的，需要认真对待 -->
+        <div class="belief-section fade-up delay-3">
+            <div class="belief-number">第二</div>
+            <h2>人民喜欢的，需要认真对待。</h2>
+            <p>不是所有"人民喜欢的"都值得无条件辩护。我们有自己的底线：不诱导沉迷，不强制消费，不占用用户超出其意愿的时间，不损害用户的身心健康。在这个底线之上，我们尊重人民自主选择快乐的权利。</p>
+            <p>中国有近7亿游戏用户。他们是学生、快递员、程序员、外卖骑手……每天面对重复的劳动、紧张的工作、拥挤的通勤。当他们在一天辛劳后打开一款游戏、看一个鬼畜视频、笑上三五分钟——这至少说明一件事：他们需要快乐。</p>
+            <p><strong>用事实说话：我们的用户对我们的产品做出了积极的表态。</strong></p>
+            
+            <!-- 五张用户评论截图占位 -->
+            <div class="five-images-grid">
+                <div class="image-placeholder">
+                    <img src="resources/images/feedback1.png" alt="用户好评截图" style="width: 100%; height: auto; border-radius: 12px;">
+                </div>
+                <div class="image-placeholder">
+                    <img src="resources/images/feedback2.png" alt="用户好评截图" style="width: 100%; height: auto; border-radius: 12px;">
+                </div>
+                <div class="image-placeholder">
+                    <img src="resources/images/feedback3.png" alt="用户好评截图" style="width: 100%; height: auto; border-radius: 12px;">
+                </div>
+                <div class="image-placeholder">
+                    <img src="resources/images/feedback4.png" alt="用户好评截图" style="width: 100%; height: auto; border-radius: 12px;">
+                </div>
+				<div class="image-placeholder">
+				    <img src="resources/images/feedback5.png" alt="用户好评截图" style="width: 100%; height: auto; border-radius: 12px;">
+				</div>
+				<div class="image-placeholder">
+				    <img src="resources/images/sale.png" alt="用户好评截图" style="width: 100%; height: auto; border-radius: 12px;">
+				</div>
+            </div>
+            <p><strong>最近一次的问卷调查显示，大部分使用者均对我们的𣿅子文化与𣿅国世界持积极态度。</strong>净推荐值首先是作为一个客户满意度衡量指标存在，直接反映了客户对公司的忠诚度。由于该指标的数值来源于现有客户和现有客户扩散的准客户比例，这个比例可以直接反映出企业在客户内心的认可程度和购买意愿。在一定程度上可以看到企业当前和未来一段时间的发展趋势，和持续盈利能力，所以NPS在公司业务预测、价值评估和内部考核方面都可以得到很好的应用。</p>
+			<div class="two-image-grid">
+				<div class="image-placeholder">
+				    <img src="resources/images/nps1.png" alt="对现状看法" style="width: 100%; height: auto; border-radius: 12px;">
+				</div>
+				<div class="image-placeholder">
+				    <img src="resources/images/nps2.png" alt="对未来看法" style="width: 100%; height: auto; border-radius: 12px;">
+				</div>
+			</div>
+
+        </div>
+
+        <!-- 第三，快乐可以多一点意义，但前提是它首先是快乐 -->
+        <div class="belief-section fade-up delay-4">
+            <div class="belief-number">第三</div>
+            <h2>快乐可以多一点意义，但前提是它首先是快乐。</h2>
+            <p>在满足快乐需求的基础上，娱乐产品有能力承载更多正向价值——不是生硬地说教，而是自然而然地融入。</p>
+            <p><strong>以"大𣿅子文化"为例：</strong></p>
+            
+            <ul class="case-list">
+                <li>
+                    <h3>文言文与诗歌创作</h3>
+                    <p>大𣿅子世界中，𣿅子们交流使用的语言是文言文，世界观内还存有大量诗歌创作作品。这些作品连同记载𣿅子故事的《𣿅子集校注》，已获得多位语文教师的认可。用户在了解有趣故事的同时，自然而然地感受到中国文言与古典文学的魅力。</p>
+                    <!-- 五张图片占位 -->
+                    <div class="five-images-grid">
+                        <div class="image-placeholder small">
+                            <img src="resources/images/culture3.png" alt="文言创作图" style="width: 100%; height: auto; border-radius: 12px;">
+                        </div>
+						<div class="image-placeholder small">
+						    <img src="resources/images/culture4.png" alt="文言创作图" style="width: 100%; height: auto; border-radius: 12px;">
+						</div>
+                        <div class="image-placeholder small">
+                            <img src="resources/images/culture2.png" alt="诗歌创作图" style="width: 100%; height: auto; border-radius: 12px;">
+                        </div>
+                        <div class="image-placeholder small">
+                            <img src="resources/images/culture1.png" alt="诗歌创作图" style="width: 100%; height: auto; border-radius: 12px;">
+                        </div>
+                         <div class="image-placeholder small">
+                            <img src="resources/images/culture5.jpg" alt="诗歌创作图" style="width: 100%; height: auto; border-radius: 12px;">
+                        </div>
+						<div class="image-placeholder small">
+						    <img src="resources/images/recognize2.jpg" alt="权威的认可" style="width: 100%; height: auto; border-radius: 12px;">
+						</div>
+                    </div>
+                </li>
+                <li>
+                    <h3>多语言融合的"𣿅语"</h3>
+                    <p>𣿅国世界观中设定的"𣿅语"，其语法语序与中文一致，能够体现中文语法的简易性与合理性；发音上包含"小舌音"，并模仿法语发音；名词性别则借鉴了法语、德语等欧洲语言的阴阳性体系；词汇则源于中文、日语、英语、法语、德语、西班牙语等多种语言。这不仅向用户展示了中文的语言智慧，也让用户体会到其他语言的工作原理与特点。𣿅语作为一种多语言融合的产物，意在促进世界语言文化的交流。</p>
+					<div class="two-images-grid">
+					    <div class="image-placeholder small">
+					        <img src="resources/images/language1.png" alt="学习语言" style="width: 100%; height: auto; border-radius: 12px;">
+					    </div>
+					</div>
+				</li>
+                <li>
+                    <h3>科学合理的城市规划</h3>
+                    <p>𣿅国世界观中的城市与地理环境，严格遵循现实世界的设计逻辑，科学合理，已获得地理教师的认可。用户沉浸其中，能够理解现实中的城市规划原理，并可通过我们提供的"大𣿅子地理竞赛"答题学习地理知识。</p>
+                    <div class="two-images-grid">
+                        <div class="image-placeholder small">
+                            <img src="resources/images/geo1.png" alt="地理竞赛题目" style="width: 100%; height: auto; border-radius: 12px;">
+                        </div>
+                        <div class="image-placeholder small">
+                            <img src="resources/images/geo2.png" alt="地理竞赛题目" style="width: 100%; height: auto; border-radius: 12px;">
+                        </div>
+						<div class="image-placeholder small">
+						    <img src="resources/images/geo3.png" alt="地理竞赛题目" style="width: 100%; height: auto; border-radius: 12px;">
+						</div>
+                    </div>
+                </li>
+                <li>
+                    <h3>饮食文化软输出</h3>
+                    <p>𣿅国世界观设定的国饮是刺梨汁。刺梨是一种益处广泛但知名度较低的水果，其维生素C含量极高——每100克鲜果约含2000-3000毫克，是猕猴桃的约10倍、橙子的50倍以上，被誉为"维C之王"。贵州是中国刺梨的主要产地，当地众多居民通过种植刺梨及其衍生产品实现脱贫致富。大𣿅子文化对刺梨汁的推广，是一种良性的软输出，有助于刺梨走向更广阔的市场。此外，世界观中规定的国宴菜品包括泡椒凤爪、酸菜牛肉面、冒菜、茼蒿菜等，每一道都带有鲜明的中国特色，在不知不觉中向用户展现了中国饮食文化的多元魅力。</p>
+                </li>
+				<div class="two-images-grid">
+				    <div class="image-placeholder small">
+				        <img src="resources/images/food1.png" alt="饮食文化输出" style="width: 100%; height: auto; border-radius: 12px;">
+				    </div>
+				    <div class="image-placeholder small">
+				        <img src="resources/images/food2.png" alt="饮食文化输出" style="width: 100%; height: auto; border-radius: 12px;">
+				    </div>
+					<div class="image-placeholder small">
+					    <img src="resources/images/food3.png" alt="饮食文化输出" style="width: 100%; height: auto; border-radius: 12px;">
+					</div>
+					<div class="image-placeholder small">
+					    <img src="resources/images/food4.png" alt="饮食文化输出" style="width: 100%; height: auto; border-radius: 12px;">
+					</div>
+					<div class="image-placeholder small">
+					    <img src="resources/images/food5.png" alt="饮食文化输出" style="width: 100%; height: auto; border-radius: 12px;">
+					</div>
+				</div>
+            </ul>
+        </div>
+
+        <!-- 写在最后 -->
+        <div class="closing-section fade-up delay-5">
+            <p>我们相信，<strong>快乐不是终点，而是起点</strong>。</p>
+            <p>一个让人快乐的产品，首先是在尊重人的真实需求。而在快乐的基础上，它可以成为文化的载体、知识的桥梁、情感的纽带。我们是在探索一条<strong>让快乐多一点意义，让意义多一点温度</strong>的路。</p>
+            <!--<p>一个能包容快乐的社会，才真正成熟。<br>一个能让人民健康快乐的行业，才真正做到了人民至上。</p>-->
+            <p style="font-size: 20px; font-weight: 600; margin-top: 30px;"><strong>让快乐，有意义。在为社会提供积极正向情绪的同时，潜移默化地传播中国文化。这是我们坚持的方向。</strong></p>
+            <div class="five-images-grid">
+                    <div class="image-placeholder small">
+                        <img src="resources/images/dondon/tonh-which-dondon.png" alt="𣿅子" style="width: 100%; height: auto; border-radius: 12px;">
+                    </div>
+            		<div class="image-placeholder small">
+            		    <img src="resources/images/dondon/wzonh-which-dondon.png" alt="武宗子" style="width: 100%; height: auto; border-radius: 12px;">
+            		</div>
+                    <div class="image-placeholder small">
+                        <img src="resources/images/dondon/reif-which-dondon.png" alt="瑞丰子" style="width: 100%; height: auto; border-radius: 12px;">
+                    </div>
+                    <div class="image-placeholder small">
+                        <img src="resources/images/dondon/brahmin-which-dondon.png" alt="李婆罗门" style="width: 100%; height: auto; border-radius: 12px;">
+                    </div>
+                     <div class="image-placeholder small">
+                        <img src="resources/images/dondon/orchid-which-dondon.png" alt="兰花子" style="width: 100%; height: auto; border-radius: 12px;">
+                    </div>
+            		<div class="image-placeholder small">
+            		    <img src="resources/images/dondon/peng-which-dondon.png" alt="小通讯员" style="width: 100%; height: auto; border-radius: 12px;">
+            		</div>
+					<div class="image-placeholder small">
+					    <img src="resources/images/dondon/gra-which-dondon.png" alt="史官高" style="width: 100%; height: auto; border-radius: 12px;">
+					</div>
+					<div class="image-placeholder small">
+					    <img src="resources/images/dondon/smar-which-dondon.png" alt="史官陈" style="width: 100%; height: auto; border-radius: 12px;">
+					</div>
+					<div class="image-placeholder small">
+					    <img src="resources/images/dondon/youtube-which-dondon.png" alt="今子" style="width: 100%; height: auto; border-radius: 12px;">
+					</div>
+                </div>
+            
+            <a href="https://dornhub.eu.org" class="back-link">
+                <i class="fas fa-arrow-left"></i> 返回 Dorn Hub 首页
+            </a>
+        </div>
+    </div>
+
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    
+    <script>
+        (function() {
+            'use strict';
+            
+            // ==================== 加载遮罩处理（与原 index.html 一致） ====================
+            const loadingMask = document.getElementById('loading-mask');
+            const stopButton = document.getElementById('stop-button');
+            let isLoading = true;
+            
+            function hideLoadingMask() {
+                if (!isLoading) return;
+                isLoading = false;
+                if (loadingMask) {
+                    loadingMask.style.transition = 'opacity 0.5s ease';
+                    loadingMask.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingMask.style.display = 'none';
+                    }, 500);
+                }
+            }
+            
+            if (stopButton) {
+                stopButton.addEventListener('click', function() {
+                    if (isLoading) {
+                        console.log('用户中断加载');
+                        hideLoadingMask();
+                    }
+                });
+            }
+            
+            window.addEventListener('load', function() {
+                setTimeout(hideLoadingMask, 500);
+            });
+            
+            setTimeout(function() {
+                if (isLoading) {
+                    hideLoadingMask();
+                }
+            }, 5000);
+            
+            // ==================== 滚动触发动画 (IntersectionObserver) ====================
+            const fadeElements = document.querySelectorAll('.fade-up');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        // 可选：取消观察已显示的元素，提高性能
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.15,
+                rootMargin: '0px 0px -30px 0px'
+            });
+            
+            fadeElements.forEach(el => {
+                observer.observe(el);
+            });
+            
+            // 手动检查已在视口内的元素（防止漏掉）
+            setTimeout(() => {
+                fadeElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 50) {
+                        el.classList.add('visible');
+                    }
+                });
+            }, 200);
+            
+            // ==================== 日期时间更新 ====================
+            function updateDateTime() {
+                const datetimeElement = document.getElementById('datetime');
+                if (!datetimeElement) return;
+                
+                const now = new Date();
+                let showDate = localStorage.getItem('showDate') !== 'false';
+                let showTime = localStorage.getItem('showTime') !== 'false';
+                
+                let datetimeStr = '';
+                if (showDate) {
+                    datetimeStr += now.toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        weekday: 'long'
+                    });
+                }
+                if (showDate && showTime) datetimeStr += ' ';
+                if (showTime) {
+                    datetimeStr += now.toLocaleTimeString('zh-CN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                }
+                datetimeElement.textContent = datetimeStr;
+                datetimeElement.style.display = (showDate || showTime) ? 'block' : 'none';
+            }
+            
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // ==================== 主题与颜色同步 ====================
+            function applyThemeAndColor() {
+                const theme = localStorage.getItem('theme') || 'auto';
+                const primaryColor = localStorage.getItem('primaryColor') || '#16DA49';
+                
+                if (theme === 'auto') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+                
+                document.documentElement.style.setProperty('--primary-color', primaryColor);
+                
+                // 提取 RGB 值
+                const hex = primaryColor.replace('#', '');
+                const r = parseInt(hex.substring(0, 2), 16);
+                const g = parseInt(hex.substring(2, 4), 16);
+                const b = parseInt(hex.substring(4, 6), 16);
+                document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
+            }
+            
+            applyThemeAndColor();
+            
+            // 监听系统主题变化
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                const theme = localStorage.getItem('theme') || 'auto';
+                if (theme === 'auto') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                }
+            });
+            
+            // 监听 storage 事件（其他标签页修改设置时同步）
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'primaryColor') {
+                    const newColor = e.newValue || '#16DA49';
+                    document.documentElement.style.setProperty('--primary-color', newColor);
+                    const hex = newColor.replace('#', '');
+                    const r = parseInt(hex.substring(0, 2), 16);
+                    const g = parseInt(hex.substring(2, 4), 16);
+                    const b = parseInt(hex.substring(4, 6), 16);
+                    document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
+                }
+                if (e.key === 'theme') {
+                    const newTheme = e.newValue || 'auto';
+                    if (newTheme === 'auto') {
+                        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                    } else {
+                        document.documentElement.setAttribute('data-theme', newTheme);
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
