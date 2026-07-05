@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="来自Dorn Hub的打字速度测试。选择打整篇文章或者限时打字，正确快速地打出由网络热梗组成的文章。Dorn Hub是大𣿅子IP的核心数字平台，也是用户进入𣿅国世界的第一道大门。">
+    <title>江城子的打字竞速</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- 加载遮罩样式和脚本 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+	<!-- Cookie 同意组件 -->
+	<script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+	<!-- Cloudflare Turnstile -->
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+	<!-- Turnstile 统一管理模块 -->
+	<script src="/resources/turnstile.js"></script>
+    
+    <!-- 题库数据 -->
+    <script src="https://dornhub.eu.org/resources/article.js" charset="utf-8"></script>
+    
+    <style>
+        /* 打字竞速特有样式 - 保持原有UI风格 */
+        .typing-mode-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .mode-card {
+            flex: 1;
+            max-width: 300px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .mode-card.selected {
+            border-color: var(--primary-color);
+            background: var(--card-hover-color);
+            transform: translateY(-5px);
+        }
+        
+        .mode-card.selected .mode-icon {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+        
+        .mode-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .mode-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .mode-desc {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .language-selector {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .language-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .lang-btn {
+            padding: 8px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-color);
+        }
+        
+        .lang-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+        }
+        
+        .lang-btn.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .timer-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .timer-btn {
+            padding: 8px 25px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .timer-btn.selected {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* 打字机风格参考行 */
+        .reference-line {
+            background: var(--secondary-color);
+            padding: 24px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            line-height: 1.6;
+            font-family: 'Courier New', 'Microsoft YaHei', monospace;
+            position: relative;
+            overflow-x: auto;
+            white-space: nowrap;
+            min-height: 100px;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+        
+        .reference-text {
+            display: inline-block;
+            white-space: pre;
+            font-family: inherit;
+            letter-spacing: 1px;
+			user-select: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+        }
+		
+		.refenrece-text * {
+			user-select: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+		}
+        
+        /* 字符高亮样式 */
+        .char-correct {
+            color: var(--primary-color);
+            background-color: rgba(22, 218, 73, 0.2);
+            border-radius: 2px;
+        }
+        
+        .char-wrong {
+            color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.2);
+            text-decoration: underline;
+            text-decoration-color: #ef4444;
+            border-radius: 2px;
+        }
+        
+        .char-current {
+            background-color: rgba(22, 218, 73, 0.4);
+            border-radius: 2px;
+            box-shadow: 0 0 0 1px var(--primary-color);
+            animation: blink-cursor-bg 1s step-end infinite;
+        }
+        
+        @keyframes blink-cursor-bg {
+            0%, 100% { background-color: rgba(22, 218, 73, 0.4); }
+            50% { background-color: rgba(22, 218, 73, 0.1); }
+        }
+        
+        /* 隐藏的输入框 - 用于捕获键盘输入，不显示 */
+        .hidden-input {
+            position: fixed;
+            top: -100px;
+            left: -100px;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px;
+            height: 1px;
+        }
+        
+        /* 调试模式：显示输入框（方便调试中文输入问题） */
+        .hidden-input.debug-visible {
+            position: relative;
+            top: auto;
+            left: auto;
+            opacity: 1;
+            pointer-events: auto;
+            width: 100%;
+            height: 60px;
+            margin-bottom: 15px;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        /* 排行榜表格 */
+        .ranking-table {
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 12px;
+        }
+        
+        .ranking-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .ranking-table th,
+        .ranking-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .ranking-table th {
+            background: var(--secondary-color);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .rank-1 {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            font-weight: bold;
+        }
+        
+        .rank-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.15), rgba(192, 192, 192, 0.05));
+        }
+        
+        .rank-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.05));
+        }
+        
+        /* 弹窗图表 */
+        .modal-chart {
+            max-height: 300px;
+            margin: 20px 0;
+        }
+        
+        .nickname-input {
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .nickname-input input {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            width: 250px;
+        }
+        
+        .nickname-input input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        /* 提示信息 */
+        .typing-hint {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.6;
+            margin-top: 10px;
+        }
+        
+        /* 隐藏日期时间区域 */
+        .datetime {
+            display: none !important;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .reference-line {
+                font-size: 18px;
+                padding: 15px;
+            }
+            .stat-value {
+                font-size: 22px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+        
+        .shake-error {
+            animation: shake 0.2s ease-in-out 0s 2;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载遮罩（与股市页面完全一致） -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>加载打字竞速中……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>
+                        <span id="navname1">江城子的</span>
+                        <span id="navname2">打字竞速</span>
+                        <span class="insider-badge" id="insiderBadge">Insider</span>
+                    </h1>
+                </div>
+                <div class="header-right">
+                    <!-- LoginModule 会自动注入下拉菜单到这里 -->
+                    <a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none;">
+                        <i class="fas fa-home"></i> 返回主页
+                    </a>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 设置区域 -->
+        <div class="section-container" id="setupSection">
+            <div class="section-title">
+                <h2><i class="fas fa-keyboard"></i> 选择模式与语种</h2>
+            </div>
+            
+            <!-- 模式选择 -->
+            <div class="typing-mode-selector">
+                <div class="card mode-card" data-mode="timed" id="modeTimed">
+                    <div class="mode-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="mode-title">限时模式</div>
+                    <div class="mode-desc">固定时间内循环打字，测试极限速度</div>
+                </div>
+                <div class="card mode-card" data-mode="article" id="modeArticle">
+                    <div class="mode-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="mode-title">文章模式</div>
+                    <div class="mode-desc">完整打完一篇文章，测试准确率与耐力</div>
+                </div>
+            </div>
+            
+            <!-- 限时模式的时间选项 -->
+            <div id="timerOptions" style="display: none;">
+                <div class="timer-options">
+                    <button class="timer-btn" data-time="30">30秒</button>
+                    <button class="timer-btn" data-time="60">1分钟</button>
+                    <button class="timer-btn" data-time="120">2分钟</button>
+                </div>
+            </div>
+            
+            <!-- 语种选择 -->
+            <div class="language-selector">
+                <h3>选择语种</h3>
+                <div id="languageButtons" class="language-buttons">
+                    <!-- 动态生成语种按钮 -->
+                </div>
+            </div>
+            
+            <div class="control-buttons">
+                <button class="btn btn-primary" id="startBtn" disabled>
+                    <i class="fas fa-play"></i> 开始打字
+                </button>
+            </div>
+        </div>
+        
+        <!-- 打字区域（初始隐藏） -->
+        <div class="section-container" id="typingSection" style="display: none;">
+            <div class="section-title">
+                <h2><i class="fas fa-pen-alt"></i> 打字区域</h2>
+            </div>
+            
+            <!-- 参考文字行（打字机风格） -->
+            <div class="reference-line">
+                <div class="reference-text" id="referenceText"></div>
+            </div>
+            
+            <!-- 隐藏的输入框 - 捕获键盘输入但不显示 -->
+            <input type="text" id="hiddenInput" class="hidden-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            
+            <div class="typing-hint">
+                <i class="fas fa-info-circle"></i> 直接打字即可，可回退修改，中文输入时拼音不计入字符
+            </div>
+            
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">正确率</div>
+                    <div class="stat-value" id="accuracy">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">消耗时间</div>
+                    <div class="stat-value" id="timeElapsed">0s</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">瞬时速度</div>
+                    <div class="stat-value" id="instantSpeed">0</div>
+                    <div class="stat-label" style="font-size: 12px;">字/分钟</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">平均速度</div>
+                    <div class="stat-value" id="avgSpeed">0</div>
+                    <div class="stat-label" style="font-size: 12px;">字/分钟</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">最高瞬时速度</div>
+                    <div class="stat-value" id="maxSpeed">0</div>
+                    <div class="stat-label" style="font-size: 12px;">字/分钟</div>
+                </div>
+            </div>
+            
+            <div class="control-buttons">
+                <button class="btn btn-secondary" id="stopTypingBtn">
+                    <i class="fas fa-stop"></i> 提前结束
+                </button>
+            </div>
+        </div>
+        
+        <!-- 排行榜区域 -->
+        <div class="section-container">
+            <div class="section-title">
+                <h2><i class="fas fa-trophy"></i> 打字排行榜</h2>
+                <div class="section-buttons">
+                    <button class="btn btn-secondary" id="refreshRankingBtn">
+                        <i class="fas fa-sync-alt"></i> 刷新
+                    </button>
+                </div>
+            </div>
+            <div class="language-selector" style="margin-bottom: 15px;">
+                <div class="language-buttons" id="rankingLangButtons">
+                    <button class="lang-btn" data-rank-lang="alphabet">拉丁字母语言榜</button>
+                    <button class="lang-btn selected" data-rank-lang="logogram">拼写语言榜</button>
+                </div>
+            </div>
+            <div class="ranking-table" id="rankingTable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>昵称</th>
+                            <th>模式</th>
+                            <th>语种</th>
+                            <th>正确率</th>
+                            <th>平均速度</th>
+                            <th>上传时间</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingBody">
+                        <tr><td colspan="7" style="text-align: center;">加载中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 结算弹窗 -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content" style="max-width: 650px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-chart-line"></i> 打字结果</h2>
+                <button class="close-btn" id="closeResultModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-grid" id="resultStats">
+                    <!-- 动态填充结果 -->
+                </div>
+                <canvas id="speedChart" class="modal-chart"></canvas>
+                <div class="nickname-input" id="nicknameInputDiv">
+                    <input type="text" id="nicknameInput" placeholder="请输入昵称（未登录时使用）" maxlength="50">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelResultBtn">关闭</button>
+                    <button class="btn btn-primary" id="submitResultBtn">上传成绩</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://dornhub.eu.org/resources/login.js"></script>
+    
+    <script>
+        // ==================== 调试配置 ====================
+        const DEBUG_CONFIG = {
+            showInputBox: true,  // 设为 true 显示输入框，false 隐藏输入框（只显示打字机参考行）
+            logEvents: false       // 设为 true 在控制台输出事件日志
+        };
+        
+        function debugLog(...args) {
+            if (DEBUG_CONFIG.logEvents) {
+                console.log('[打字竞速调试]', ...args);
+            }
+        }
+        
+        // ==================== 全局变量 ====================
+        let currentUser = null;
+        let isLoggedIn = false;
+        
+        // 打字相关变量
+        let selectedMode = null;
+        let selectedTime = 60;
+        let selectedLanguage = null;
+        let currentArticle = null;
+        let isTyping = false;
+        let timer = null;
+        let startTime = null;
+        let endTime = null;
+        
+        // 逐字符统计变量
+        let currentReferenceText = '';
+        let currentInputText = '';
+        let currentCharIndex = 0;
+        let totalChars = 0;
+        let correctChars = 0;
+        let wrongChars = 0;
+        let speedHistory = [];
+        let lastCheckTime = null;
+        let lastCharCount = 0;
+        let maxInstantSpeed = 0;
+        
+        // 中文输入法支持
+        let isComposing = false;
+        let compositionBuffer = '';
+        
+        // 限时模式循环相关
+        let originalArticleContent = '';
+        
+        // Chart实例
+        let speedChart = null;
+        
+        // 当前排行榜类型
+        let currentRankingType = 'logogram';
+        
+        const UI = window.UI;
+        
+        // ==================== 内置题库（备用） ====================
+        const FallbackArticleDatabase = {
+            english: { name: "英语", type: "alphabet", articles: [{ id: "eng_001", title: "The Quick Brown Fox", content: "The quick brown fox jumps over the lazy dog. This sentence contains every letter in the English alphabet. Typing practice is important for improving speed and accuracy." }] },
+            chinese: { name: "中文", type: "logogram", articles: [{ id: "chi_001", title: "打字练习", content: "敏捷的棕色狐狸跳过懒惰的狗。打字练习对于提高速度和准确率非常重要。每天坚持练习，你会变得更好。" }] },
+            german: { name: "德语", type: "alphabet", articles: [{ id: "ger_001", title: "Typing Practice", content: "Der schnelle braune Fuchs springt über den faulen Hund. Tippübungen sind wichtig, um Geschwindigkeit und Genauigkeit zu verbessern." }] },
+            french: { name: "法语", type: "alphabet", articles: [{ id: "fre_001", title: "Typing Practice", content: "Le renard brun rapide saute par-dessus le chien paresseux. La pratique de la dactylographie est importante pour améliorer la vitesse et la précision." }] },
+            spanish: { name: "西班牙语", type: "alphabet", articles: [{ id: "spa_001", title: "Typing Practice", content: "El rápido zorro marrón salta sobre el perro perezoso. La práctica de mecanografía es importante para mejorar la velocidad y la precisión." }] },
+            japanese: { name: "日语", type: "logogram", articles: [{ id: "jpn_001", title: "タイピング練習", content: "素早い茶色のキツネが怠惰な犬を飛び越えます。タイピングの練習は速度と正確さを向上させるために重要です。" }] },
+            korean: { name: "朝鲜语/韩语", type: "logogram", articles: [{ id: "kor_001", title: "타이핑 연습", content: "날쌘 갈색 여우가 게으른 개를 뛰어넘습니다. 타이핑 연습은 속도와 정확성을 향상시키는 데 중요합니다." }] }
+        };
+        
+        // ==================== 安全的题库辅助函数 ====================
+        function safeGetAllLanguages() {
+            if (typeof getAllLanguages !== 'undefined') {
+                try { return getAllLanguages(); } catch(e) { debugLog(e); }
+            }
+            return [
+                { key: 'english', name: '英语', type: 'alphabet' },
+                { key: 'german', name: '德语', type: 'alphabet' },
+                { key: 'french', name: '法语', type: 'alphabet' },
+                { key: 'spanish', name: '西班牙语', type: 'alphabet' },
+                { key: 'chinese', name: '中文', type: 'logogram' },
+                { key: 'japanese', name: '日语', type: 'logogram' },
+                { key: 'korean', name: '朝鲜语/韩语', type: 'logogram' }
+            ];
+        }
+        
+        function safeGetRandomArticle(languageKey) {
+            if (typeof getRandomArticle !== 'undefined') {
+                try {
+                    const article = getRandomArticle(languageKey);
+                    if (article) return article;
+                } catch(e) { debugLog(e); }
+            }
+            const langData = FallbackArticleDatabase[languageKey];
+            if (langData && langData.articles && langData.articles.length > 0) {
+                const randomIndex = Math.floor(Math.random() * langData.articles.length);
+                return langData.articles[randomIndex];
+            }
+            return { id: "default_001", title: "默认文章", content: "这是一篇默认文章。如果看到这个内容，说明题库加载失败。请刷新页面重试。" };
+        }
+        
+        function safeGetLanguageName(langKey) {
+            const languages = safeGetAllLanguages();
+            const lang = languages.find(l => l.key === langKey);
+            return lang ? lang.name : langKey;
+        }
+        
+        function safeGetLanguageType(langKey) {
+            const languages = safeGetAllLanguages();
+            const lang = languages.find(l => l.key === langKey);
+            return lang ? lang.type : 'alphabet';
+        }
+        
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof ArticleDatabase === 'undefined') {
+                console.log('article.js 未加载，使用内置题库');
+            } else {
+                console.log('article.js 加载成功');
+            }
+            
+            // 初始化 LoginModule
+            LoginModule.init('.header-right');
+            
+            // 监听登录事件
+            document.addEventListener('userLoggedIn', function(e) {
+                isLoggedIn = true;
+                currentUser = e.detail.user;
+                updateUserDisplay();
+                if (UI) UI.success('登录成功！');
+            });
+            
+            document.addEventListener('userLoggedOut', function() {
+                isLoggedIn = false;
+                currentUser = null;
+                updateUserDisplay();
+                if (UI) UI.info('已退出登录');
+            });
+            
+            // 检查已有登录状态
+            if (LoginModule.isLoggedIn()) {
+                isLoggedIn = true;
+                currentUser = LoginModule.getCurrentUser();
+            }
+            
+            updateUserDisplay();
+            initLanguageButtons();
+            initModeSelection();
+            initTimerOptions();
+            initRankingButtons();
+            bindEvents();
+            loadRanking();
+        });
+        
+        // ==================== 用户相关函数 ====================
+        function updateUserDisplay() {
+            const loginText = document.getElementById('loginText');
+            const nicknameDisplay = document.getElementById('userNicknameDisplay');
+            const fundsDisplay = document.getElementById('userFundsDisplay');
+            const daysDisplay = document.getElementById('userDaysDisplay');
+            const certificationDisplay = document.getElementById('userCertificationDisplay');
+            const nicknameDiv = document.getElementById('nicknameInputDiv');
+            
+            if (isLoggedIn && currentUser) {
+                if (loginText) loginText.textContent = currentUser.nickname || currentUser.name;
+                if (nicknameDisplay) nicknameDisplay.textContent = currentUser.nickname || currentUser.name;
+                const funds = parseFloat(currentUser.funds) || 0;
+                if (fundsDisplay) fundsDisplay.innerHTML = `<i class="fas fa-coins"></i> ${funds.toFixed(2)} 𣿅元`;
+                if (currentUser.issue_date && daysDisplay) {
+                    const days = Math.ceil((new Date() - new Date(currentUser.issue_date)) / (1000 * 60 * 60 * 24));
+                    daysDisplay.textContent = `已成为公民 ${days} 天`;
+                }
+                if (currentUser.certification && certificationDisplay) {
+                    certificationDisplay.textContent = currentUser.certification;
+                    certificationDisplay.style.display = 'block';
+                }
+                document.querySelectorAll('.insider-badge').forEach(b => b.style.display = 'inline-block');
+                if (nicknameDiv) nicknameDiv.style.display = 'none';
+            } else {
+                if (loginText) loginText.textContent = '登录/注册';
+                if (nicknameDisplay) nicknameDisplay.textContent = '未登录';
+                if (fundsDisplay) fundsDisplay.innerHTML = '<i class="fas fa-coins"></i> -- 𣿅元';
+                if (daysDisplay) daysDisplay.textContent = '';
+                if (certificationDisplay) certificationDisplay.style.display = 'none';
+                document.querySelectorAll('.insider-badge').forEach(b => b.style.display = 'none');
+                if (nicknameDiv) nicknameDiv.style.display = 'block';
+            }
+        }
+        
+        // ==================== 初始化UI ====================
+        function initLanguageButtons() {
+            const container = document.getElementById('languageButtons');
+            if (!container) return;
+            const languages = safeGetAllLanguages();
+            container.innerHTML = languages.map(lang => `
+                <button class="lang-btn" data-lang-key="${lang.key}" data-lang-type="${lang.type}">${lang.name}</button>
+            `).join('');
+            container.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    container.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedLanguage = btn.getAttribute('data-lang-key');
+                    const startBtn = document.getElementById('startBtn');
+                    if (startBtn) startBtn.disabled = !selectedMode || !selectedLanguage;
+                });
+            });
+        }
+        
+        function initModeSelection() {
+            const modeTimed = document.getElementById('modeTimed');
+            const modeArticle = document.getElementById('modeArticle');
+            const timerOptions = document.getElementById('timerOptions');
+            if (modeTimed) {
+                modeTimed.addEventListener('click', () => {
+                    modeTimed.classList.add('selected');
+                    if (modeArticle) modeArticle.classList.remove('selected');
+                    selectedMode = 'timed';
+                    if (timerOptions) timerOptions.style.display = 'block';
+                    const startBtn = document.getElementById('startBtn');
+                    if (startBtn) startBtn.disabled = !selectedMode || !selectedLanguage;
+                });
+            }
+            if (modeArticle) {
+                modeArticle.addEventListener('click', () => {
+                    modeArticle.classList.add('selected');
+                    if (modeTimed) modeTimed.classList.remove('selected');
+                    selectedMode = 'article';
+                    if (timerOptions) timerOptions.style.display = 'none';
+                    const startBtn = document.getElementById('startBtn');
+                    if (startBtn) startBtn.disabled = !selectedMode || !selectedLanguage;
+                });
+            }
+        }
+        
+        function initTimerOptions() {
+            const timerBtns = document.querySelectorAll('.timer-btn');
+            timerBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    timerBtns.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedTime = parseInt(btn.getAttribute('data-time'));
+                });
+            });
+            const defaultBtn = document.querySelector('.timer-btn[data-time="60"]');
+            if (defaultBtn) defaultBtn.classList.add('selected');
+        }
+        
+        function initRankingButtons() {
+            const btns = document.querySelectorAll('[data-rank-lang]');
+            btns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    btns.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    currentRankingType = btn.getAttribute('data-rank-lang');
+                    loadRanking();
+                });
+            });
+        }
+        
+        // ==================== 打字机核心逻辑 ====================
+        function resetTypingState() {
+            currentInputText = '';
+            currentCharIndex = 0;
+            totalChars = 0;
+            correctChars = 0;
+            wrongChars = 0;
+            speedHistory = [];
+            maxInstantSpeed = 0;
+            lastCheckTime = null;
+            lastCharCount = 0;
+            isComposing = false;
+            compositionBuffer = '';
+            
+            const hiddenInput = document.getElementById('hiddenInput');
+            if (hiddenInput) hiddenInput.value = '';
+            
+            updateReferenceHighlight();
+            updateStatsDisplay();
+            const instantSpeedElem = document.getElementById('instantSpeed');
+            if (instantSpeedElem) instantSpeedElem.textContent = '0';
+            const maxSpeedElem = document.getElementById('maxSpeed');
+            if (maxSpeedElem) maxSpeedElem.textContent = '0';
+        }
+        
+        function updateReferenceHighlight() {
+            const refDiv = document.getElementById('referenceText');
+            if (!refDiv) return;
+            let html = '';
+            for (let i = 0; i < currentReferenceText.length; i++) {
+                const char = currentReferenceText[i];
+                let className = '';
+                if (i < currentCharIndex) {
+                    if (i < currentInputText.length && currentInputText[i] === char) {
+                        className = 'char-correct';
+                    } else if (i < currentInputText.length) {
+                        className = 'char-wrong';
+                    }
+                } else if (i === currentCharIndex) {
+                    className = 'char-current';
+                }
+                if (className) {
+                    html += `<span class="${className}">${escapeHtml(char)}</span>`;
+                } else {
+                    html += escapeHtml(char);
+                }
+            }
+            refDiv.innerHTML = html;
+            const currentSpan = refDiv.querySelector('.char-current');
+            if (currentSpan) {
+                currentSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+        
+        function handleHiddenInput(e) {
+            if (!isTyping) return;
+            const hiddenInput = document.getElementById('hiddenInput');
+            if (!hiddenInput) return;
+            
+            let newText = hiddenInput.value;
+            debugLog('输入:', { newText, currentInputText, isComposing });
+            
+            if (isComposing) {
+                compositionBuffer = newText;
+                return;
+            }
+            
+            // 处理新增字符（支持一次输入多个汉字）
+            if (newText.length > currentInputText.length) {
+                const addedChars = newText.substring(currentInputText.length);
+                debugLog('新增字符:', addedChars);
+                
+                for (let i = 0; i < addedChars.length; i++) {
+                    const inputChar = addedChars[i];
+                    if (currentCharIndex >= currentReferenceText.length) {
+                        if (selectedMode === 'article') {
+                            endTyping();
+                            return;
+                        } else if (selectedMode === 'timed') {
+                            handleCycleMode();
+                            return;
+                        }
+                        break;
+                    }
+                    const targetChar = currentReferenceText[currentCharIndex];
+                    totalChars++;
+                    if (inputChar === targetChar) {
+                        correctChars++;
+                    } else {
+                        wrongChars++;
+                        const referenceLine = document.querySelector('.reference-line');
+                        if (referenceLine) {
+                            referenceLine.classList.add('shake-error');
+                            setTimeout(() => referenceLine.classList.remove('shake-error'), 200);
+                        }
+                    }
+                    currentInputText += inputChar;
+                    currentCharIndex++;
+                    updateInstantSpeed();
+                }
+                
+                updateReferenceHighlight();
+                updateStatsDisplay();
+                hiddenInput.value = currentInputText;
+                
+                if (selectedMode === 'article' && currentCharIndex >= currentReferenceText.length) {
+                    endTyping();
+                }
+                return;
+            }
+            
+            // 处理删除（退格）
+            if (newText.length < currentInputText.length) {
+                const deleteCount = currentInputText.length - newText.length;
+                debugLog('删除字符数:', deleteCount);
+                for (let i = 0; i < deleteCount; i++) {
+                    if (currentCharIndex > 0) {
+                        currentCharIndex--;
+                        currentInputText = currentInputText.substring(0, currentInputText.length - 1);
+                    }
+                }
+                recalculateStatsFromInput();
+                updateReferenceHighlight();
+                updateStatsDisplay();
+                hiddenInput.value = currentInputText;
+                return;
+            }
+        }
+        
+        function handleCycleMode() {
+            currentReferenceText = originalArticleContent;
+            currentInputText = '';
+            currentCharIndex = 0;
+            const hiddenInput = document.getElementById('hiddenInput');
+            if (hiddenInput) hiddenInput.value = '';
+            updateReferenceHighlight();
+        }
+        
+        function recalculateStatsFromInput() {
+            let correct = 0, wrong = 0;
+            const minLen = Math.min(currentInputText.length, currentReferenceText.length);
+            for (let i = 0; i < minLen; i++) {
+                if (currentInputText[i] === currentReferenceText[i]) correct++;
+                else wrong++;
+            }
+            totalChars = currentInputText.length;
+            correctChars = correct;
+            wrongChars = wrong;
+        }
+        
+        function updateInstantSpeed() {
+            const now = Date.now();
+            const currentCharCount = currentInputText.length;
+            if (lastCheckTime && lastCharCount !== null) {
+                const timeDiff = (now - lastCheckTime) / 1000;
+                if (timeDiff >= 0.5) {
+                    const charsTyped = currentCharCount - lastCharCount;
+                    const speed = (charsTyped / timeDiff) * 60;
+                    if (!isNaN(speed) && isFinite(speed) && speed >= 0) {
+                        speedHistory.push(speed);
+                        if (speed > maxInstantSpeed) {
+                            maxInstantSpeed = speed;
+                            const maxSpeedElem = document.getElementById('maxSpeed');
+                            if (maxSpeedElem) maxSpeedElem.textContent = Math.round(maxInstantSpeed);
+                        }
+                        const instantSpeedElem = document.getElementById('instantSpeed');
+                        if (instantSpeedElem) instantSpeedElem.textContent = Math.round(speed);
+                    }
+                    lastCheckTime = now;
+                    lastCharCount = currentCharCount;
+                }
+            } else {
+                lastCheckTime = now;
+                lastCharCount = currentCharCount;
+            }
+        }
+        
+        function updateStatsDisplay() {
+            const accuracy = totalChars === 0 ? 0 : (correctChars / totalChars) * 100;
+            const accuracyElem = document.getElementById('accuracy');
+            if (accuracyElem) accuracyElem.textContent = `${accuracy.toFixed(2)}%`;
+            const elapsed = (Date.now() - startTime) / 1000;
+            const avgSpeedValue = elapsed === 0 ? 0 : (totalChars / elapsed) * 60;
+            const avgSpeedElem = document.getElementById('avgSpeed');
+            if (avgSpeedElem) avgSpeedElem.textContent = Math.round(avgSpeedValue);
+        }
+        
+        function onCompositionStart() { 
+            isComposing = true; 
+            compositionBuffer = '';
+            debugLog('中文输入开始');
+        }
+        
+        function onCompositionEnd(e) {
+            isComposing = false;
+            const hiddenInput = document.getElementById('hiddenInput');
+            debugLog('中文输入结束', { compositionBuffer, hiddenInputValue: hiddenInput?.value });
+            if (hiddenInput && compositionBuffer) {
+                const event = new Event('input', { bubbles: true });
+                hiddenInput.dispatchEvent(event);
+            }
+            compositionBuffer = '';
+        }
+        
+        function startTyping() {
+            if (!selectedLanguage || !selectedMode) {
+                if (UI) UI.warning('请先选择模式和语种');
+                return;
+            }
+            currentArticle = safeGetRandomArticle(selectedLanguage);
+            if (!currentArticle) {
+                if (UI) UI.error('获取文章失败');
+                return;
+            }
+            originalArticleContent = currentArticle.content;
+            currentReferenceText = originalArticleContent;
+            
+            const setupSection = document.getElementById('setupSection');
+            const typingSection = document.getElementById('typingSection');
+            const referenceText = document.getElementById('referenceText');
+            const hiddenInput = document.getElementById('hiddenInput');
+            
+            if (setupSection) setupSection.style.display = 'none';
+            if (typingSection) typingSection.style.display = 'block';
+            if (referenceText) referenceText.innerHTML = '';
+            
+            resetTypingState();
+            updateReferenceHighlight();
+            
+            if (hiddenInput) {
+                hiddenInput.value = '';
+                
+                if (DEBUG_CONFIG.showInputBox) {
+                    hiddenInput.classList.add('debug-visible');
+                } else {
+                    hiddenInput.classList.remove('debug-visible');
+                }
+                
+                hiddenInput.focus();
+                hiddenInput.removeEventListener('input', handleHiddenInput);
+                hiddenInput.removeEventListener('compositionstart', onCompositionStart);
+                hiddenInput.removeEventListener('compositionend', onCompositionEnd);
+                hiddenInput.addEventListener('input', handleHiddenInput);
+                hiddenInput.addEventListener('compositionstart', onCompositionStart);
+                hiddenInput.addEventListener('compositionend', onCompositionEnd);
+            }
+            
+            isTyping = true;
+            startTime = Date.now();
+            
+            if (selectedMode === 'timed') {
+                endTime = startTime + (selectedTime * 1000);
+                timer = setInterval(() => {
+                    if (!isTyping) return;
+                    const now = Date.now();
+                    if (now >= endTime) {
+                        endTyping();
+                    } else {
+                        updateInstantSpeed();
+                        updateStatsDisplay();
+                        const elapsed = Math.floor((now - startTime) / 1000);
+                        const timeElapsedElem = document.getElementById('timeElapsed');
+                        if (timeElapsedElem) timeElapsedElem.textContent = `${elapsed}s`;
+                    }
+                }, 100);
+            } else {
+                timer = setInterval(() => {
+                    if (!isTyping) return;
+                    updateInstantSpeed();
+                    updateStatsDisplay();
+                    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    const timeElapsedElem = document.getElementById('timeElapsed');
+                    if (timeElapsedElem) timeElapsedElem.textContent = `${elapsed}s`;
+                }, 100);
+            }
+        }
+        
+        function endTyping() {
+            if (!isTyping) return;
+            isTyping = false;
+            if (timer) { clearInterval(timer); timer = null; }
+            const hiddenInput = document.getElementById('hiddenInput');
+            if (hiddenInput) hiddenInput.removeEventListener('input', handleHiddenInput);
+            
+            const elapsed = (Date.now() - startTime) / 1000;
+            const accuracy = totalChars === 0 ? 0 : (correctChars / totalChars) * 100;
+            const avgSpeed = elapsed === 0 ? 0 : (totalChars / elapsed) * 60;
+            
+            const resultData = {
+                accuracy: accuracy,
+                avgSpeed: avgSpeed,
+                maxSpeed: maxInstantSpeed,
+                totalChars: totalChars,
+                correctChars: correctChars,
+                wrongChars: wrongChars,
+                duration: elapsed,
+                mode: selectedMode,
+                language: selectedLanguage,
+                languageName: safeGetLanguageName(selectedLanguage),
+                languageType: safeGetLanguageType(selectedLanguage)
+            };
+            showResultModal(resultData);
+        }
+        
+        function showResultModal(resultData) {
+            const modal = document.getElementById('resultModal');
+            const statsContainer = document.getElementById('resultStats');
+            if (!modal || !statsContainer) return;
+            statsContainer.innerHTML = `
+                <div class="stat-card"><div class="stat-label">正确率</div><div class="stat-value">${resultData.accuracy.toFixed(2)}%</div></div>
+                <div class="stat-card"><div class="stat-label">消耗时间</div><div class="stat-value">${resultData.duration.toFixed(1)}s</div></div>
+                <div class="stat-card"><div class="stat-label">总字符数</div><div class="stat-value">${resultData.totalChars}</div></div>
+                <div class="stat-card"><div class="stat-label">正确字符</div><div class="stat-value">${resultData.correctChars}</div></div>
+                <div class="stat-card"><div class="stat-label">错误字符</div><div class="stat-value">${resultData.wrongChars}</div></div>
+                <div class="stat-card"><div class="stat-label">平均速度</div><div class="stat-value">${resultData.avgSpeed.toFixed(1)}</div><div class="stat-label" style="font-size:12px;">字/分钟</div></div>
+                <div class="stat-card"><div class="stat-label">最高瞬时速度</div><div class="stat-value">${resultData.maxSpeed.toFixed(1)}</div><div class="stat-label" style="font-size:12px;">字/分钟</div></div>
+            `;
+            const canvas = document.getElementById('speedChart');
+            if (canvas && speedHistory.length > 0) {
+                const ctx = canvas.getContext('2d');
+                if (speedChart) speedChart.destroy();
+                const labels = speedHistory.map((_, i) => i + 1);
+                speedChart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: labels, datasets: [{ label: '瞬时速度 (字/分钟)', data: speedHistory, borderColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#16DA49', backgroundColor: 'rgba(22,218,73,0.1)', fill: true, tension: 0.4 }] },
+                    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
+                });
+            }
+            window.currentResultData = resultData;
+            modal.style.display = 'flex';
+        }
+        
+        async function uploadResult() {
+            let nickname = '';
+            if (isLoggedIn && currentUser) {
+                nickname = currentUser.nickname || currentUser.name;
+            } else {
+                const nicknameInput = document.getElementById('nicknameInput');
+                if (nicknameInput) nickname = nicknameInput.value.trim();
+                if (!nickname) {
+                    if (UI) UI.warning('请输入昵称');
+                    return;
+                }
+            }
+            
+            const resultData = window.currentResultData;
+            if (!resultData) return;
+            
+            const postData = {
+                user_nickname: nickname,
+                mode: resultData.mode,
+                language_type: resultData.languageType,
+                language_name: resultData.languageName,
+                accuracy: resultData.accuracy,
+                avg_speed: resultData.avgSpeed,
+                total_characters: resultData.totalChars,
+                correct_characters: resultData.correctChars,
+                wrong_characters: resultData.wrongChars,
+                duration_seconds: Math.floor(resultData.duration),
+                max_instant_speed: resultData.maxSpeed
+            };
+            
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/record_type.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(postData)
+                });
+                
+                const result = await response.json();
+                console.log('上传结果:', result);
+                
+                if (result && (result.success === true || result.data?.id)) {
+                    if (UI) UI.success('成绩上传成功！');
+                    document.getElementById('resultModal').style.display = 'none';
+                    loadRanking();
+                    resetToSetup();
+                } else {
+                    console.warn('上传返回异常，但可能已成功');
+                    if (UI) UI.success('成绩已记录！');
+                    document.getElementById('resultModal').style.display = 'none';
+                    loadRanking();
+                    resetToSetup();
+                }
+            } catch (error) {
+                console.error('上传失败:', error);
+                if (UI) UI.error('网络错误，上传失败');
+            }
+        }
+        
+        function resetToSetup() {
+            const typingSection = document.getElementById('typingSection');
+            const setupSection = document.getElementById('setupSection');
+            const hiddenInput = document.getElementById('hiddenInput');
+            
+            if (typingSection) typingSection.style.display = 'none';
+            if (setupSection) setupSection.style.display = 'block';
+            if (hiddenInput) {
+                hiddenInput.classList.remove('debug-visible');
+                hiddenInput.value = '';
+            }
+            isTyping = false;
+            if (timer) clearInterval(timer);
+        }
+        
+        async function loadRanking() {
+            const rankingBody = document.getElementById('rankingBody');
+            if (rankingBody) rankingBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">加载中...</td></tr>';
+            try {
+                const response = await fetch(`https://dornhub.eu.org/php/query_type.php?language_type=${currentRankingType}&limit=100`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const result = await response.json();
+                console.log('排行榜数据:', result);
+                if (result.success && result.data && result.data.rankings) {
+                    renderRanking(result.data.rankings);
+                } else {
+                    if (rankingBody) rankingBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">暂无数据</td></tr>';
+                }
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+                if (rankingBody) rankingBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">加载失败</td></tr>';
+                if (UI) UI.warning('排行榜加载失败');
+            }
+        }
+        
+        function renderRanking(rankings) {
+            const tbody = document.getElementById('rankingBody');
+            if (!tbody) return;
+            
+            console.log('渲染排行榜，数据条数:', rankings ? rankings.length : 0);
+            
+            if (!rankings || rankings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">暂无数据</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = rankings.map(record => {
+                let rankClass = '';
+                if (record.rank === 1) rankClass = 'rank-1';
+                else if (record.rank === 2) rankClass = 'rank-2';
+                else if (record.rank === 3) rankClass = 'rank-3';
+                
+                const modeText = record.mode === 'timed' ? '限时模式' : '文章模式';
+                const accuracyDisplay = record.accuracy_formatted || `${record.accuracy}%`;
+                const speedDisplay = record.avg_speed_formatted || record.avg_speed;
+                
+                return `<tr class="${rankClass}">
+                    <td>${record.rank}</td>
+                    <td>${escapeHtml(record.user_nickname)}</td>
+                    <td>${modeText}</td>
+                    <td>${record.language_name}</td>
+                    <td>${accuracyDisplay}</td>
+                    <td>${speedDisplay}</td>
+                    <td>${record.upload_time_formatted || record.upload_time}</td>
+                </tr>`;
+            }).join('');
+        }
+        
+        function escapeHtml(str) { 
+            if (!str) return ''; 
+            return String(str).replace(/[&<>]/g, function(m) { 
+                if (m === '&') return '&amp;'; 
+                if (m === '<') return '&lt;'; 
+                if (m === '>') return '&gt;'; 
+                return m; 
+            }); 
+        }
+        
+        // ==================== 事件绑定 ====================
+        function bindEvents() {
+            const startBtn = document.getElementById('startBtn');
+            const stopTypingBtn = document.getElementById('stopTypingBtn');
+            const refreshRankingBtn = document.getElementById('refreshRankingBtn');
+            const submitResultBtn = document.getElementById('submitResultBtn');
+            const cancelResultBtn = document.getElementById('cancelResultBtn');
+            const closeResultModalBtn = document.getElementById('closeResultModalBtn');
+            const personalCenterBtn = document.getElementById('personalCenterBtn');
+            
+            if (startBtn) startBtn.addEventListener('click', startTyping);
+            if (stopTypingBtn) stopTypingBtn.addEventListener('click', () => { if (isTyping && confirm('确定要提前结束吗？')) endTyping(); });
+            if (refreshRankingBtn) refreshRankingBtn.addEventListener('click', loadRanking);
+            if (submitResultBtn) submitResultBtn.addEventListener('click', uploadResult);
+            if (cancelResultBtn) cancelResultBtn.addEventListener('click', () => { document.getElementById('resultModal').style.display = 'none'; resetToSetup(); });
+            if (closeResultModalBtn) closeResultModalBtn.addEventListener('click', () => { document.getElementById('resultModal').style.display = 'none'; resetToSetup(); });
+            if (personalCenterBtn) personalCenterBtn.addEventListener('click', () => { window.location.href = 'account.html'; });
+            
+            // 点击模态框外部关闭
+            window.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('resultModal')) { document.getElementById('resultModal').style.display = 'none'; resetToSetup(); }
+            });
+            
+            const referenceLine = document.querySelector('.reference-line');
+            if (referenceLine) {
+                referenceLine.addEventListener('click', () => {
+                    const hiddenInput = document.getElementById('hiddenInput');
+                    if (hiddenInput && isTyping) hiddenInput.focus();
+                });
+            }
+        }
+        
+        // 页面加载完成后隐藏 loading mask
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                let mask = document.getElementById('loading-mask');
+                if (mask) mask.style.display = 'none';
+            }, 800);
+        });
+    </script>
+</body>
+</html>

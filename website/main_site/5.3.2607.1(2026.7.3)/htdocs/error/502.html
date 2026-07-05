@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="icon" href="https://dornhub.eu.org/SatornhLogo.png">
+		
+        <title>出错啦！</title>
+		
+        <style>
+            @import url(\'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap\');
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 
+                    "Open Sans",
+                    "Noto Sans SC",
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Roboto,
+                    "Helvetica Neue",
+                    Arial,
+                    sans-serif;
+                position: relative;
+                min-height: 100vh;
+                background-image: url('https://dornhub.eu.org/flag.jpg');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }
+
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(255, 255, 255, 0.8);
+                z-index: -1;
+            }
+
+            .page-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 20px;
+            }
+
+            .mica-card {
+                max-width: 500px;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.7);
+                backdrop-filter: blur(20px) saturate(180%);
+                -webkit-backdrop-filter: blur(20px) saturate(180%);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                padding: 30px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .mica-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.1) 0%,
+                    rgba(255, 255, 255, 0.05) 50%,
+                    rgba(255, 255, 255, 0.1) 100%);
+                pointer-events: none;
+                border-radius: 16px;
+                z-index: 0;
+            }
+
+            .content {
+                position: relative;
+                z-index: 1;
+            }
+
+            .logo {
+                font-size: 30px;
+                font-weight: 700;
+                margin-bottom: 24px;
+            }
+            .logo .dorn {
+                color: #16DA49;
+            }
+            .logo .hub {
+                background-color: #16DA49;
+                color: white;
+                padding: 0 10px;
+                border-radius: 10px;
+            }
+
+            h2 {
+                color: #16DA49;
+                margin-bottom: 16px;
+            }
+
+            p {
+                font-size: 15px;
+                line-height: 1.6;
+                color: #323130;
+                margin-bottom: 14px;
+            }
+
+            .btn {
+                display: inline-block;
+                background: #16DA49;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                text-decoration: none;
+                font-weight: 500;
+                margin: 10px 0 20px;
+            }
+
+			
+			.picture-container {
+				height: 200px;
+				display: flex;
+				justify-content: center;
+			}
+			
+			.error-code {
+				font-size: 80px;
+				transform: rotate(-15deg);
+			}
+			
+			.info-container {
+				transform: translateX(30px);
+			}
+        </style>
+    </head>
+    <body>
+
+        <div class="page-container">
+            <div class="mica-card">
+                <div class="content">
+                    <div class="logo">
+                        <span class="dorn">Dorn</span>
+                        <span class="hub">Hub</span>
+                    </div>
+					<div class="info-container">
+                    <h2 class="error-code">502</h2>
+					<div class="picture-container">
+						<img src="https://dornhub.eu.org/resources/images/error.png" height="100%">
+					</div>
+					</div>
+					<br>
+                    <div style="text-align:center;">
+						<p style="font-size: 30px;">502 Bad Gateway</p>
+						<br>
+                        <a class="btn" href="https://dornhub.eu.org">返回主页</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </body>
+    </html>

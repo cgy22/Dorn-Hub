@@ -1,0 +1,2423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="来自Dorn Hub的记忆小游戏，在10秒内记住𣿅国夫人的购物要求，在超市选购最合适的商品，花最接近预算的钱，买最对的东西。Dorn Hub是大𣿅子IP的核心数字平台，也是用户进入𣿅国世界的第一道大门。">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+    
+    <title>𣿅国夫人爱购物 · 花光她的钱</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+	<!-- Cookie 同意组件 -->
+	<script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+	<!-- Cloudflare Turnstile -->
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+	<!-- Turnstile 统一管理模块 -->
+	<script src="/resources/turnstile.js"></script>
+    
+    <!-- 商品数据 -->
+    <script src="items.js"></script>
+    
+    <style>
+        /* 游戏特定样式 */
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow: hidden;
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+        
+        /* 开始界面 */
+        .start-screen {
+            text-align: center;
+            padding: 60px 20px 80px;
+        }
+        
+        .game-title {
+            font-size: 64px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            text-shadow: 0 4px 12px var(--shadow-color);
+        }
+        
+        .game-subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+        
+        .rules-box {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 600px;
+            text-align: left;
+            box-shadow: 0 8px 32px var(--shadow-color);
+        }
+        
+        .rules-box h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .rules-box ul {
+            padding-left: 20px;
+        }
+        
+        .rules-box li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .start-btn {
+            font-size: 24px;
+            padding: 15px 50px;
+            border-radius: 50px;
+            margin: 20px auto;
+            display: inline-block;
+        }
+        
+        /* 𣿅国夫人弹窗 */
+        .wife-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            z-index: 2000;
+            box-shadow: 0 20px 60px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            display: none;
+        }
+        
+        .wife-modal.active {
+            display: block;
+            animation: modalAppear 0.4s var(--animation-curve);
+        }
+        
+        .wife-avatar {
+            font-size: 80px;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        .wife-speech {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 20px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .wife-speech::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            border-width: 10px;
+            border-style: solid;
+            border-color: transparent transparent var(--secondary-color) transparent;
+        }
+        
+        .wife-requirement {
+            font-size: 18px;
+            font-weight: 500;
+            margin: 15px 0;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 12px;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .countdown-timer {
+            font-size: 48px;
+            font-weight: 900;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 20px 0;
+            animation: pulse 1s infinite;
+        }
+        
+        /* 超市界面 */
+        .supermarket {
+            display: none;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding-top: 40px;
+            padding-bottom: 60px;
+        }
+        
+        .supermarket.active {
+            display: block;
+        }
+        
+        /* 购物车状态栏 */
+        .cart-status {
+            position: sticky;
+            top: 90px;
+            z-index: 100;
+            background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+        
+        .cart-info {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .cart-total {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .budget-info {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .budget-info.warning {
+            color: #d13438;
+        }
+        
+        /* 计时器显示 */
+        .shopping-timer {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: var(--secondary-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .shopping-timer i {
+            margin-right: 5px;
+        }
+        
+        /* 商品横向滚动容器 */
+        .products-scroll-container {
+            width: 100%;
+            overflow-x: hidden;
+            position: relative;
+            margin: 30px 0 40px;
+            padding: 20px 0;
+        }
+        
+        .products-track {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            transition: transform 0.3s ease-out;
+            will-change: transform;
+            padding: 10px 0;
+        }
+        
+        /* 商品卡片 */
+        .product-card {
+            flex: 0 0 200px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all var(--transition-speed) var(--animation-curve);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 24px var(--shadow-color);
+            border-color: var(--primary-color);
+        }
+        
+        .product-emoji {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-align: center;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-price {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .product-price::after {
+            content: ' 𣿅元';
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        /* 隐藏商品标签 */
+        .product-tags {
+            display: none;
+        }
+        
+        /* +- 按钮组 */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .qty-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-speed) var(--animation-curve);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qty-btn.minus {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .qty-btn.minus:hover:not(:disabled) {
+            background: #d13438;
+            color: white;
+        }
+        
+        .qty-btn:hover:not(:disabled) {
+            transform: scale(1.1);
+        }
+        
+        .qty-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .qty-display {
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        /* 玩家 */
+        .player-container {
+            position: relative;
+            margin: 50px 0 40px;
+            height: 100px;
+        }
+        
+        .player {
+            position: absolute;
+            left: 0;
+            transition: left 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateX(-50%);
+            z-index: 50;
+        }
+        
+        .player-avatar {
+            font-size: 60px;
+            filter: drop-shadow(0 8px 12px var(--shadow-color));
+        }
+        
+        .player-cart {
+            font-size: 40px;
+            margin-top: -15px;
+            animation: cartShake 0.5s infinite;
+        }
+        
+        .player-items {
+            font-size: 12px;
+            background: var(--primary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-top: 5px;
+        }
+        
+        @keyframes cartShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+        
+        /* 货架轨道指示器 */
+        .shelf-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 30px 0 40px;
+        }
+        
+        .shelf-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border-color);
+            transition: all var(--transition-speed) var(--animation-curve);
+        }
+        
+        .shelf-dot.active {
+            width: 24px;
+            background: var(--primary-color);
+        }
+        
+        /* 收银台 */
+        .checkout-area {
+            text-align: center;
+            padding: 40px 30px 60px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            margin: 40px 0 100px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .checkout-btn {
+            font-size: 24px;
+            padding: 15px 50px;
+            border-radius: 50px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-speed) var(--animation-curve);
+        }
+        
+        .checkout-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px var(--shadow-color);
+        }
+        
+        /* 购物结果弹窗 - 修正初始位置 */
+        .result-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            z-index: 2000;
+            box-shadow: 0 20px 60px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            display: none;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .result-modal.active {
+            display: block;
+            animation: modalAppear 0.4s var(--animation-curve);
+        }
+        
+        .result-icon {
+            font-size: 80px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .result-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .result-details {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .result-row.total {
+            font-weight: 700;
+            font-size: 18px;
+            border-bottom: none;
+        }
+        
+        .result-message {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 12px;
+        }
+        
+        .result-message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .result-message.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .result-time {
+            text-align: center;
+            font-size: 16px;
+            margin: 10px 0;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .result-user-number {
+            text-align: center;
+            font-size: 18px;
+            margin: 10px 0;
+            padding: 10px;
+            background: var(--secondary-color);
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        /* 购物车抽屉 */
+        .cart-drawer {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 15px;
+            z-index: 1000;
+            transform: translateY(calc(100% + 20px));
+            transition: transform var(--transition-speed) var(--animation-curve);
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 8px 32px var(--shadow-color);
+        }
+        
+        .cart-drawer.active {
+            transform: translateY(0);
+        }
+        
+        .cart-drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            background: var(--secondary-color);
+            border-radius: 8px;
+        }
+        
+        .cart-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        
+        .cart-item {
+            background: var(--secondary-color);
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .cart-item-remove {
+            cursor: pointer;
+            color: #d13438;
+            margin-left: 5px;
+            font-size: 16px;
+        }
+        
+        .cart-item-remove:hover {
+            transform: scale(1.2);
+        }
+        
+        /* 控制提示 */
+        .control-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 15px;
+            font-size: 14px;
+            z-index: 999;
+            opacity: 0.7;
+            transition: opacity var(--transition-speed) var(--animation-curve);
+        }
+        
+        .control-hint:hover {
+            opacity: 1;
+        }
+        
+        .control-hint i {
+            color: var(--primary-color);
+            margin-right: 5px;
+        }
+        
+        .key {
+            display: inline-block;
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px 6px;
+            margin: 0 2px;
+        }
+        
+        /* 头部用户信息 - 参考index.html样式 */
+        .header-right {
+            display: flex !important;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-menu-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .login-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 8px 12px;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: all var(--transition-speed) var(--animation-curve);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            justify-content: space-between;
+        }
+        
+        .login-btn:hover {
+            background: var(--secondary-color);
+            transform: scale(1.05);
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--shadow-color);
+            z-index: 1000;
+            display: none;
+            min-width: 220px;
+            width: 100%;
+            margin-top: 5px;
+            animation: slideDown 0.3s var(--animation-curve);
+            overflow: hidden;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+        }
+        
+        .user-dropdown.active {
+            display: block;
+        }
+        
+        .user-info-section {
+            padding: 16px;
+            background: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .user-nickname {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .user-funds {
+            font-size: 14px;
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        
+        .user-funds i {
+            color: #ffd700;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 4px 0;
+        }
+        
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.2s var(--animation-curve);
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+        
+        #user-funds-display {
+            color: gold;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        /* 排行榜和记录弹窗 - 修正初始位置 */
+        .leaderboard-modal, .records-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            z-index: 2000;
+            box-shadow: 0 20px 60px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+            display: none;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .leaderboard-modal.active, .records-modal.active {
+            display: block;
+            animation: modalAppear 0.4s var(--animation-curve);
+        }
+        
+        .leaderboard-table, .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .leaderboard-table th,
+        .leaderboard-table td,
+        .records-table th,
+        .records-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .leaderboard-table th,
+        .records-table th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        .leaderboard-table tr:hover,
+        .records-table tr:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .rank-1 {
+            background-color: rgba(255, 215, 0, 0.1);
+            font-weight: bold;
+        }
+        
+        .rank-2 {
+            background-color: rgba(192, 192, 192, 0.1);
+        }
+        
+        .rank-3 {
+            background-color: rgba(205, 127, 50, 0.1);
+        }
+        
+        .success-badge {
+            color: #16DA49;
+            font-weight: bold;
+        }
+        
+        .fail-badge {
+            color: #d13438;
+            font-weight: bold;
+        }
+        
+        .close-modal-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        
+        .upload-form {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .upload-form input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        /* 普通按钮样式 - 参考btn类 */
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all var(--transition-speed) var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #106ebe;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载遮罩 -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <!-- 转圈圈加载动画 -->
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+    
+    <div class="container game-container">
+        <!-- 头部，包含用户信息 - 参考index.html样式 -->
+        <header>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="ms-fontSize-32 ms-fontWeight-semibold">
+                        <span id="navname1">𣿅国夫人</span>
+                        <span id="navname2">爱购物</span>
+                    </h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-menu-container">
+                        <button class="login-btn btn" id="loginBtn">
+                            <span id="loginText">登录/注册</span>
+                            <i class="fas fa-chevron-down" id="dropdownArrow"></i>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="user-info-section">
+                                <div class="user-nickname" id="userNicknameDisplay"></div>
+                                <div class="user-funds" id="userFundsDisplay">
+                                    <i class="fas fa-coins"></i> <span id="fundsAmount">0.00</span> 𣿅元
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>退出登录</span>
+                            </div>
+                        </div>
+                    </div>
+					<a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none;">
+					               <i class="fas fa-home"></i> 主页
+					           </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 开始界面 -->
+        <div id="startScreen" class="start-screen">
+            <div class="game-title">
+                <span class="logo-part1">𣿅国夫人</span>
+                <span class="logo-part2">爱购物</span>
+            </div>
+            <div class="game-subtitle">记住要求 · 精打细算 · 讨好𣿅国夫人</div>
+            
+            <div class="rules-box">
+                <h3><i class="fas fa-shopping-cart"></i> 游戏规则</h3>
+                <ul>
+                    <li>👩 你将要扮演𣿅子，讨好𣿅国夫人。𣿅国夫人会告诉你需要买什么，以及预算多少</li>
+                    <li>⏰ 要求只会显示10秒，之后要靠记忆</li>
+                    <li>🛒 在超市找到符合要求的商品（可以不同品牌）</li>
+                    <li>💰 总花费要最接近但不超过预算</li>
+                    <li>🎯 买错品类或超预算，𣿅国夫人会生气</li>
+                    <li>⌨️ 按 A/D 键左右移动，浏览商品</li>
+                    <li>➕ 点击 + 按钮添加商品，点击 - 按钮移除</li>
+                    <li>🏆 登录用户若购物成功可获得10𣿅元奖励，并可上传成绩到排行榜</li>
+                </ul>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn btn-primary start-btn" id="startGameBtn">
+                    <i class="fas fa-play"></i> 开始购物
+                </button>
+                <button class="btn btn-primary" id="showLeaderboardStartBtn">
+                    <i class="fas fa-chart-bar"></i> 查看排行榜
+                </button>
+                <button class="btn btn-primary" id="showRecordsStartBtn">
+                    <i class="fas fa-history"></i> 游玩记录
+                </button>
+            </div>
+        </div>
+
+        <!-- 𣿅国夫人弹窗 -->
+        <div id="wifeModal" class="wife-modal">
+            <div class="wife-avatar">
+                <i class="fas fa-female"></i>
+            </div>
+            <div class="wife-speech">
+                <i class="fas fa-quote-left"></i> 老公，去超市帮我买点东西~
+            </div>
+            <div id="wifeRequirement" class="wife-requirement">
+                买一瓶饮料，预算 10 𣿅元
+            </div>
+            <div class="countdown-timer" id="countdownTimer">10</div>
+            <button class="btn btn-primary" id="gotoSupermarketBtn" style="display: none;">去购物</button>
+        </div>
+
+        <!-- 超市界面 -->
+        <div id="supermarket" class="supermarket">
+            <!-- 购物车状态栏 -->
+            <div class="cart-status">
+                <div class="cart-info">
+                    <div class="cart-total" id="cartTotal">总价: 0 𣿅元</div>
+                    <div class="budget-info" id="budgetInfo">预算: -- 𣿅元</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="shopping-timer" id="shoppingTimer">
+                        <i class="far fa-clock"></i> <span id="timerDisplay">0.0</span>秒
+                    </div>
+                    <span id="cartCount">0</span> 件商品
+                </div>
+            </div>
+			<br>
+            <!-- 玩家 -->
+            <div class="player-container">
+                <div class="player" id="player" style="left: 0%;">
+                    <div class="player-avatar">
+                        <i class="fas fa-male"></i>
+                    </div>
+                    <div class="player-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="player-items" id="playerItems">0</div>
+                </div>
+            </div>
+
+            <!-- 商品横向滚动区域 -->
+            <div class="products-scroll-container" id="productsScrollContainer">
+                <div class="products-track" id="productsTrack"></div>
+            </div>
+            
+            <!-- 轨道位置指示器 -->
+            <div class="shelf-indicator" id="shelfIndicator"></div>
+
+            <!-- 收银台 -->
+            <div class="checkout-area">
+                <button class="checkout-btn btn btn-primary" id="checkoutBtn">
+                    <i class="fas fa-cash-register"></i> 结账
+                </button>
+            </div>
+        </div>
+
+        <!-- 购物结果弹窗 -->
+        <div id="resultModal" class="result-modal">
+            <button class="close-modal-btn" id="closeResultBtn">&times;</button>
+            <div class="result-icon" id="resultIcon">
+                <i class="fas fa-smile"></i>
+            </div>
+            <div class="result-title" id="resultTitle">购物成功</div>
+            <div class="result-details">
+                <div class="result-row">
+                    <span>实际花费</span>
+                    <span id="resultSpent">0 𣿅元</span>
+                </div>
+                <div class="result-row">
+                    <span>𣿅国夫人预算</span>
+                    <span id="resultBudget">0 𣿅元</span>
+                </div>
+                <div class="result-row">
+                    <span>预算差额</span>
+                    <span id="resultDiff">0 𣿅元</span>
+                </div>
+                <div class="result-row">
+                    <span>购物用时</span>
+                    <span id="resultTime">0.0 秒</span>
+                </div>
+                <div class="result-row">
+                    <span>购买商品</span>
+                    <span id="resultItems">0 件</span>
+                </div>
+            </div>
+            
+            <div id="recordInfo" class="result-user-number" style="display: none;">
+                本次游玩已记录！您的参与序数：<span id="userNumberDisplay"></span>
+            </div>
+            
+            <div class="result-message" id="resultMessage">
+                𣿅国夫人很开心，夸你会过日子！
+            </div>
+            
+            <!-- 上传表单（仅成功时显示） -->
+            <div id="uploadForm" class="upload-form" style="display: none;">
+                <h3><i class="fas fa-upload"></i> 上传成绩到排行榜</h3>
+                <div id="usernameInput"></div>
+                <button class="btn btn-primary" id="uploadScoreBtn" style="width: 100%;">上传成绩</button>
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                    排行榜按预算差额排序，越接近预算排名越靠前
+                </p>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn btn-primary end-btn" id="endGameBtn">
+                    <i class="fas fa-redo"></i> 再玩一局
+                </button>
+                <button class="btn btn-primary" id="viewLeaderboardBtn">
+                    <i class="fas fa-chart-bar"></i> 查看排行榜
+                </button>
+            </div>
+        </div>
+
+        <!-- 购物车抽屉 -->
+        <div class="cart-drawer" id="cartDrawer">
+            <div class="cart-drawer-header" id="cartDrawerHeader">
+                <span><i class="fas fa-shopping-cart"></i> 购物车</span>
+                <span id="cartDrawerTotal">0 𣿅元</span>
+            </div>
+            <div class="cart-items" id="cartItems"></div>
+        </div>
+
+        <!-- 控制提示 -->
+        <div class="control-hint">
+            <i class="fas fa-keyboard"></i>
+            <span class="key">A</span> 向左 <span class="key">D</span> 向右
+        </div>
+    </div>
+
+    <!-- 排行榜弹窗 - 修正初始位置 -->
+    <div id="leaderboardModal" class="leaderboard-modal">
+        <button class="close-modal-btn" id="closeLeaderboardBtn">&times;</button>
+        <h2><i class="fas fa-chart-bar"></i> 购物排行榜</h2>
+        <p>按预算差额排序（越接近预算排名越靠前），仅显示成功记录</p>
+        <div id="leaderboardContent">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>用户昵称</th>
+                        <th>预算差额</th>
+                        <th>用时</th>
+                        <th>上传时间</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <tr><td colspan="5" style="text-align: center;">加载中......</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="button-group">
+            <button class="btn btn-primary" id="backToStartFromLeaderboard">返回首页</button>
+        </div>
+    </div>
+
+    <!-- 游玩记录弹窗 - 修正初始位置 -->
+    <div id="recordsModal" class="records-modal">
+        <button class="close-modal-btn" id="closeRecordsBtn">&times;</button>
+        <h2><i class="fas fa-history"></i> 游玩记录</h2>
+        <p>最近100次记录，按时间倒序排列</p>
+        <div id="recordsContent">
+            <table class="records-table">
+                <thead>
+                    <tr>
+                        <th>序数</th>
+                        <th>用户昵称</th>
+                        <th>结果</th>
+                        <th>预算差额</th>
+                        <th>用时</th>
+                        <th>上传时间</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsBody">
+                    <tr><td colspan="6" style="text-align: center;">加载中......</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="button-group">
+            <button class="btn btn-primary" id="backToStartFromRecords">返回首页</button>
+        </div>
+    </div>
+
+    <!-- 登录模态框 -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>登录</h2>
+                <button class="close-btn" id="closeLoginBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 注意：给整个表单区域包一个 form 标签，并添加 data-turnstile 属性 -->
+                <form id="loginForm" data-turnstile="#loginTurnstileContainer">
+                    <div class="form-group">
+                        <label for="idNumber">𣿅国身份证号</label>
+                        <input type="text" id="idNumber" placeholder="请输入𣿅国身份证号">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" id="password" placeholder="请输入密码">
+                    </div>
+                    <div style="text-align: left; margin: 10px 0;">
+                        <a href="https://dornhub.eu.org/forgot-password.html" style="color: var(--primary-color); text-decoration: none; font-size: 13px;">
+                            <i class="fas fa-key"></i> 忘记密码？！
+                        </a>
+                    </div>
+                    <div style="text-align: left; margin: 10px 0;">
+                        <a href="https://dornhub.eu.org/gov-services/id/index.html" style="color: var(--primary-color); text-decoration: none; font-size: 13px;">
+                            <i class="fas fa-user-plus"></i> 还没有账号？点此注册
+                        </a>
+                    </div>
+                    
+                    <!-- Turnstile 容器 - id 与 data-turnstile 中的选择器对应 -->
+                    <div id="loginTurnstileContainer"></div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">登录</button>
+                        <button type="button" class="btn btn-secondary" id="cancelLoginBtn">取消</button>
+                    </div>
+                    <div id="loginMessage" style="margin-top: 15px; text-align: center;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    
+    <script>
+        // ==================== 游戏状态 ====================
+        let gameState = {
+            currentRequest: null,
+            cart: [],
+            scrollPosition: 0,
+            maxScroll: 0,
+            cardWidth: 220,
+            totalCards: 0,
+            countdown: 10,
+            countdownInterval: null,
+            shoppingTimer: null,
+            shoppingStartTime: null,
+            shoppingElapsed: 0,
+            isGameActive: false,
+            currentTheme: localStorage.getItem('theme') || 'auto',
+            currentColor: localStorage.getItem('primaryColor') || '#16DA49',
+            currentUserNumber: null,
+            lastRecordId: null
+        };
+
+        // ==================== 用户登录状态 ====================
+        let isLoggedIn = false;
+        let currentUser = null;
+
+        // ==================== DOM 元素 ====================
+        const startScreen = document.getElementById('startScreen');
+        const wifeModal = document.getElementById('wifeModal');
+        const supermarket = document.getElementById('supermarket');
+        const resultModal = document.getElementById('resultModal');
+        const leaderboardModal = document.getElementById('leaderboardModal');
+        const recordsModal = document.getElementById('recordsModal');
+        const loginModal = document.getElementById('loginModal');
+        
+        const startGameBtn = document.getElementById('startGameBtn');
+        const gotoSupermarketBtn = document.getElementById('gotoSupermarketBtn');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        const endGameBtn = document.getElementById('endGameBtn');
+        const closeResultBtn = document.getElementById('closeResultBtn');
+        const wifeRequirement = document.getElementById('wifeRequirement');
+        const countdownTimer = document.getElementById('countdownTimer');
+        const cartTotal = document.getElementById('cartTotal');
+        const budgetInfo = document.getElementById('budgetInfo');
+        const cartCount = document.getElementById('cartCount');
+        const playerItems = document.getElementById('playerItems');
+        const productsTrack = document.getElementById('productsTrack');
+        const productsScrollContainer = document.getElementById('productsScrollContainer');
+        const shelfIndicator = document.getElementById('shelfIndicator');
+        const cartDrawer = document.getElementById('cartDrawer');
+        const cartDrawerHeader = document.getElementById('cartDrawerHeader');
+        const cartItems = document.getElementById('cartItems');
+        const cartDrawerTotal = document.getElementById('cartDrawerTotal');
+        const player = document.getElementById('player');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const resultTime = document.getElementById('resultTime');
+        const resultSpent = document.getElementById('resultSpent');
+        const resultBudget = document.getElementById('resultBudget');
+        const resultDiff = document.getElementById('resultDiff');
+        const resultItems = document.getElementById('resultItems');
+        const resultIcon = document.getElementById('resultIcon');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultMessage = document.getElementById('resultMessage');
+        const recordInfo = document.getElementById('recordInfo');
+        const userNumberDisplay = document.getElementById('userNumberDisplay');
+        const uploadForm = document.getElementById('uploadForm');
+        const usernameInput = document.getElementById('usernameInput');
+        const uploadScoreBtn = document.getElementById('uploadScoreBtn');
+        
+        // 用户相关 - 参考index.html
+        const loginBtn = document.getElementById('loginBtn');
+        const loginText = document.getElementById('loginText');
+        const dropdownArrow = document.getElementById('dropdownArrow');
+        const userDropdown = document.getElementById('userDropdown');
+        const userNicknameDisplay = document.getElementById('userNicknameDisplay');
+        const userFundsDisplay = document.getElementById('userFundsDisplay');
+        const fundsAmount = document.getElementById('fundsAmount');
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        const closeLoginBtn = document.getElementById('closeLoginBtn');
+        const cancelLoginBtn = document.getElementById('cancelLoginBtn');
+        const idNumberInput = document.getElementById('idNumber');
+        const passwordInput = document.getElementById('password');
+        const loginMessage = document.getElementById('loginMessage');
+        
+        // 排行榜和记录按钮
+        const showLeaderboardStartBtn = document.getElementById('showLeaderboardStartBtn');
+        const showRecordsStartBtn = document.getElementById('showRecordsStartBtn');
+        const viewLeaderboardBtn = document.getElementById('viewLeaderboardBtn');
+        const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
+        const closeRecordsBtn = document.getElementById('closeRecordsBtn');
+        const backToStartFromLeaderboard = document.getElementById('backToStartFromLeaderboard');
+        const backToStartFromRecords = document.getElementById('backToStartFromRecords');
+        const leaderboardBody = document.getElementById('leaderboardBody');
+        const recordsBody = document.getElementById('recordsBody');
+
+        // ==================== 工具函数 ====================
+        function formatPrice(price) {
+            return price.toFixed(2) + ' 𣿅元';
+        }
+
+        function formatTime(seconds) {
+            return seconds.toFixed(1) + ' 秒';
+        }
+
+        // 应用主题
+        function applyTheme(theme) {
+            if (theme === 'auto') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+        }
+
+        // 应用颜色
+        function applyColor(color) {
+            document.documentElement.style.setProperty('--primary-color', color);
+            const rgb = parseInt(color.slice(1), 16);
+            const r = (rgb >> 16) & 0xff;
+            const g = (rgb >> 8) & 0xff;
+            const b = (rgb >> 0) & 0xff;
+            document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
+        }
+
+        // ==================== 用户登录功能 - 参考index.html ====================
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            const savedLoginStatus = localStorage.getItem('isLoggedIn');
+            
+            if (savedUser && savedLoginStatus === 'true') {
+                currentUser = JSON.parse(savedUser);
+                isLoggedIn = true;
+                updateLoginDisplay();
+            }
+        }
+
+        function updateFundsDisplay() {
+            if (isLoggedIn && currentUser && currentUser.funds !== undefined) {
+                fundsAmount.textContent = Number(currentUser.funds).toFixed(2);
+            }
+        }
+
+        function updateLoginDisplay() {
+            if (isLoggedIn && currentUser) {
+                loginText.textContent = currentUser.nickname || currentUser.name;
+                userNicknameDisplay.textContent = currentUser.nickname || currentUser.name;
+                updateFundsDisplay();
+                userFundsDisplay.style.display = 'flex';
+            } else {
+                loginText.textContent = '登录/注册';
+                userDropdown.classList.remove('active');
+                dropdownArrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function initUserMenu() {
+            loginBtn.addEventListener('click', (e) => {
+                if (isLoggedIn) {
+                    userDropdown.classList.toggle('active');
+                    dropdownArrow.style.transform = userDropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+                } else {
+                    showLoginModal();
+                }
+                e.stopPropagation();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!loginBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                    dropdownArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+
+            logoutBtn.addEventListener('click', () => {
+                isLoggedIn = false;
+                currentUser = null;
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('currentUser');
+                updateLoginDisplay();
+                userDropdown.classList.remove('active');
+                dropdownArrow.style.transform = 'rotate(0deg)';
+                
+                if (typeof UI !== 'undefined' && UI.notify) {
+                    UI.notify('已退出登录', 'info');
+                }
+            });
+        }
+
+        // 显示登录模态框
+        function showLoginModal() {
+            loginModal.style.display = 'flex';
+            idNumberInput.value = '';
+            passwordInput.value = '';
+            loginMessage.textContent = '';
+        }
+
+        // 关闭登录模态框并重置表单
+        function closeLoginModal() {
+            loginModal.style.display = 'none';
+            idNumberInput.value = '';
+            passwordInput.value = '';
+            loginMessage.textContent = '';
+            const container = document.getElementById('loginTurnstileContainer');
+            if (typeof turnstile !== 'undefined' && container) {
+                turnstile.reset(container);
+            }
+        }
+
+        // ==================== 游戏核心逻辑 ====================
+        
+        // 生成随机要求
+        function generateRandomRequest() {
+            const allTags = new Set();
+            items.forEach(item => {
+                item.tags.forEach(tag => allTags.add(tag));
+            });
+            const tagsArray = Array.from(allTags);
+            
+            const itemCount = Math.floor(Math.random() * 3) + 3;
+            
+            const requestItems = [];
+            const usedTags = new Set();
+            
+            for (let i = 0; i < itemCount; i++) {
+                let availableTags = tagsArray.filter(tag => !usedTags.has(tag));
+                if (availableTags.length === 0) {
+                    availableTags = tagsArray;
+                }
+                
+                const randomTag = availableTags[Math.floor(Math.random() * availableTags.length)];
+                usedTags.add(randomTag);
+                
+                const quantity = Math.floor(Math.random() * 3) + 1;
+                
+                requestItems.push({
+                    tags: [randomTag],
+                    quantity: quantity,
+                    tagDisplay: randomTag
+                });
+            }
+            
+            let minTotal = 0;
+            let maxItemPrice = 0;
+            
+            requestItems.forEach(req => {
+                const validItems = items.filter(item => 
+                    req.tags.some(tag => item.tags.includes(tag))
+                );
+                
+                if (validItems.length > 0) {
+                    const minPrice = Math.min(...validItems.map(item => item.price));
+                    const maxPrice = Math.max(...validItems.map(item => item.price));
+                    minTotal += minPrice * req.quantity;
+                    maxItemPrice = Math.max(maxItemPrice, maxPrice);
+                }
+            });
+            
+            let buffer = 0;
+            
+            if (maxItemPrice >= 1000000) {
+                buffer = 500000 + Math.random() * 1000000;
+            } else if (maxItemPrice >= 100000) {
+                buffer = 50000 + Math.random() * 100000;
+            } else if (maxItemPrice >= 10000) {
+                buffer = 5000 + Math.random() * 10000;
+            } else if (maxItemPrice >= 1000) {
+                buffer = 500 + Math.random() * 1000;
+            } else if (maxItemPrice >= 100) {
+                buffer = 50 + Math.random() * 100;
+            } else {
+                buffer = 3 + Math.random() * 7;
+            }
+            
+            const budget = Math.round((minTotal + buffer) * 100) / 100;
+            
+            const displayParts = [];
+            requestItems.forEach(req => {
+                let text = req.tagDisplay;
+                if (req.quantity > 1) {
+                    text += ' x' + req.quantity;
+                }
+                displayParts.push(text);
+            });
+            
+            let fullDescription = '';
+            if (displayParts.length === 1) {
+                fullDescription = displayParts[0];
+            } else if (displayParts.length === 2) {
+                fullDescription = displayParts[0] + ' 和 ' + displayParts[1];
+            } else {
+                fullDescription = displayParts.slice(0, -1).join('、') + ' 和 ' + displayParts.slice(-1);
+            }
+            
+            return {
+                items: requestItems,
+                displayParts: displayParts,
+                budget: budget,
+                fullDescription: `买 ${fullDescription}，预算 ${budget} 𣿅元`
+            };
+        }
+
+        function getItemCount(productId) {
+            return gameState.cart.filter(item => item.id === productId).length;
+        }
+
+        function renderProductsTrack() {
+            let html = '';
+            
+            items.forEach(item => {
+                const count = getItemCount(item.id);
+                html += `
+                    <div class="product-card" data-id="${item.id}" data-tags='${JSON.stringify(item.tags)}'>
+                        <div class="product-emoji">${item.emoji}</div>
+                        <div class="product-name">${item.name}</div>
+                        <div class="product-price">${item.price.toFixed(2)}</div>
+                        <div class="quantity-controls">
+                            <button class="qty-btn minus" data-id="${item.id}" ${count === 0 ? 'disabled' : ''}>-</button>
+                            <span class="qty-display">${count}</span>
+                            <button class="qty-btn plus" data-id="${item.id}">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            productsTrack.innerHTML = html;
+            
+            gameState.totalCards = items.length;
+            const containerWidth = productsScrollContainer.offsetWidth;
+            const trackWidth = gameState.totalCards * gameState.cardWidth;
+            gameState.maxScroll = Math.max(0, trackWidth - containerWidth);
+            
+            updateShelfIndicator();
+            
+            document.querySelectorAll('.qty-btn.plus').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const productId = parseInt(btn.dataset.id);
+                    addToCart(productId);
+                });
+            });
+            
+            document.querySelectorAll('.qty-btn.minus').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const productId = parseInt(btn.dataset.id);
+                    removeFromCart(productId);
+                });
+            });
+        }
+
+        function updateScrollPosition() {
+            const scrollX = (gameState.scrollPosition / 100) * gameState.maxScroll;
+            productsTrack.style.transform = `translateX(-${scrollX}px)`;
+            
+            const playerPercent = (gameState.scrollPosition / 100) * 100;
+            player.style.left = playerPercent + '%';
+            
+            updateShelfIndicator();
+        }
+
+        function updateShelfIndicator() {
+            const totalDots = 10;
+            const activeDot = Math.floor((gameState.scrollPosition / 100) * (totalDots - 1));
+            
+            let dotsHtml = '';
+            for (let i = 0; i < totalDots; i++) {
+                dotsHtml += `<div class="shelf-dot ${i === activeDot ? 'active' : ''}"></div>`;
+            }
+            shelfIndicator.innerHTML = dotsHtml;
+        }
+
+        function addToCart(productId) {
+            const product = items.find(item => item.id === productId);
+            if (!product) return;
+            
+            gameState.cart.push(product);
+            updateCartUI();
+            
+            const card = document.querySelector(`.product-card[data-id="${productId}"]`);
+            if (card) {
+                const count = getItemCount(productId);
+                const minusBtn = card.querySelector('.qty-btn.minus');
+                const display = card.querySelector('.qty-display');
+                
+                display.textContent = count;
+                minusBtn.disabled = count === 0;
+            }
+        }
+
+        function removeFromCart(productId) {
+            const index = gameState.cart.findIndex(item => item.id === productId);
+            if (index >= 0) {
+                gameState.cart.splice(index, 1);
+                updateCartUI();
+                
+                const card = document.querySelector(`.product-card[data-id="${productId}"]`);
+                if (card) {
+                    const count = getItemCount(productId);
+                    const minusBtn = card.querySelector('.qty-btn.minus');
+                    const display = card.querySelector('.qty-display');
+                    
+                    display.textContent = count;
+                    minusBtn.disabled = count === 0;
+                }
+            }
+        }
+
+        function updateCartUI() {
+            const total = gameState.cart.reduce((sum, item) => sum + item.price, 0);
+            cartTotal.textContent = `总价: ${formatPrice(total)}`;
+            cartCount.textContent = gameState.cart.length;
+            playerItems.textContent = gameState.cart.length;
+            
+            if (gameState.cart.length > 0) {
+                cartDrawer.classList.add('active');
+                
+                const cartStats = {};
+                gameState.cart.forEach(item => {
+                    if (!cartStats[item.id]) {
+                        cartStats[item.id] = {
+                            ...item,
+                            count: 0
+                        };
+                    }
+                    cartStats[item.id].count++;
+                });
+                
+                let itemsHtml = '';
+                Object.values(cartStats).forEach(item => {
+                    itemsHtml += `
+                        <div class="cart-item">
+                            ${item.emoji} ${item.name} x${item.count} ${item.price.toFixed(2)}𣿅
+                            <span class="cart-item-remove" data-id="${item.id}">
+                                <i class="fas fa-times-circle"></i>
+                            </span>
+                        </div>
+                    `;
+                });
+                cartItems.innerHTML = itemsHtml;
+                cartDrawerTotal.textContent = formatPrice(total);
+                
+                document.querySelectorAll('.cart-item-remove').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.dataset.id);
+                        while (gameState.cart.findIndex(item => item.id === id) >= 0) {
+                            const index = gameState.cart.findIndex(item => item.id === id);
+                            gameState.cart.splice(index, 1);
+                        }
+                        updateCartUI();
+                        renderProductsTrack();
+                    });
+                });
+            } else {
+                cartDrawer.classList.remove('active');
+                cartItems.innerHTML = '';
+                cartDrawerTotal.textContent = formatPrice(0);
+            }
+            
+            if (gameState.currentRequest && total > gameState.currentRequest.budget) {
+                budgetInfo.classList.add('warning');
+            } else {
+                budgetInfo.classList.remove('warning');
+            }
+        }
+
+        function validateCart() {
+            if (!gameState.currentRequest) return { valid: false, reason: '无购物要求' };
+            
+            const request = gameState.currentRequest;
+            const cart = [...gameState.cart];
+            
+            const requirements = request.items.map(item => ({
+                tags: item.tags || [],
+                quantity: item.quantity
+            }));
+            
+            for (const cartItem of cart) {
+                for (let i = 0; i < requirements.length; i++) {
+                    const req = requirements[i];
+                    
+                    const hasTag = req.tags.some(tag => cartItem.tags.includes(tag));
+                    if (!hasTag) continue;
+                    
+                    req.quantity--;
+                    if (req.quantity === 0) {
+                        requirements.splice(i, 1);
+                    }
+                    break;
+                }
+            }
+            
+            if (requirements.length > 0) {
+                const missing = requirements.map(r => 
+                    `${r.tags.join('/')} x${r.quantity}`
+                ).join(', ');
+                return { valid: false, reason: `缺少: ${missing}` };
+            }
+            
+            return { valid: true, reason: '' };
+        }
+
+        // ==================== 新增功能 ====================
+
+        async function saveShoppingRecord() {
+            const total = gameState.cart.reduce((sum, item) => sum + item.price, 0);
+            const budget = gameState.currentRequest.budget;
+            const budgetDiff = budget - total;
+            const validation = validateCart();
+            const success = validation.valid && total <= budget ? 1 : 0;
+            
+            const username = isLoggedIn && currentUser ? (currentUser.nickname || currentUser.name) : null;
+            
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/save_shopping_record.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        success: success,
+                        budget_diff: budgetDiff,
+                        total_spent: total,
+                        budget: budget,
+                        items_count: gameState.cart.length,
+                        time_used: gameState.shoppingElapsed,
+                        username: username
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    gameState.currentUserNumber = data.user_number;
+                    userNumberDisplay.textContent = data.user_number;
+                    recordInfo.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('保存记录失败:', error);
+            }
+        }
+
+        async function addShoppingReward() {
+            if (!isLoggedIn || !currentUser) return;
+            
+            const total = gameState.cart.reduce((sum, item) => sum + item.price, 0);
+            const budget = gameState.currentRequest.budget;
+            
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/add_shopping_reward.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id_number: currentUser.id_number,
+                        reward_amount: 10,
+                        total_spent: total,
+                        budget: budget,
+                        items_count: gameState.cart.length,
+                        time_used: gameState.shoppingElapsed
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (typeof UI !== 'undefined' && UI.notify) {
+                        UI.notify(`获得 10𣿅元奖励！`, 'success');
+                    }
+                    
+                    if (data.updated_user) {
+                        currentUser = data.updated_user;
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        updateLoginDisplay();
+                    }
+                }
+            } catch (error) {
+                console.error('添加奖励失败:', error);
+            }
+        }
+
+        async function loadLeaderboard() {
+            leaderboardBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">加载中...</td></tr>';
+            
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/get_shopping_leaderboard.php');
+                const data = await response.json();
+                
+                if (data.error) {
+                    leaderboardBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">加载失败: ${data.error}</td></tr>`;
+                    return;
+                }
+                
+                if (data.length === 0) {
+                    leaderboardBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">暂无排行榜数据</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                data.forEach((entry, index) => {
+                    let rankClass = '';
+                    if (index === 0) rankClass = 'rank-1';
+                    else if (index === 1) rankClass = 'rank-2';
+                    else if (index === 2) rankClass = 'rank-3';
+                    
+                    const budgetDiff = parseFloat(entry.budget_diff) || 0;
+                    const timeUsed = parseFloat(entry.time_used) || 0;
+                    
+                    html += `
+                        <tr class="${rankClass}">
+                            <td>${index + 1}</td>
+                            <td>${entry.username}</td>
+                            <td>${budgetDiff.toFixed(2)} 𣿅元</td>
+                            <td>${timeUsed.toFixed(1)} 秒</td>
+                            <td>${entry.created_at}</td>
+                        </tr>
+                    `;
+                });
+                
+                leaderboardBody.innerHTML = html;
+                
+            } catch (error) {
+                console.error('加载排行榜失败:', error);
+                leaderboardBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">加载失败，请稍后重试</td></tr>';
+            }
+        }
+
+        async function loadRecords() {
+            recordsBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">加载中...</td></tr>';
+            
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/get_shopping_records.php');
+                const data = await response.json();
+                
+                if (data.error) {
+                    recordsBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">加载失败: ${data.error}</td></tr>`;
+                    return;
+                }
+                
+                if (data.length === 0) {
+                    recordsBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">暂无游玩记录</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                data.forEach(record => {
+                    const successBadge = record.success ? 
+                        '<span class="success-badge">✅ 成功</span>' : 
+                        '<span class="fail-badge">❌ 失败</span>';
+                    
+                    const budgetDiff = parseFloat(record.budget_diff) || 0;
+                    const timeUsed = parseFloat(record.time_used) || 0;
+                    
+                    html += `
+                        <tr>
+                            <td>${record.user_number}</td>
+                            <td>${record.username || '-'}</td>
+                            <td>${successBadge}</td>
+                            <td>${budgetDiff.toFixed(2)} 𣿅元</td>
+                            <td>${timeUsed.toFixed(1)} 秒</td>
+                            <td>${record.created_at}</td>
+                        </tr>
+                    `;
+                });
+                
+                recordsBody.innerHTML = html;
+                
+            } catch (error) {
+                console.error('加载记录失败:', error);
+                recordsBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">加载失败，请稍后重试</td></tr>';
+            }
+        }
+
+        async function uploadScore() {
+            let username = '';
+            
+            if (isLoggedIn && currentUser) {
+                username = currentUser.nickname || currentUser.name;
+            } else {
+                const tempInput = document.getElementById('tempUsername');
+                if (!tempInput) {
+                    usernameInput.innerHTML = `
+                        <input type="text" id="tempUsername" placeholder="请输入您的昵称" maxlength="20">
+                    `;
+                    return;
+                }
+                
+                const tempUsername = tempInput.value.trim();
+                if (!tempUsername) {
+                    if (typeof UI !== 'undefined' && UI.notify) {
+                        UI.notify('请输入昵称', 'error');
+                    }
+                    return;
+                }
+                username = tempUsername;
+            }
+            
+            const total = gameState.cart.reduce((sum, item) => sum + item.price, 0);
+            const budget = gameState.currentRequest.budget;
+            const budgetDiff = budget - total;
+            const validation = validateCart();
+            const success = validation.valid && total <= budget ? 1 : 0;
+            
+            if (success !== 1) {
+                if (typeof UI !== 'undefined' && UI.notify) {
+                    UI.notify('只有成功购物才能上传排行榜', 'error');
+                }
+                return;
+            }
+            
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/save_shopping_score.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        budget_diff: budgetDiff,
+                        total_spent: total,
+                        budget: budget,
+                        items_count: gameState.cart.length,
+                        time_used: gameState.shoppingElapsed
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (typeof UI !== 'undefined' && UI.notify) {
+                        UI.notify('成绩上传成功！', 'success');
+                    }
+                    uploadForm.style.display = 'none';
+                } else {
+                    if (typeof UI !== 'undefined' && UI.notify) {
+                        UI.notify('上传失败: ' + data.message, 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('上传失败:', error);
+                if (typeof UI !== 'undefined' && UI.notify) {
+                    UI.notify('网络错误，请稍后重试', 'error');
+                }
+            }
+        }
+
+        // ==================== 游戏流程控制 ====================
+
+        function startNewGame() {
+            gameState.currentRequest = generateRandomRequest();
+            gameState.cart = [];
+            gameState.scrollPosition = 0;
+            gameState.countdown = 10;
+            gameState.currentUserNumber = null;
+            
+            wifeRequirement.textContent = gameState.currentRequest.fullDescription;
+            wifeRequirement.style.display = 'block';
+            budgetInfo.textContent = `预算: ${formatPrice(gameState.currentRequest.budget)}`;
+            
+            startScreen.style.display = 'none';
+            wifeModal.classList.add('active');
+            gotoSupermarketBtn.style.display = 'none';
+            countdownTimer.style.display = 'block';
+            countdownTimer.textContent = '10';
+            
+            if (gameState.countdownInterval) {
+                clearInterval(gameState.countdownInterval);
+            }
+            
+            gameState.countdownInterval = setInterval(() => {
+                gameState.countdown--;
+                countdownTimer.textContent = gameState.countdown;
+                
+                if (gameState.countdown <= 0) {
+                    clearInterval(gameState.countdownInterval);
+                    countdownTimer.style.display = 'none';
+                    gotoSupermarketBtn.style.display = 'block';
+                    wifeRequirement.style.display = 'none';
+                }
+            }, 1000);
+            
+            updateCartUI();
+        }
+
+        function enterSupermarket() {
+            wifeModal.classList.remove('active');
+            supermarket.classList.add('active');
+            gameState.isGameActive = true;
+            
+            gameState.shoppingStartTime = Date.now();
+            gameState.shoppingElapsed = 0;
+            
+            if (gameState.shoppingTimer) {
+                clearInterval(gameState.shoppingTimer);
+            }
+            
+            gameState.shoppingTimer = setInterval(() => {
+                if (gameState.shoppingStartTime) {
+                    gameState.shoppingElapsed = (Date.now() - gameState.shoppingStartTime) / 1000;
+                    timerDisplay.textContent = gameState.shoppingElapsed.toFixed(1);
+                }
+            }, 100);
+            
+            setTimeout(() => {
+                renderProductsTrack();
+                updateScrollPosition();
+            }, 50);
+        }
+
+        async function checkout() {
+            if (!gameState.isGameActive) return;
+            
+            const total = gameState.cart.reduce((sum, item) => sum + item.price, 0);
+            const budget = gameState.currentRequest.budget;
+            const budgetDiff = budget - total;
+            const validation = validateCart();
+            
+            const isSuccess = validation.valid && total <= budget;
+            
+            resultSpent.textContent = formatPrice(total);
+            resultBudget.textContent = formatPrice(budget);
+            resultDiff.textContent = formatPrice(Math.abs(budgetDiff));
+            resultTime.textContent = formatTime(gameState.shoppingElapsed);
+            resultItems.textContent = gameState.cart.length + ' 件';
+            
+            if (isSuccess) {
+                resultIcon.innerHTML = '<i class="fas fa-smile" style="color: #16DA49;"></i>';
+                resultTitle.textContent = '购物成功！';
+                resultTitle.style.color = '#16DA49';
+                resultMessage.className = 'result-message success';
+                resultMessage.textContent = '𣿅国夫人很满意，夸你有品位会过日子！';
+                
+                const failReason = document.getElementById('failReason');
+                if (failReason) {
+                    failReason.style.display = 'none';
+                }
+                
+                uploadForm.style.display = 'block';
+                
+                if (isLoggedIn && currentUser) {
+                    usernameInput.innerHTML = `
+                        <p>将使用您的账号昵称: <strong>${currentUser.nickname || currentUser.name}</strong></p>
+                    `;
+                } else {
+                    usernameInput.innerHTML = `
+                        <input type="text" id="tempUsername" placeholder="请输入您的昵称" maxlength="20">
+                    `;
+                }
+            } else {
+                resultIcon.innerHTML = '<i class="fas fa-frown" style="color: #d13438;"></i>';
+                resultTitle.textContent = '购物失败';
+                resultTitle.style.color = '#d13438';
+                resultMessage.className = 'result-message fail';
+                resultMessage.textContent = '𣿅国夫人很不高兴，认为你很晦气！';
+                
+                let failReason = document.getElementById('failReason');
+                if (!failReason) {
+                    failReason = document.createElement('div');
+                    failReason.id = 'failReason';
+                    failReason.className = 'result-message fail';
+                    failReason.style.marginTop = '10px';
+                    failReason.style.backgroundColor = '#fff3cd';
+                    failReason.style.color = '#856404';
+                    resultMessage.parentNode.insertBefore(failReason, resultMessage.nextSibling);
+                }
+                
+                if (total > budget) {
+                    failReason.textContent = `💰 超预算 ${formatPrice(total - budget)}！`;
+                } else if (!validation.valid) {
+                    failReason.textContent = `🛒 ${validation.reason}`;
+                } else {
+                    failReason.textContent = '❌ 购物失败，原因未知';
+                }
+                failReason.style.display = 'block';
+                
+                uploadForm.style.display = 'none';
+            }
+            
+            if (gameState.shoppingTimer) {
+                clearInterval(gameState.shoppingTimer);
+                gameState.shoppingTimer = null;
+            }
+            
+            await saveShoppingRecord();
+            
+            if (isSuccess && isLoggedIn && currentUser) {
+                await addShoppingReward();
+            }
+            
+            resultModal.classList.add('active');
+        }
+        
+        function endGame() {
+            resultModal.classList.remove('active');
+            supermarket.classList.remove('active');
+            startScreen.style.display = 'block';
+            gameState.isGameActive = false;
+            
+            const failReason = document.getElementById('failReason');
+            if (failReason) {
+                failReason.style.display = 'none';
+            }
+            
+            gameState.cart = [];
+            updateCartUI();
+            
+            if (gameState.countdownInterval) {
+                clearInterval(gameState.countdownInterval);
+            }
+            
+            if (gameState.shoppingTimer) {
+                clearInterval(gameState.shoppingTimer);
+                gameState.shoppingTimer = null;
+            }
+            
+            timerDisplay.textContent = '0.0';
+        }
+
+        
+        function showLeaderboard() {
+            loadLeaderboard();
+            leaderboardModal.classList.add('active');
+        }
+
+        function showRecords() {
+            loadRecords();
+            recordsModal.classList.add('active');
+        }
+
+        // ==================== 事件监听 ====================
+        
+        document.addEventListener('keydown', (e) => {
+            if (!gameState.isGameActive) return;
+            
+            if (e.key === 'a' || e.key === 'A') {
+                gameState.scrollPosition = Math.max(0, gameState.scrollPosition - 0.5);
+                updateScrollPosition();
+                e.preventDefault();
+            } else if (e.key === 'd' || e.key === 'D') {
+                gameState.scrollPosition = Math.min(100, gameState.scrollPosition + 0.5);
+                updateScrollPosition();
+                e.preventDefault();
+            }
+        });
+
+        startGameBtn.addEventListener('click', startNewGame);
+        gotoSupermarketBtn.addEventListener('click', enterSupermarket);
+        checkoutBtn.addEventListener('click', checkout);
+        endGameBtn.addEventListener('click', endGame);
+        
+        closeResultBtn.addEventListener('click', () => {
+            resultModal.classList.remove('active');
+        });
+
+        cartDrawerHeader.addEventListener('click', () => {
+            cartDrawer.classList.toggle('active');
+        });
+
+        window.addEventListener('resize', () => {
+            if (gameState.isGameActive) {
+                const containerWidth = productsScrollContainer.offsetWidth;
+                const trackWidth = gameState.totalCards * gameState.cardWidth;
+                gameState.maxScroll = Math.max(0, trackWidth - containerWidth);
+                updateScrollPosition();
+            }
+        });
+		
+		// ==================== 触摸滑动支持 ====================
+		let touchStartX = 0;
+		let touchEndX = 0;
+		let isTouching = false;
+		
+		productsScrollContainer.addEventListener('touchstart', (e) => {
+		    if (!gameState.isGameActive) return;
+		    touchStartX = e.touches[0].clientX;
+		    isTouching = true;
+		});
+		
+		productsScrollContainer.addEventListener('touchmove', (e) => {
+		    if (!gameState.isGameActive || !isTouching) return;
+		    e.preventDefault();
+		    
+		    const currentX = e.touches[0].clientX;
+		    const diff = currentX - touchStartX;
+		    
+		    const tempScrollPercent = gameState.scrollPosition - (diff / gameState.maxScroll) * 50;
+		    if (tempScrollPercent >= 0 && tempScrollPercent <= 100) {
+		         gameState.scrollPosition = tempScrollPercent;
+		         updateScrollPosition();
+		    }
+		});
+		
+		productsScrollContainer.addEventListener('touchend', (e) => {
+		    if (!gameState.isGameActive || !isTouching) return;
+		    
+		    touchEndX = e.changedTouches[0].clientX;
+		    const diff = touchEndX - touchStartX;
+		    
+		    const swipeThreshold = 0.1;
+		    const movePercent = 0.1;
+		    
+		    if (Math.abs(diff) > swipeThreshold) {
+		        if (diff > 0) {
+		            gameState.scrollPosition = Math.max(0, gameState.scrollPosition - movePercent);
+		        } else {
+		            gameState.scrollPosition = Math.min(100, gameState.scrollPosition + movePercent);
+		        }
+		        updateScrollPosition();
+		    }
+		    
+		    isTouching = false;
+		});
+		
+		productsScrollContainer.addEventListener('touchcancel', () => {
+		    isTouching = false;
+		});
+		
+		let isDragging = false;
+		let dragStartX = 0;
+		
+		productsScrollContainer.addEventListener('mousedown', (e) => {
+		    if (!gameState.isGameActive) return;
+		    isDragging = true;
+		    dragStartX = e.clientX;
+		    e.preventDefault();
+		});
+		
+		document.addEventListener('mousemove', (e) => {
+		    if (!gameState.isGameActive || !isDragging) return;
+		    e.preventDefault();
+		});
+		
+		document.addEventListener('mouseup', (e) => {
+		    if (!gameState.isGameActive || !isDragging) return;
+		    
+		    const diff = e.clientX - dragStartX;
+		    const swipeThreshold = 30;
+		    const movePercent = 10;
+		    
+		    if (Math.abs(diff) > swipeThreshold) {
+		        if (diff > 0) {
+		            gameState.scrollPosition = Math.max(0, gameState.scrollPosition - movePercent);
+		        } else {
+		            gameState.scrollPosition = Math.min(100, gameState.scrollPosition + movePercent);
+		        }
+		        updateScrollPosition();
+		    }
+		    
+		    isDragging = false;
+		});
+		
+		document.querySelectorAll('.product-card').forEach(card => {
+		    card.addEventListener('touchstart', (e) => {
+		        e.stopPropagation();
+		    });
+		});
+
+        // 登录相关事件
+        closeLoginBtn.addEventListener('click', closeLoginModal);
+        cancelLoginBtn.addEventListener('click', closeLoginModal);
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal) {
+                closeLoginModal();
+            }
+        });
+
+        // 排行榜和记录事件
+        showLeaderboardStartBtn.addEventListener('click', showLeaderboard);
+        showRecordsStartBtn.addEventListener('click', showRecords);
+        viewLeaderboardBtn.addEventListener('click', showLeaderboard);
+        
+        closeLeaderboardBtn.addEventListener('click', () => {
+            leaderboardModal.classList.remove('active');
+        });
+        
+        closeRecordsBtn.addEventListener('click', () => {
+            recordsModal.classList.remove('active');
+        });
+        
+        backToStartFromLeaderboard.addEventListener('click', () => {
+            leaderboardModal.classList.remove('active');
+        });
+        
+        backToStartFromRecords.addEventListener('click', () => {
+            recordsModal.classList.remove('active');
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === leaderboardModal) {
+                leaderboardModal.classList.remove('active');
+            }
+            if (e.target === recordsModal) {
+                recordsModal.classList.remove('active');
+            }
+            if (e.target === resultModal) {
+                resultModal.classList.remove('active');
+            }
+        });
+
+        uploadScoreBtn.addEventListener('click', uploadScore);
+
+        // ==================== 登录表单 Turnstile 事件 ====================
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('turnstile-verified', async function(e) {
+                const idNumber = idNumberInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                if (!idNumber || !password) {
+                    loginMessage.textContent = '请输入身份证号和密码';
+                    loginMessage.style.color = '#d13438';
+                    return;
+                }
+                
+                loginMessage.textContent = '登录中...';
+                loginMessage.style.color = 'var(--primary-color)';
+                
+                try {
+                    const response = await fetch('https://dornhub.eu.org/php/query_citizen.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id_number: idNumber, password: password })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        currentUser = data.data;
+                        isLoggedIn = true;
+                        
+                        if (!currentUser.nickname) {
+                            currentUser.nickname = currentUser.name;
+                        }
+                        
+                        localStorage.setItem('isLoggedIn', 'true');
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        
+                        updateLoginDisplay();
+                        closeLoginModal();
+                        
+                        if (typeof UI !== 'undefined' && UI.notify) {
+                            UI.notify('登录成功！', 'success');
+                        }
+                    } else {
+                        loginMessage.textContent = data.error || '登录失败，请重试';
+                        loginMessage.style.color = '#d13438';
+                        // 重置 Turnstile
+                        const container = document.getElementById('loginTurnstileContainer');
+                        if (typeof turnstile !== 'undefined' && container) {
+                            turnstile.reset(container);
+                        }
+                    }
+                } catch (error) {
+                    console.error('登录请求失败:', error);
+                    loginMessage.textContent = '网络错误，请稍后重试';
+                    loginMessage.style.color = '#d13438';
+                    const container = document.getElementById('loginTurnstileContainer');
+                    if (typeof turnstile !== 'undefined' && container) {
+                        turnstile.reset(container);
+                    }
+                }
+            });
+        }
+
+        // ==================== 初始化 ====================
+        
+        applyTheme(gameState.currentTheme);
+        applyColor(gameState.currentColor);
+        
+        const savedTheme = localStorage.getItem('theme');
+        const savedColor = localStorage.getItem('primaryColor');
+        
+        if (savedTheme) {
+            gameState.currentTheme = savedTheme;
+            applyTheme(savedTheme);
+        }
+        
+        if (savedColor) {
+            gameState.currentColor = savedColor;
+            applyColor(savedColor);
+        }
+        
+        checkLoginStatus();
+        initUserMenu();
+        updateCartUI();
+
+        // 停止加载遮罩
+        setTimeout(() => {
+            const loadingMask = document.getElementById('loading-mask');
+            if (loadingMask) {
+                loadingMask.style.opacity = '0';
+                setTimeout(() => {
+                    loadingMask.style.display = 'none';
+                }, 300);
+            }
+        }, 500);
+    </script>
+</body>
+</html>
