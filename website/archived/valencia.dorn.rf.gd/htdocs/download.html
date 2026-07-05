@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN" >
+<head>
+<meta charset="UTF-8">
+<title>VALENCIA | 瓦来西雅大辞典</title>
+<link rel="icon" href="https://satorna.github.io/image/webIcon.png">
+<link rel="stylesheet" href="css/style.css">
+<style>
+	body{
+		background-image: url("image/bg.png");
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+		background-size: cover;
+	}
+</style>
+</head>
+<body>
+
+<nav>
+	<div class="menu">
+		<img style="height: 90%;" src="image/logo_img.png" onclick="redirectToPage()">
+		<div class="menu_links">
+			<a href="index.html" class="link">首页</a>
+			<a href="alphabet.html" class="link">字母表</a>
+			<a href="bwbazencl.html" class="link">词缀表</a>
+			<a href="tondha.html" class="link">时态表</a>
+			<a href="edusrc.html" class="link">学习资源</a>
+			<button class="translate" onclick="window.alert('即将上线。')">翻译</button>
+		</div>
+		<div class="menu_icon" onclick="toggleMenu(this)">
+			<span class="icon"></span>
+			<ul class="menu_content">  
+			    <li><a href="index.html" class="link" style="color: white">首页</a></li>  
+			    <li><a href="alphabet.html" class="link" style="color: white">字母表</a></li>  
+			    <li><a href="bwbazencl.html" class="link" style="color: white">词缀表</a></li>
+				<li><a href="tondha.html" class="link" style="color: white">时态表</a></li>
+				<li><a href="edusrc.html" class="link" style="color: white">学习资源</a></li>
+				<li><a onclick="window.alert('即将上线。')" class="link" style="color: #6499FF;">翻译</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+<br><br><br>
+<section class="wrapper">
+	<div align="center" class="logoContainer">
+	    
+		<br><br>
+		<h1>下载我们的应用。</h1>
+	</div>
+		
+	<div class="container" id="ctn">
+		
+		<div>
+		 <br>
+		 <h2>Windows 平台</h2>
+		 <p>点击下方按钮以下载exe程序。下载完成后请双击安装。</p>
+		 <p>系统要求：Windows 7及以上</p>
+		 <p>文件大小：95.0MB（97324KB）。</p>
+		 <p>版本：2.3.5 （2024年5月12日更新）</p>
+		 <br>
+		 <a href="https://cgy22-my.sharepoint.com/:u:/g/personal/cgy2289019171_cgy22_onmicrosoft_com/EWqitaD8suhCiAjvKHSnkdsBCjlhH4onOQ179_-XiomPlw?e=uk3txn"><button class="translate">⬇️下载！</button></a>
+		</div>
+		<div>
+			<br>
+			<h2>Android 平台</h2>
+			<p>点击下方按钮以下载apk程序。下载完成后请点击文件安装。</p>
+			<p>系统要求：Android 8及以上。</p>
+			<p>文件大小：11.5MB（11742KB）。</p>
+			<p>版本：2.3.5（2024年5月12日更新）</p>
+			<br>
+			<a href="https://cgy22-my.sharepoint.com/:u:/g/personal/cgy2289019171_cgy22_onmicrosoft_com/ERJb9tAE-khGiFaotxtECCoBpAqw8aZPkXvSa13S2xS9kw?e=fSixPb"><button class="translate">⬇下载！</button></a>
+		</div>
+	</div>
+	<br><br>
+	<div style="display:flex; justify-content:center;"><a href=""><button class="translate">不知道怎么下载安装？点击这里！👈🏻</button></a></div>
+<br><br><br><br><br>
+	<div style="display:flex; justify-content:center;">注意：电脑客户端下载时，要查看下载进度，请关注任务栏中“瓦莱希雅”图标下的进图条。</div>
+	<div style="display:flex; justify-content:center;">手机版用户暂时无法自动更新应用，请在浏览器中访问valencia.dorn.rf.gd/download.html下载新版应用。</div>
+	
+	
+</section>
+
+<p id="status">🛜网络状态：检测中...</p>
+<a href="index.html" class="link"><p class="documents">⬅️返回首页</p></a>
+<script src="js/script.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/wordData.js"></script>
+<script>
+	  var currentVersion = 240502;
+
+// 检测 'www.microsoft.com' 的连通性
+function checkConnectivity() {
+  var img = new Image();
+  img.onload = function() {
+    document.getElementById('status').textContent = '🛜您已连接到 Internet';
+  };
+  img.onerror = function() {
+    document.getElementById('status').textContent = '❌您尚未连接到 Internet';
+  };
+
+  // 尝试加载 Microsoft 的 logo 作为测试
+  img.src = 'https://www.microsoft.com/favicon.ico?v2';
+}checkConnectivity();
+window.onload = checkConnectivity;
+
+
+
+
+
+</script>
+
+</body>
+
+<footer class="footer-copyright">
+    <div class="copyright">
+		<br>
+            <p>所有内容纯属虚构，与现实无关，敬请理性看待</p>
+            <p id="cprt">版权所有 © 2024 DornGames | Version 2.3.5</p>
+            <p>Box3Pro : <u><a href="https://dao3.fun/profile/50450184">@DornGames</a></u>
+             | Github : <u><a href="https://github.com/dornhub">@dornhub</a></u>
+             | Author(Box3Pro) : <u><a href="https://dao3.fun/profile/448769">@云游de鸽者</a></u>
+            </p>
+			<p id="ver"></p>
+			<p>Produced by @云游de鸽者 | Adapted by 221301.</p>
+			<br>
+	</div>
+</footer>
+
+</html>

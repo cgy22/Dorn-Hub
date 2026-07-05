@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN" >
+<head>
+<meta charset="UTF-8">
+<title>VALENCIA | 瓦来西雅大辞典</title>
+<link rel="icon" href="https://satorna.github.io/image/webIcon.png">
+<link rel="stylesheet" href="css/style.css">
+    <!-- Cookie 同意组件 -->
+	<script src="http://dorn.rf.gd/resources/cookie-consent.js"></script>
+<style>
+	body{
+		background-image: url("image/bg.png");
+		background-position: center center;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+		background-size: cover;
+	}
+	#loader {
+		display: flex;
+	    position: fixed;  
+	    top: 0;  
+	    left: 0;  
+	    width: 100%;  
+	    height: 100%;  
+	    background-color: rgba(242, 172, 8);
+	    z-index: 999999;
+	    display: flex;  
+	    justify-content: center;
+	    align-items: center;
+		opacity: 1;
+		transition: opacity 1s ease-out
+	}  
+	  
+	.loader-content {  
+	    color: white; 
+	    font-size: 20px;
+	    font-weight: bold;
+	    text-align: center;
+	}
+</style>
+</head>
+<body>
+	<!--<div id="loader">
+	    <div class="loader-content">  
+	        📖瓦莱希雅大辞典正在加载中...
+	    </div>  
+	</div>-->
+<nav>
+	<div class="menu">
+		<img style="height: 90%;" src="image/logo_img.png" onclick="redirectToPage()">
+		<div class="menu_links">
+			<a href="index.html" class="link">首页</a>
+			<a href="alphabet.html" class="link">字母表</a>
+			<a href="bwbazencl.html" class="link">词缀表</a>
+			<a href="tondha.html" class="link">时态表</a>
+			<a href="edusrc.html" class="link">学习资源</a>
+			<button class="translate" onclick="window.alert('即将上线。')">翻译</button>
+			<a href="download.html"><button class="translate">下载离线应用</button></a>
+		</div>
+		<div class="menu_icon" onclick="toggleMenu(this)">
+			<span class="icon"></span>
+			<ul class="menu_content">  
+			    <li><a href="index.html" class="link" style="color: white">首页</a></li>  
+			    <li><a href="alphabet.html" class="link" style="color: white">字母表</a></li>  
+			    <li><a href="bwbazencl.html" class="link" style="color: white">词缀表</a></li>
+				<li><a href="tondha.html" class="link" style="color: white">时态表</a></li>
+				<li><a href="edusrc.html" class="link" style="color: white">学习资源</a></li>
+                <li><a href="https://cgy22.github.io/dhof" class="link" style="color: white">𣿅国名人堂</a></li>
+				<li><a onclick="window.alert('即将上线。)" class="link" style="color: #6499FF;">翻译</a></li>
+				<li><a href="download.html" class="link" style="color: #6499FF;">下载离线应用</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+<br><br><br>
+<section>
+	<div align="center" class="logoContainer">
+	    <img class="logo-title" src="image/logo_img.png" />
+	</div>
+
+	<div class="container" id="ctn">
+		 <div class="login-wrapper" id="lgwp">
+		     <div class="form-wrapper" id="fmwp">
+		<div id="cover">
+			<div id="selectLan" onclick="showOpt()">
+			    <p id="selectP">𣿅中词典</p>  
+			    <ul id="selectUL" style="display: none;"></ul>  
+			</div>
+		  <form method="get" action="javascript:;">
+		    <div class="tb">
+		      <div class="td"><input oninput="findWord()" list="search-terms" type="text" name="username" id="search_ipt" autocomplete="off"></div>
+		      <div class="td" id="s-cover">
+		        <button class="search-button" type="submit" id="search_ui_containerButton" onclick="submitword();">
+		          <div id="s-circle"></div>
+		          <span></span>
+		        </button>
+		      </div>
+		    </div>
+			<ul id="search-list"></ul>
+		  </form>
+		</div>
+		</div>
+		</div>
+	</div>
+</section>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<p id="status">🛜网络状态：检测中...</p>
+<a href="help-center.html" class="link"><p class="documents">📎帮助中心</p></a>
+<script>
+	  var currentVersion = 240512;
+function checkForUpdate() {
+
+  var updateurl = 'http://valencia.dorn.rf.gd/update/' + currentVersion + '.ico';
+  var img = new Image();
+  img.onload = function() {
+          // 弹出确认窗口
+          if(window.confirm('发现新版本！是否更新?')) {
+            window.location.href = 'https://valencia.dorn.rf.gd/download.html';
+			 clearInterval(intervalId);// 如果用户点击确定，导向至URL页面
+          } else {
+            clearInterval(intervalId); // 如果用户点击取消，停止计时器
+          }
+        };
+    // 如果图像加载失败（即页面不存在），则递增版本号
+  img.onerror = function() {
+    currentVersion++;
+  };
+	document.getElementById("ver").innerHTML=currentVersion;
+  // 尝试加载页面作为图像测试
+  img.src = updateurl;
+}var intervalId = setInterval(checkForUpdate, 1000);
+
+function checkConnectivity() {  
+  var img = new Image();  
+  var statusElement = document.getElementById('status'); // 确保您获取了status元素  
+  
+  img.onload = function() {  
+    statusElement.textContent = '🛜您已连接到 Internet';  
+    statusElement.classList.remove('offline');  
+  };  
+  
+  img.onerror = function() {  
+    statusElement.textContent = '✖️您尚未连接到 Internet';  
+    statusElement.classList.add('offline');  
+  };  
+  
+  // 尝试加载 Microsoft 的 logo，并添加一个时间戳以防止缓存  
+  var timestamp = Date.now(); // 获取当前时间的时间戳  
+  img.src = 'https://www.microsoft.com/favicon.ico?v2&' + timestamp;  
+}  
+  
+// 每3秒检查一次连通性  
+setInterval(checkConnectivity, 3000);
+ 
+	window.onload = function() {
+	    var loaderContent = document.querySelector('.loader-content');  
+	    var dots = [".", "..", "..."];  
+	    var dotIndex = 0;  
+	    var loaderInterval = setInterval(function() {  
+	        loaderContent.textContent = "📖瓦莱希雅大辞典正在加载中" + dots[dotIndex];  
+	        dotIndex = (dotIndex + 1) % dots.length; // 循环数组  
+	    }, 500); // 切换间隔时间为0.5秒  
+	
+	
+	var loader = document.getElementById('loader');
+	       
+	        setTimeout(function() {  
+	            loader.style.opacity = '0'; 
+	              
+	            // 等待过渡结束后隐藏加载画面  
+	            setTimeout(function() {  
+	                loader.style.display = 'none';  
+	            }, 500);
+	        }, 500);
+	};
+	
+
+//var win=require('nw.gui').Window.get();
+//		win.maximize();
+//		win.show();
+
+
+</script>
+<script src="js/script.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/wordData.js"></script>
+
+</body>
+
+<footer class="footer-copyright">
+    <div class="copyright">
+		<br>
+            <p>所有内容纯属虚构，与现实无关，敬请理性看待</p>
+            <p id="cprt">版权所有 © 2024 DornGames | Version 2.3.5</p>
+            <p>Box3Pro : <u><a href="https://dao3.fun/profile/50450184">@DornGames</a></u>
+             | Github : <u><a href="https://github.com/dornhub">@dornhub</a></u>
+             | Author(Box3Pro) : <u><a href="https://dao3.fun/profile/448769">@云游de鸽者</a></u>
+            </p>
+			<!--<p id="ver"></p>-->
+			<p>Produced by @云游de鸽者 | Adapted by 221301.</p>
+			<br>
+	</div>
+</footer>
+
+</html>
