@@ -52,6 +52,16 @@ Please keep all content respectful and on-theme for the Donh IP.
 
 ---
 
+## ©️ Copyright
+
+**Copyright © 2021-2026 Dorn Hub. All Rights Reserved.**
+
+All code and content of this project are protected by copyright. Unauthorized copying, modification, distribution, or commercial use is prohibited.
+
+Please refer to the [LICENSE](LICENSE) document for detailed license terms.
+
+---
+
 *Last updated: July 5, 2026*
 
 ---
@@ -112,6 +122,16 @@ Dorn Hub
 - ✅ 标注原始版权方
 - ✅ 保持文件结构清晰
 - ❌ 禁止 NSFW 或冒犯性内容
+
+---
+
+## ©️ 版权信息
+
+**Copyright © 2021-2026 Dorn Hub. All Rights Reserved.**
+
+本项目的所有代码和内容均受版权保护。未经授权，禁止复制、修改、分发或商业使用。
+
+详细许可条款请参见 [LICENSE](LICENSE) 文件。
 
 ---
 
