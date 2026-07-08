@@ -1,7 +1,3 @@
-# 🚧 UNDER CONSTRUCTION 🚧
-
-> This repository is a work in progress. Files are being added and organized.
-
 # 🎮 Dorn Hub — Fan Project Hub
 
 > A fan‑built universe for the Donh IP. Website info, games, lore — collected here.
@@ -81,9 +77,6 @@ Dorn Hub
 
 ---
 
-# 🚧 施工中 🚧
-
-> 本仓库仍在建设中，文件正在陆续添加和整理。
 
 # 🎮 Dorn Hub — 粉丝项目集散地
 
