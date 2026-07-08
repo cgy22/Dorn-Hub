@@ -52,7 +52,7 @@ Please keep all content respectful and on-theme for the Donh IP.
 
 **Copyright © 2021-2026 Dorn Hub. All Rights Reserved.**
 
-All code and content of this project are protected by copyright. Unauthorized copying, modification, distribution, or commercial use is prohibited.
+Code and content of this project are protected by copyright. Unauthorized copying, modification, distribution, or commercial use is prohibited.
 
 ### Code
 The **code** (*.js, *.css, *.html, *.php) in this repository is licensed under the **AGPL-3.0** license.
@@ -132,7 +132,7 @@ Dorn Hub
 
 **Copyright © 2021-2026 Dorn Hub. All Rights Reserved.**
 
-本项目的所有代码和内容均受版权保护。未经授权，禁止复制、修改、分发或商业使用。
+本项目的代码和内容受版权保护。未经授权，禁止复制、修改、分发或商业使用。
 
 ### 代码
 本仓库的**代码**（*.js, *.css, *.html, *.php）使用 **AGPL-3.0** 许可证。
