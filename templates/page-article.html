@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章内容展示页面模板 · 隐私政策</title>
+    <meta name="description" content="文章内容展示页面模板 - 以隐私政策为代表，展示文章类页面核心组件">
+
+    <!-- ===== 绝对网址 CSS ===== -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+
+    <!-- ===== 项目样式 ===== -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+
+    <!-- ===== 页面特定样式 ===== -->
+    <style>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 90px 20px 60px;
+        }
+
+        /* 头部 */
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s var(--animation-curve);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 12px rgba(var(--primary-color-rgb), 0.3);
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title i {
+            color: var(--primary-color);
+            font-size: 28px;
+        }
+
+        .page-title h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        /* 更新日期 */
+        .update-date {
+            text-align: right;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .update-date i {
+            margin-right: 6px;
+        }
+
+        /* 目录 */
+        .table-of-contents {
+            background: var(--secondary-color);
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .table-of-contents h3 {
+            margin: 0 0 14px 0;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 4px 16px;
+        }
+
+        .toc-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 13px;
+            padding: 4px 0;
+            display: block;
+            transition: all 0.2s;
+            border-bottom: 1px solid transparent;
+        }
+
+        .toc-link:hover {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* 文章内容 */
+        .article-section {
+            margin-bottom: 32px;
+            scroll-margin-top: 80px;
+        }
+
+        .article-section h2 {
+            color: var(--primary-color);
+            font-size: 22px;
+            margin: 0 0 14px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .article-section h3 {
+            font-size: 18px;
+            margin: 20px 0 10px 0;
+            color: var(--text-color);
+        }
+
+        .article-section p {
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+
+        .article-section ul,
+        .article-section ol {
+            margin: 10px 0;
+            padding-left: 24px;
+        }
+
+        .article-section li {
+            margin: 6px 0;
+            line-height: 1.7;
+        }
+
+        /* 数据表格 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: var(--secondary-color);
+        }
+
+        /* 返回顶部 */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-color);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+            box-shadow: 0 2px 12px var(--shadow-color);
+            border: none;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+        }
+
+        .back-to-top:hover {
+            transform: scale(1.1);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 80px;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .article-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-title h1 {
+                font-size: 20px;
+            }
+
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .article-section h2 {
+                font-size: 19px;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 6px 8px;
+            }
+
+            .back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding-top: 70px;
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+            .page-title i {
+                font-size: 20px;
+            }
+
+            .page-title h1 {
+                font-size: 17px;
+            }
+
+            .back-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+
+            .table-of-contents {
+                padding: 14px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 加载遮罩 ===== -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>加载文章中……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。</p>
+    </div>
+
+    <!-- ===== 页面主体 ===== -->
+    <div class="container">
+
+        <!-- ===== 头部 ===== -->
+        <div class="article-header">
+            <a href="#" class="back-btn">
+                <i class="fas fa-arrow-left"></i> 返回主页
+            </a>
+            <div class="page-title">
+                <i class="fas fa-shield-alt"></i>
+                <h1>隐私政策</h1>
+            </div>
+        </div>
+
+        <!-- ===== 更新日期 ===== -->
+        <div class="update-date">
+            <i class="fas fa-calendar-alt"></i> 最后更新：2026年7月9日
+        </div>
+
+        <!-- ===== 内容卡片 ===== -->
+        <div class="section-container">
+
+            <!-- ===== 引言 ===== -->
+            <p style="font-size: 16px; margin-bottom: 20px;">
+                <strong>PRIVACY POLICY</strong><br>
+                本隐私政策描述了 Dorn Hub（"我们"）如何收集、使用和保护您的个人信息。
+            </p>
+
+            <ul style="margin-bottom: 24px;">
+                <li>访问我们的网站 <a href="#" style="color: var(--primary-color);">https://example.com</a></li>
+                <li>使用 Dorn Hub 提供的各项服务</li>
+                <li>以其他相关方式与我们互动</li>
+            </ul>
+
+            <p style="margin-bottom: 30px;">
+                如果您有任何问题或疑虑，请通过 <a href="#" style="color: var(--primary-color);">contact@example.com</a> 联系我们。
+            </p>
+
+            <!-- ===== 目录 ===== -->
+            <div class="table-of-contents">
+                <h3><i class="fas fa-list"></i> 目录</h3>
+                <div class="toc-grid">
+                    <a href="#section1" class="toc-link">1. 我们收集哪些信息？</a>
+                    <a href="#section2" class="toc-link">2. 我们如何使用您的信息？</a>
+                    <a href="#section3" class="toc-link">3. 我们如何共享您的信息？</a>
+                    <a href="#section4" class="toc-link">4. 我们如何使用 Cookie？</a>
+                    <a href="#section5" class="toc-link">5. 您的数据存储在哪里？</a>
+                    <a href="#section6" class="toc-link">6. 我们如何保护您的数据？</a>
+                    <a href="#section7" class="toc-link">7. 您的隐私权利</a>
+                    <a href="#section8" class="toc-link">8. 本政策的更新</a>
+                    <a href="#section9" class="toc-link">9. 联系我们</a>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 第1节 -->
+            <!-- ============================================================ -->
+            <div id="section1" class="article-section">
+                <h2>1. 我们收集哪些信息？</h2>
+
+                <h3>您主动提供的信息</h3>
+                <p>我们收集您主动提供给我们的个人信息，包括但不限于：</p>
+                <ul>
+                    <li><strong>账户信息：</strong>用户名、密码、昵称</li>
+                    <li><strong>个人信息：</strong>姓名、出生日期、性别（均非必填）</li>
+                    <li><strong>联系方式：</strong>邮箱地址（可选，用于密码找回）</li>
+                    <li><strong>反馈内容：</strong>您通过表单提交的反馈和建议</li>
+                </ul>
+
+                <h3>自动收集的信息</h3>
+                <p>当您访问我们的网站时，我们会自动收集：</p>
+                <ul>
+                    <li><strong>设备信息：</strong>IP地址、浏览器类型、操作系统</li>
+                    <li><strong>使用数据：</strong>访问时间、浏览页面、点击行为</li>
+                    <li><strong>位置信息：</strong>基于IP地址的近似地理位置</li>
+                </ul>
+
+                <h3>敏感信息</h3>
+                <p>我们不会主动收集种族、民族、宗教信仰、性取向等敏感信息。性别字段为可选项，且未经核实。</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 第2节 -->
+            <!-- ============================================================ -->
+            <div id="section2" class="article-section">
+                <h2>2. 我们如何使用您的信息？</h2>
+
+                <p>我们收集的信息用于以下目的：</p>
+                <ul>
+                    <li><strong>提供服务：</strong>创建和管理您的账户，提供个性化体验</li>
+                    <li><strong>安全保障：</strong>防止欺诈和滥用，维护网站安全</li>
+                    <li><strong>改进产品：</strong>分析使用趋势，优化用户体验</li>
+                    <li><strong>沟通：</strong>回复您的反馈，发送重要通知</li>
+                    <li><strong>密码恢复：</strong>通过邮箱发送密码重置链接</li>
+                </ul>
+
+                <p>我们仅在获得您同意或法律允许的情况下处理您的数据。</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 第3节 -->
+            <!-- ============================================================ -->
+            <div id="section3" class="article-section">
+                <h2>3. 我们如何共享您的信息？</h2>
+
+                <p>我们不会出售您的个人信息。我们可能在以下情况下共享信息：</p>
+
+                <h3>第三方服务提供商</h3>
+                <p>我们与以下第三方合作，以提供核心服务：</p>
+                <ul>
+                    <li><strong>网站托管：</strong>服务器运营商</li>
+                    <li><strong>分析工具：</strong>Google Analytics（匿名统计）</li>
+                    <li><strong>安全防护：</strong>Cloudflare Turnstile（机器人检测）</li>
+                </ul>
+
+                <h3>法律要求</h3>
+                <p>当法律要求或为保护合法权益时，我们可能披露您的信息。</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 第4节 -->
+            <!-- ============================================================ -->
+            <div id="section4" class="article-section">
+                <h2>4. 我们如何使用 Cookie？</h2>
+
+                <p>我们使用 Cookie 来提升您的浏览体验：</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>用途</th>
+                            <th>是否必要</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>必要 Cookie</td>
+                            <td>网站正常运行，安全验证</td>
+                            <td>是</td>
+                        </tr>
+                        <tr>
+                            <td>功能 Cookie</td>
+                            <td>记住主题、固定网站等个性化设置</td>
+                            <td>可选</td>
+                        </tr>
+                        <tr>
+                            <td>分析 Cookie</td>
+                            <td>Google Analytics 统计访问数据</td>
+                            <td>可选</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>您可以在设置中管理 Cookie 偏好，随时启用或禁用功能 Cookie 和分析 Cookie。</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 第5节 -->
+            <!-- ============================================================ -->
+            <div id="section5" class="article-section">
+                <h2>5. 您的数据存储在哪里？</h2>
+
+                <p>您的数据可能存储在以下地区：</p>
+                <ul>
+                    <li><strong>美国：</strong>主要服务器位于美国</li>
+                    <li><strong>英国：</strong>备用服务器位于英国</li>
+                    <li><strong>全球边缘网络：</strong>Cloudflare 全球 CDN 节点</li>
+                </ul>
+
+                <p>我们采取适当的保障措施，确保数据跨境传输符合适用法律。</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 第6节 -->
+            <!-- ============================================================ -->
+            <div id="section6" class="article-section">
+                <h2>6. 我们如何保护您的数据？</h2>
+
+                <p>我们采取以下措施保护您的信息安全：</p>
+                <ul>
+                    <li><strong>加密传输：</strong>所有数据传输使用 TLS/SSL 加密</li>
+                    <li><strong>密码保护：</strong>密码经过哈希处理，不存储明文</li>
+                    <li><strong>访问控制：</strong>严格控制数据库访问权限</li>
+                    <li><strong>安全监控：</strong>定期安全审计和漏洞扫描</li>
+                </ul>
+
+                <p>尽管我们努力保护您的数据，但没有任何互联网传输是100%安全的，请您在安全的环境中访问我们的服务。</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 第7节 -->
+            <!-- ============================================================ -->
+            <div id="section7" class="article-section">
+                <h2>7. 您的隐私权利</h2>
+
+                <p>根据您所在地区，您可能享有以下权利：</p>
+                <ul>
+                    <li><strong>访问权：</strong>请求获取我们持有的您的个人信息</li>
+                    <li><strong>更正权：</strong>请求更正不准确的个人信息</li>
+                    <li><strong>删除权：</strong>请求删除您的个人信息</li>
+                    <li><strong>撤回同意：</strong>随时撤回对数据处理的同意</li>
+                    <li><strong>数据迁移：</strong>请求获取您的数据副本</li>
+                </ul>
+
+                <p>如需行使以上权利，请通过 <a href="#" style="color: var(--primary-color);">联系我们</a> 页面提交请求。</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 第8节 -->
+            <!-- ============================================================ -->
+            <div id="section8" class="article-section">
+                <h2>8. 本政策的更新</h2>
+
+                <p>我们可能不时更新本隐私政策。更新后的版本将在页面顶部显示新的修订日期。建议您定期查看本页面，了解最新信息。</p>
+
+                <p>如果发生重大变更，我们将通过网站公告或邮件通知您。</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 第9节 -->
+            <!-- ============================================================ -->
+            <div id="section9" class="article-section">
+                <h2>9. 联系我们</h2>
+
+                <p>如果您对本隐私政策有任何疑问或建议，请通过以下方式联系我们：</p>
+                <ul>
+                    <li><strong>邮箱：</strong> <a href="#" style="color: var(--primary-color);">contact@example.com</a></li>
+                    <li><strong>网站：</strong> <a href="#" style="color: var(--primary-color);">联系我们页面</a></li>
+                </ul>
+
+                <p style="margin-top: 16px; color: var(--text-secondary); font-size: 14px;">
+                    <i class="fas fa-info-circle"></i> 本政策仅适用于 Dorn Hub 相关服务。
+                </p>
+            </div>
+
+            <!-- ===== 页脚 ===== -->
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color); font-size: 13px; color: var(--text-secondary);">
+                <p>Copyright © 2021-2026 Dorn Hub, All Rights Reserved.</p>
+            </div>
+
+        </div>
+        <!-- ===== 内容卡片结束 ===== -->
+
+    </div>
+
+    <!-- ===== 返回顶部按钮 ===== -->
+    <button class="back-to-top" id="backToTop" title="返回顶部">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- ============================================================ -->
+    <!-- ===== 绝对网址 JavaScript ===== -->
+    <!-- ============================================================ -->
+
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    <script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+
+    <script>
+        // ============================================================
+        // 文章内容展示页面 JavaScript
+        // ============================================================
+
+        (function() {
+            'use strict';
+
+            // ---- 返回顶部 ----
+            const backBtn = document.getElementById('backToTop');
+
+            window.addEventListener('scroll', function() {
+                backBtn.classList.toggle('visible', window.scrollY > 300);
+            });
+
+            backBtn.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ---- 目录平滑滚动 ----
+            document.querySelectorAll('.toc-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId && targetId.startsWith('#')) {
+                        const target = document.querySelector(targetId);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                });
+            });
+
+            // ---- 背景同步 ----
+            setTimeout(() => {
+                const bgType = localStorage.getItem('backgroundType') || 'default';
+                const customBg = localStorage.getItem('customBackground');
+                if (bgType !== 'none' && !document.querySelector('.background-layer')) {
+                    const bgLayer = document.createElement('div');
+                    bgLayer.className = 'background-layer';
+                    bgLayer.style.cssText =
+                        'position:fixed;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;z-index:-1;pointer-events:none';
+                    if (bgType === 'default') bgLayer.style.backgroundImage = "url('https://picsum.photos/1920/1080')";
+                    else if (bgType === 'random') bgLayer.style.backgroundImage =
+                        "url('https://picsum.photos/1920/1080?" + Date.now() + "')";
+                    else if (bgType === 'custom' && customBg) bgLayer.style.backgroundImage = "url('" + customBg + "')";
+                    if (bgLayer.style.backgroundImage) document.body.appendChild(bgLayer);
+                }
+            }, 200);
+
+            // ---- 隐藏加载遮罩 ----
+            setTimeout(() => {
+                const mask = document.getElementById('loading-mask');
+                if (mask) {
+                    mask.style.opacity = '0';
+                    setTimeout(() => mask.style.display = 'none', 400);
+                }
+            }, 600);
+
+            console.log('✅ 文章内容展示页面模板已加载');
+
+        })();
+    </script>
+
+</body>
+</html>

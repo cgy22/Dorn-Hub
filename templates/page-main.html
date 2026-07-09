@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主页面模板 · Dorn Hub 组件库</title>
+    <meta name="description" content="主页面模板 - 包含头部、搜索、固定网站、公告栏、分类导航、设置面板等完整UI组件">
+
+    <!-- ===== 绝对网址 CSS ===== -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+
+    <!-- ===== 项目样式（直接引用） ===== -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+
+    <!-- ===== 页面特定样式（仅补充主页面特有布局） ===== -->
+    <style>
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .search-box-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 1px 2px var(--shadow-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            transition: all var(--transition-speed) var(--animation-curve);
+            height: 48px;
+            box-sizing: border-box;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 1px var(--primary-color);
+            transform: scale(1.01);
+        }
+
+        .search-btn {
+            min-width: 100px;
+            height: 48px;
+            padding: 0 20px;
+            font-size: 16px;
+        }
+
+        /* 搜索引擎下拉菜单 */
+        .search-engine-custom {
+            position: relative;
+            display: inline-block;
+            width: 150px;
+            flex-shrink: 0;
+        }
+
+        .search-engine-custom .engine-trigger {
+            height: 48px;
+            padding: 0 16px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all var(--transition-speed) var(--animation-curve);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .search-engine-custom .engine-trigger:hover {
+            background: var(--secondary-color);
+        }
+
+        .search-engine-custom .engine-trigger .arrow {
+            font-size: 12px;
+            transition: transform 0.3s var(--animation-curve);
+            opacity: 0.7;
+        }
+
+        .search-engine-custom .engine-trigger .arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .search-engine-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--shadow-color);
+            z-index: 1000;
+            display: none;
+            min-width: 150px;
+            width: 100%;
+            animation: slideDown 0.3s var(--animation-curve);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-engine-dropdown.active {
+            display: block;
+        }
+
+        .search-engine-dropdown .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s var(--animation-curve);
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .search-engine-dropdown .dropdown-item:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .search-engine-dropdown .dropdown-item.selected {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            color: var(--primary-color);
+        }
+
+        .search-engine-dropdown .dropdown-item i {
+            width: 18px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        /* 搜索建议 */
+        .suggestions {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px var(--shadow-color);
+            z-index: 100;
+            display: none;
+            max-height: 350px;
+            overflow-y: auto;
+            animation: slideDown 0.3s var(--animation-curve);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+        }
+
+        .suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.2s var(--animation-curve);
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .suggestion-item i {
+            color: var(--primary-color);
+            width: 18px;
+            text-align: center;
+        }
+
+        .suggestion-item small {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+
+        /* 固定网站 */
+        .pinned-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 15px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            transition: all var(--transition-speed) var(--animation-curve);
+            min-height: 60px;
+        }
+
+        .pinned-grid.empty {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .pinned-card {
+            background: var(--card-bg);
+            border-radius: 6px;
+            box-shadow: 0 1.6px 3.6px 0 var(--shadow-color), 0 0.3px 0.9px 0 var(--shadow-color);
+            padding: 15px;
+            transition: all var(--transition-speed) var(--animation-curve);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            animation: cardAppear 0.7s var(--animation-curve);
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .pinned-card:hover {
+            box-shadow: 0 3.2px 7.2px 0 var(--shadow-color), 0 0.6px 1.8px 0 var(--shadow-color);
+            background-color: var(--card-hover-color);
+            transform: translateY(-5px) scale(1.02);
+            border-color: var(--primary-color);
+        }
+
+        .pinned-card h3 {
+            margin: 0 0 8px 0;
+            color: var(--primary-color);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pinned-card p {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 13px;
+            word-break: break-all;
+            opacity: 0.8;
+        }
+
+        .pinned-card .remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s var(--animation-curve);
+            color: var(--text-color);
+        }
+
+        .pinned-card:hover .remove-btn {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .pinned-card.batch-selected {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .pinned-card .batch-checkbox {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            display: none;
+        }
+
+        .pinned-card.batch-mode .batch-checkbox {
+            display: flex;
+        }
+
+        .pinned-card.batch-mode .remove-btn {
+            display: none;
+        }
+
+        /* 批量操作 */
+        .batch-actions {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            animation: fadeIn 0.4s var(--animation-curve);
+        }
+
+        .batch-actions.active {
+            display: flex;
+        }
+
+        .batch-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.4s var(--animation-curve);
+        }
+
+        .batch-btn.delete {
+            background: #d13438;
+            color: white;
+        }
+        .batch-btn.delete:hover {
+            background: #b02a2e;
+        }
+
+        /* 分类头部 */
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .category-header i {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .category-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .category-count {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-left: auto;
+        }
+
+        /* 公告栏 */
+        .announcement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .announcement-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px 20px;
+            transition: all 0.3s var(--animation-curve);
+        }
+
+        .announcement-item:hover {
+            background-color: var(--secondary-color);
+            transform: translateX(5px);
+        }
+
+        .announcement-content {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .announcement-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Logo */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .dornhub-logo {
+            font-size: 48px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+        }
+
+        .dornhub-logo .logo-part1 {
+            color: var(--primary-color);
+        }
+
+        .dornhub-logo .logo-part2 {
+            color: white;
+            background-color: var(--primary-color);
+            border-radius: 16px;
+            padding: 0 10px;
+            margin-left: 10px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .search-box-wrapper {
+                flex-wrap: wrap;
+            }
+            .search-box {
+                flex: 1 1 100%;
+            }
+            .search-engine-custom {
+                width: 100%;
+            }
+            .search-btn {
+                flex: 1 1 100%;
+            }
+            .pinned-grid {
+                grid-template-columns: 1fr;
+            }
+            .dornhub-logo {
+                font-size: 32px;
+            }
+            #navname1, #navname2 {
+                font-size: 20px;
+            }
+            #navname2 {
+                height: 28px;
+                padding: 0 8px;
+            }
+            .header-right {
+                gap: 8px;
+            }
+            .datetime {
+                font-size: 12px;
+            }
+            .container {
+                padding-top: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dornhub-logo {
+                font-size: 26px;
+            }
+            #navname1, #navname2 {
+                font-size: 17px;
+            }
+            #navname2 {
+                height: 24px;
+                padding: 0 6px;
+            }
+            .container {
+                padding-top: 90px;
+            }
+        }
+
+        /* 彩蛋容器 */
+        #easter-egg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        .falling-text {
+            position: absolute;
+            top: -50px;
+            font-weight: bold;
+            color: var(--primary-color);
+            opacity: 0.8;
+            animation: falling-text 3s linear forwards;
+            pointer-events: none;
+            z-index: 10001;
+        }
+
+        @keyframes falling-text {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: confetti-fall 3s ease-out forwards, confetti-rotate 1s ease-out infinite;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        @keyframes confetti-fall {
+            0% { top: -10px; opacity: 1; }
+            100% { top: 100vh; opacity: 0; }
+        }
+
+        @keyframes confetti-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 加载遮罩 ===== -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+
+    <!-- ===== 页面主体 ===== -->
+    <div class="container">
+
+        <!-- ===== 头部 ===== -->
+        <header>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>
+                        <span id="navname1">Dorn</span>
+                        <span id="navname2">Hub</span>
+                        <span class="insider-badge" id="insiderBadge">Insider</span>
+                    </h1>
+                </div>
+                <div class="header-right">
+                    <div class="datetime" id="datetime"></div>
+                    <button class="settings-btn btn" id="settingsBtn">
+                        <i class="fas fa-cog"></i> 设置
+                    </button>
+                    <!-- 登录下拉菜单由 LoginModule 注入 -->
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== Logo ===== -->
+        <div class="logo-container">
+            <div class="dornhub-logo" id="dornhubLogo">
+                <span class="logo-part1">Dorn</span>
+                <span class="logo-part2">Hub</span>
+            </div>
+        </div>
+
+        <!-- ===== 搜索栏 ===== -->
+        <div class="search-container">
+            <div class="search-box-wrapper">
+                <input type="text" class="search-box" id="searchInput" placeholder="搜索网站、页面内容..." autocomplete="off">
+                <button class="search-btn btn btn-primary" id="searchBtn">
+                    <i class="fas fa-search"></i> 搜索
+                </button>
+                <div class="search-engine-custom" id="engineDropdownContainer">
+                    <button class="engine-trigger" id="engineTrigger">
+                        <span id="engineSelectedLabel">站内搜索</span>
+                        <i class="fas fa-chevron-down arrow" id="engineArrow"></i>
+                    </button>
+                    <div class="search-engine-dropdown" id="engineDropdown">
+                        <div id="engineOptionsContainer">
+                            <!-- 由 JS 生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="suggestions" id="suggestions"></div>
+        </div>
+
+        <!-- ===== 固定网站 ===== -->
+        <div class="pinned-section" id="pinnedSection">
+            <div class="section-container">
+                <div class="section-title">
+                    <h2>固定网站</h2>
+                    <div class="section-buttons">
+                        <button class="btn btn-secondary" id="batchOperateBtn">
+                            <i class="fas fa-tasks"></i> 批量操作
+                        </button>
+                        <button class="btn btn-primary" id="addPinnedBtn">
+                            <i class="fas fa-plus"></i> 添加网站
+                        </button>
+                    </div>
+                </div>
+                <div class="batch-actions" id="batchActions">
+                    <div class="batch-checkbox">
+                        已选择 <span id="selectedCount">0</span> 个网站
+                    </div>
+                    <div class="batch-buttons">
+                        <button class="batch-btn delete" id="batchDeleteBtn">
+                            <i class="fas fa-trash"></i> 删除选中
+                        </button>
+                        <button class="batch-btn btn-secondary" id="cancelBatchBtn">
+                            <i class="fas fa-times"></i> 取消
+                        </button>
+                    </div>
+                </div>
+                <div class="pinned-grid" id="pinnedGrid">
+                    <div class="empty">暂无固定网站，点击"添加网站"添加</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 公告栏 ===== -->
+        <div class="announcement-section section-container" id="announcementSection">
+            <div class="category-header">
+                <i class="fas fa-bullhorn"></i>
+                <h2>公告栏</h2>
+                <span class="category-count" id="announcementCount"></span>
+            </div>
+            <div id="announcementList" class="announcement-list">
+                <div style="text-align:center; padding:20px; color:var(--text-secondary);">
+                    <i class="fas fa-spinner fa-spin"></i> 加载公告中...
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 分类导航 ===== -->
+        <div id="categoriesContainer"></div>
+
+    </div>
+
+    <!-- ===== 设置模态框 ===== -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>设置</h2>
+                <button class="close-btn" id="closeSettingsBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 配色 -->
+                <div class="setting-group">
+                    <h3>配色方案</h3>
+                    <div class="color-options" id="colorOptions">
+                        <div class="color-option active" style="background:#16DA49;" data-color="#16DA49">𣿅国绿</div>
+                        <div class="color-option" style="background:#6499FF;" data-color="#6499FF">大江蓝</div>
+                        <div class="color-option" style="background:#A51515;" data-color="#A51515">秋茗红</div>
+                        <div class="color-option" style="background:#349DA5;" data-color="#349DA5">铁山青</div>
+                        <div class="color-option" style="background:#FFB500;" data-color="#FFB500">凤凰金</div>
+                        <div class="color-option" style="background:#DA70D6;" data-color="#DA70D6">兰花紫</div>
+                        <div class="color-option" style="background:#FF69B4;" data-color="#FF69B4">梨花粉</div>
+                        <div class="color-option" style="background:#0078d4;" data-color="#0078d4">深蓝色</div>
+                    </div>
+                    <div class="custom-color-container">
+                        <div class="custom-color-btn" id="customColorBtn" style="background:var(--primary-color);"></div>
+                        <div class="custom-color-input">
+                            <input type="color" id="customColorInput" value="#16DA49">
+                            <button class="btn btn-primary" id="applyCustomColor">应用</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 明暗模式 -->
+                <div class="setting-group">
+                    <h3>明暗模式</h3>
+                    <div class="theme-options">
+                        <div class="theme-option active" data-theme="light">浅色</div>
+                        <div class="theme-option" data-theme="dark">深色</div>
+                        <div class="theme-option" data-theme="auto">跟随系统</div>
+                    </div>
+                </div>
+
+                <!-- 显示选项 -->
+                <div class="setting-group">
+                    <h3>显示选项</h3>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示固定网站栏</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showPinnedToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示网址导航</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showNavigationToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示日期</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showDateToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示时间</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showTimeToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示公告栏</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showAnnouncementToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 背景 -->
+                <div class="setting-group">
+                    <h3>页面背景</h3>
+                    <div class="background-options">
+                        <div class="background-option" data-bg="default" style="background:linear-gradient(135deg,#16DA49,#20EE66);color:#fff;">默认</div>
+                        <div class="background-option active" data-bg="none" style="background:var(--bg-color);color:var(--text-color);">无背景</div>
+                        <div class="background-option" data-bg="random" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;">随机</div>
+                        <div class="background-option" data-bg="custom" style="background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;">自定义</div>
+                    </div>
+                    <div class="custom-color-input-file">
+                        <input type="file" id="customBackgroundInput" accept="image/*">
+                        <button class="btn btn-primary" id="applyCustomBackground">应用自定义背景</button>
+                    </div>
+                </div>
+
+                <!-- Cookie偏好 -->
+                <div class="setting-group">
+                    <h3><i class="fas fa-cookie-bite"></i> Cookie 偏好</h3>
+                    <div class="toggle-group">
+                        <span class="toggle-label">功能 Cookie</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="functionalCookiesToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">分析 Cookie</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="analyticsCookiesToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div id="cookieWarning" class="cookie-warning" style="display:none;"></div>
+                    <div style="display:flex;gap:12px;margin-top:10px;">
+                        <button class="btn btn-primary" id="saveCookiePrefsBtn"><i class="fas fa-save"></i> 保存</button>
+                        <button class="btn btn-secondary" id="resetCookiePrefsBtn"><i class="fas fa-undo"></i> 重置</button>
+                    </div>
+                </div>
+
+                <!-- 更新说明 & 清除数据 -->
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;">
+                    <button class="btn btn-primary" id="settingsUpdateLogBtn"><i class="fas fa-history"></i> 查看更新说明</button>
+                    <button class="btn btn-danger" id="clearDataBtn"><i class="fas fa-trash"></i> 清除所有数据</button>
+                </div>
+
+                <!-- 法律信息 -->
+                <div class="setting-group" style="margin-top:20px;">
+                    <h3>法律信息</h3>
+                    <div style="display:flex;flex-wrap:wrap;gap:15px;justify-content:center;">
+                        <a href="#" style="color:var(--primary-color);text-decoration:none;"><i class="fas fa-shield-alt"></i> 隐私政策</a>
+                        <a href="#" style="color:var(--primary-color);text-decoration:none;"><i class="fas fa-file-contract"></i> 使用条款</a>
+                        <a href="#" style="color:var(--primary-color);text-decoration:none;"><i class="fas fa-cookie-bite"></i> Cookie 政策</a>
+                        <a href="#" style="color:var(--primary-color);text-decoration:none;"><i class="fas fa-exclamation-triangle"></i> 免责声明</a>
+                    </div>
+                </div>
+                <p style="text-align:center;font-size:13px;color:var(--text-secondary);margin-top:16px;">
+                    Copyright © 2021-2026 Dorn Hub, All Rights Reserved.<br>
+                    版本号: 5.3 | 更新号: 2607.2
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 添加固定网站模态框 ===== -->
+    <div class="modal" id="addPinnedModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>添加固定网站</h2>
+                <button class="close-btn" id="closeAddPinnedBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pinnedTitle">网站标题（可选）</label>
+                    <input type="text" id="pinnedTitle" placeholder="输入网站标题，留空则使用网址">
+                </div>
+                <div class="form-group">
+                    <label for="pinnedUrl">网站地址 *</label>
+                    <input type="text" id="pinnedUrl" placeholder="https://example.com">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelAddPinnedBtn">取消</button>
+                    <button class="btn btn-primary" id="savePinnedBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 更新说明模态框 ===== -->
+    <div class="modal update-modal" id="updateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> 更新说明</h2>
+                <button class="close-btn" id="closeUpdateModalBtn">&times;</button>
+            </div>
+            <div class="modal-body" id="updateModalBody">
+                <div style="text-align:center;padding:40px;color:var(--text-secondary);">
+                    <i class="fas fa-spinner fa-spin"></i> 加载更新日志...
+                </div>
+            </div>
+            <div class="form-actions" style="margin:0;padding:16px 20px;border-top:1px solid var(--border-color);">
+                <button class="btn btn-primary" id="closeUpdateModalFooterBtn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 彩蛋容器 ===== -->
+    <div id="easter-egg-container"></div>
+
+    <!-- ============================================================ -->
+    <!-- ===== 绝对网址 JavaScript ===== -->
+    <!-- ============================================================ -->
+
+    <!-- 项目脚本 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    <script src="https://dornhub.eu.org/resources/login.js"></script>
+    <script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+
+    <!-- 演示数据 -->
+    <script>
+        // ============================================================
+        // 演示数据：网站分类与网站列表
+        // ============================================================
+        const categories = {
+            demo1: { name: '官方服务', icon: 'fa-crown', order: 1 },
+            demo2: { name: '娱乐游戏', icon: 'fa-gamepad', order: 2 },
+            demo3: { name: '文化历史', icon: 'fa-landmark', order: 3 }
+        };
+
+        const websites = [
+            { name: '示例官网', url: 'https://example.com', icon: 'fa-crown', category: 'demo1' },
+            { name: '示例论坛', url: 'https://example.org', icon: 'fa-comments', category: 'demo1' },
+            { name: '示例游戏平台', url: 'https://example-game.com', icon: 'fa-gamepad', category: 'demo2' },
+            { name: '示例百科', url: 'https://example-wiki.com', icon: 'fa-book', category: 'demo3' },
+            { name: '示例博物馆', url: 'https://example-museum.com', icon: 'fa-landmark', category: 'demo3' },
+            { name: '示例学习中心', url: 'https://example-learn.com', icon: 'fa-graduation-cap', category: 'demo2' }
+        ];
+
+        function getCategories() {
+            return Object.entries(categories)
+                .sort((a, b) => a[1].order - b[1].order)
+                .map(([key, value]) => ({ key, ...value }));
+        }
+
+        function getWebsitesByCategory(categoryKey) {
+            return websites.filter(s => s.category === categoryKey);
+        }
+    </script>
+
+    <script>
+        // ============================================================
+        // 主页面 JavaScript
+        // ============================================================
+
+        (function() {
+            'use strict';
+
+            // ---- DOM 引用 ----
+            const container = document.querySelector('.container');
+            const header = document.querySelector('header');
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const suggestions = document.getElementById('suggestions');
+            const pinnedGrid = document.getElementById('pinnedGrid');
+            const categoriesContainer = document.getElementById('categoriesContainer');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsModal = document.getElementById('settingsModal');
+            const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+            const addPinnedBtn = document.getElementById('addPinnedBtn');
+            const addPinnedModal = document.getElementById('addPinnedModal');
+            const closeAddPinnedBtn = document.getElementById('closeAddPinnedBtn');
+            const cancelAddPinnedBtn = document.getElementById('cancelAddPinnedBtn');
+            const savePinnedBtn = document.getElementById('savePinnedBtn');
+            const pinnedTitleInput = document.getElementById('pinnedTitle');
+            const pinnedUrlInput = document.getElementById('pinnedUrl');
+            const batchOperateBtn = document.getElementById('batchOperateBtn');
+            const batchActions = document.getElementById('batchActions');
+            const selectedCountEl = document.getElementById('selectedCount');
+            const batchDeleteBtn = document.getElementById('batchDeleteBtn');
+            const cancelBatchBtn = document.getElementById('cancelBatchBtn');
+            const dornhubLogo = document.getElementById('dornhubLogo');
+            const clearDataBtn = document.getElementById('clearDataBtn');
+
+            // 搜索引擎下拉
+            const engineTrigger = document.getElementById('engineTrigger');
+            const engineDropdown = document.getElementById('engineDropdown');
+            const engineArrow = document.getElementById('engineArrow');
+            const engineOptionsContainer = document.getElementById('engineOptionsContainer');
+            const engineSelectedLabel = document.getElementById('engineSelectedLabel');
+
+            // ---- 状态 ----
+            let pinnedWebsites = JSON.parse(localStorage.getItem('demo_pinnedWebsites') || '[]');
+            let isBatchMode = false;
+            let selectedCards = new Set();
+            let currentSearchEngine = localStorage.getItem('demo_searchEngine') || 'internal';
+            let clickCount = 0;
+            let isEasterEggActive = false;
+
+            const searchEngines = {
+                internal: { name: '站内搜索', icon: 'fa-search' },
+                bing: { name: 'Bing', icon: 'fa-search' },
+                baidu: { name: '百度', icon: 'fa-search' },
+                google: { name: 'Google', icon: 'fa-search' },
+                duckduckgo: { name: 'DuckDuckGo', icon: 'fa-search' }
+            };
+
+            // ---- 渲染分类导航 ----
+            function renderCategories() {
+                categoriesContainer.innerHTML = '';
+                const cats = getCategories();
+
+                cats.forEach(cat => {
+                    const sites = getWebsitesByCategory(cat.key);
+                    if (sites.length === 0) return;
+
+                    const section = document.createElement('div');
+                    section.className = 'section-container';
+
+                    const header = document.createElement('div');
+                    header.className = 'category-header';
+                    header.innerHTML = `
+                        <i class="fas ${cat.icon}"></i>
+                        <h2>${cat.name}</h2>
+                        <span class="category-count">(${sites.length})</span>
+                    `;
+                    section.appendChild(header);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'grid';
+
+                    sites.forEach(site => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        card.setAttribute('data-url', site.url);
+                        card.innerHTML = `
+                            <h3><i class="fas ${site.icon}"></i> ${site.name}</h3>
+                            <p>${site.url}</p>
+                            <button class="pin-btn" ${pinnedWebsites.length >= 10 ? 'disabled' : ''}>
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        `;
+
+                        card.addEventListener('click', (e) => {
+                            if (!e.target.closest('.pin-btn')) {
+                                window.open(site.url, '_blank');
+                            }
+                        });
+
+                        const pinBtn = card.querySelector('.pin-btn');
+                        pinBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (pinnedWebsites.length < 10) {
+                                addPinned(site);
+                                pinBtn.disabled = true;
+                            }
+                        });
+
+                        const isPinned = pinnedWebsites.some(p => p.url === site.url);
+                        if (isPinned) pinBtn.disabled = true;
+
+                        grid.appendChild(card);
+                    });
+
+                    section.appendChild(grid);
+                    categoriesContainer.appendChild(section);
+                });
+            }
+
+            // ---- 固定网站 ----
+            function renderPinned() {
+                pinnedGrid.innerHTML = '';
+                if (pinnedWebsites.length === 0) {
+                    pinnedGrid.innerHTML = '<div class="empty">暂无固定网站，点击"添加网站"添加</div>';
+                    pinnedGrid.classList.add('empty');
+                    return;
+                }
+                pinnedGrid.classList.remove('empty');
+
+                pinnedWebsites.forEach((site, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'pinned-card';
+                    card.setAttribute('data-index', index);
+                    card.innerHTML = `
+                        <div class="batch-checkbox">
+                            <input type="checkbox" data-index="${index}">
+                        </div>
+                        <h3><i class="fas ${site.icon || 'fa-link'}"></i> ${site.name}</h3>
+                        <p>${site.url}</p>
+                        <button class="remove-btn"><i class="fas fa-times"></i></button>
+                    `;
+
+                    card.addEventListener('click', (e) => {
+                        if (isBatchMode) {
+                            if (!e.target.closest('.batch-checkbox') && !e.target.closest('.remove-btn')) {
+                                const cb = card.querySelector('input[type="checkbox"]');
+                                cb.checked = !cb.checked;
+                                toggleSelect(card, cb.checked);
+                            }
+                        } else {
+                            if (!e.target.closest('.remove-btn')) {
+                                window.open(site.url, '_blank');
+                            }
+                        }
+                    });
+
+                    card.querySelector('.remove-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (!isBatchMode) removePinned(index);
+                    });
+
+                    const cb = card.querySelector('input[type="checkbox"]');
+                    cb.addEventListener('change', (e) => {
+                        e.stopPropagation();
+                        toggleSelect(card, cb.checked);
+                    });
+
+                    pinnedGrid.appendChild(card);
+                });
+
+                // 更新添加按钮状态
+                const addBtn = document.getElementById('addPinnedBtn');
+                if (addBtn) {
+                    addBtn.disabled = pinnedWebsites.length >= 10;
+                    addBtn.title = pinnedWebsites.length >= 10 ? '最多固定10个网站' : '';
+                }
+            }
+
+            function toggleSelect(card, selected) {
+                if (selected) {
+                    card.classList.add('batch-selected');
+                    selectedCards.add(card);
+                } else {
+                    card.classList.remove('batch-selected');
+                    selectedCards.delete(card);
+                }
+                selectedCountEl.textContent = selectedCards.size;
+            }
+
+            function addPinned(site) {
+                if (pinnedWebsites.length >= 10) return;
+                pinnedWebsites.push({ name: site.name, url: site.url, icon: site.icon || 'fa-link' });
+                localStorage.setItem('demo_pinnedWebsites', JSON.stringify(pinnedWebsites));
+                renderPinned();
+                renderCategories();
+                if (window.UI && window.UI.success) UI.success('已固定网站！');
+            }
+
+            function removePinned(index) {
+                pinnedWebsites.splice(index, 1);
+                localStorage.setItem('demo_pinnedWebsites', JSON.stringify(pinnedWebsites));
+                renderPinned();
+                renderCategories();
+                if (window.UI && window.UI.info) UI.info('已移除固定网站');
+            }
+
+            // ---- 搜索 ----
+            function performSearch(keyword) {
+                if (!keyword || !keyword.trim()) return;
+                const q = keyword.trim();
+
+                if (currentSearchEngine === 'internal') {
+                    // 站内搜索：在网站数据中搜索
+                    const results = websites.filter(s =>
+                        s.name.toLowerCase().includes(q.toLowerCase()) ||
+                        s.url.toLowerCase().includes(q.toLowerCase())
+                    );
+                    showSuggestions(results, q);
+                } else {
+                    const engine = searchEngines[currentSearchEngine];
+                    if (engine && engine.url) {
+                        window.open(engine.url + encodeURIComponent(q), '_blank');
+                    }
+                }
+            }
+
+            function showSuggestions(results, keyword) {
+                suggestions.innerHTML = '';
+                if (results.length === 0) {
+                    suggestions.innerHTML = `<div class="suggestion-item"><i class="fas fa-search"></i> 未找到 "${keyword}" 相关网站</div>`;
+                    suggestions.classList.add('active');
+                    return;
+                }
+
+                results.slice(0, 8).forEach(site => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `
+                        <i class="fas ${site.icon || 'fa-globe'}"></i>
+                        <span>${site.name}</span>
+                        <small>${site.url}</small>
+                    `;
+                    div.addEventListener('click', () => {
+                        window.open(site.url, '_blank');
+                        suggestions.classList.remove('active');
+                        searchInput.value = '';
+                    });
+                    suggestions.appendChild(div);
+                });
+                suggestions.classList.add('active');
+            }
+
+            // ---- 搜索引擎下拉 ----
+            function renderEngineOptions() {
+                const engines = [
+                    { value: 'internal', label: '站内搜索' },
+                    ...Object.entries(searchEngines).filter(([k]) => k !== 'internal').map(([k, v]) => ({
+                        value: k,
+                        label: v.name
+                    }))
+                ];
+
+                engineOptionsContainer.innerHTML = engines.map(e =>
+                    `<div class="dropdown-item ${e.value === currentSearchEngine ? 'selected' : ''}" data-value="${e.value}">
+                        <span>${e.label}</span>
+                    </div>`
+                ).join('');
+
+                const selected = engines.find(e => e.value === currentSearchEngine);
+                engineSelectedLabel.textContent = selected ? selected.label : '站内搜索';
+
+                engineOptionsContainer.querySelectorAll('.dropdown-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const val = item.dataset.value;
+                        currentSearchEngine = val;
+                        localStorage.setItem('demo_searchEngine', val);
+                        engineSelectedLabel.textContent = item.querySelector('span').textContent;
+                        engineDropdown.classList.remove('active');
+                        engineArrow.classList.remove('open');
+                        engineOptionsContainer.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('selected'));
+                        item.classList.add('selected');
+
+                        if (searchInput.value.trim()) {
+                            searchInput.dispatchEvent(new Event('input'));
+                        }
+                    });
+                });
+            }
+
+            // ---- 公告栏 ----
+            function loadAnnouncements() {
+                const list = document.getElementById('announcementList');
+                const count = document.getElementById('announcementCount');
+
+                // 演示公告数据
+                const demoAnnouncements = [
+                    { content: '🎉 欢迎来到 Dorn Hub 组件展示页面！', time: new Date().toLocaleString() },
+                    { content: '📢 本页面展示主页所有核心组件，数据均为演示数据', time: new Date().toLocaleString() },
+                    { content: '✨ 点击 Logo 或搜索 "I love dorn!" 触发彩蛋', time: new Date().toLocaleString() }
+                ];
+
+                count.textContent = `(${demoAnnouncements.length})`;
+                list.innerHTML = demoAnnouncements.map(a =>
+                    `<div class="announcement-item">
+                        <div class="announcement-content">${a.content}</div>
+                        <div class="announcement-time"><i class="fas fa-clock"></i> ${a.time}</div>
+                    </div>`
+                ).join('');
+            }
+
+            // ---- 彩蛋 ----
+            function triggerEasterEgg() {
+                if (isEasterEggActive) return;
+                isEasterEggActive = true;
+
+                const container = document.getElementById('easter-egg-container');
+                const colors = ['#16DA49', '#6499FF', '#FFB500', '#DA70D6', '#FF69B4', '#A51515'];
+
+                // 五彩纸屑
+                for (let i = 0; i < 120; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'confetti';
+                    el.style.left = Math.random() * 100 + 'vw';
+                    el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    el.style.animationDelay = Math.random() * 2 + 's';
+                    el.style.width = (4 + Math.random() * 8) + 'px';
+                    el.style.height = (4 + Math.random() * 8) + 'px';
+                    container.appendChild(el);
+                }
+
+                // 文字
+                const words = ['Dorn', '𣿅', 'Hub', '✨', '🎉'];
+                for (let i = 0; i < 30; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'falling-text';
+                    el.textContent = words[Math.floor(Math.random() * words.length)];
+                    el.style.left = Math.random() * 100 + 'vw';
+                    el.style.animationDelay = Math.random() * 2 + 's';
+                    el.style.fontSize = (18 + Math.random() * 28) + 'px';
+                    el.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    container.appendChild(el);
+                }
+
+                if (window.UI && window.UI.success) {
+                    UI.success('🎉 刺梨汁万岁！彩蛋触发！ 🎉');
+                }
+
+                setTimeout(() => {
+                    container.innerHTML = '';
+                    isEasterEggActive = false;
+                    clickCount = 0;
+                }, 4000);
+            }
+
+            // ---- 设置面板 ----
+            function applyTheme(theme) {
+                if (theme === 'auto') {
+                    const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+                localStorage.setItem('demo_theme', theme);
+
+                document.querySelectorAll('.theme-option').forEach(el => {
+                    el.classList.toggle('active', el.dataset.theme === theme);
+                });
+            }
+
+            function applyColor(color) {
+                document.documentElement.style.setProperty('--primary-color', color);
+                document.documentElement.style.setProperty('--primary-color-rgb', hexToRgb(color));
+                localStorage.setItem('demo_primaryColor', color);
+
+                document.querySelectorAll('.color-option').forEach(el => {
+                    el.classList.toggle('active', el.dataset.color === color);
+                });
+                document.getElementById('customColorBtn').style.backgroundColor = color;
+                document.getElementById('customColorInput').value = color;
+            }
+
+            function hexToRgb(hex) {
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                return `${r}, ${g}, ${b}`;
+            }
+
+            // ---- 初始化 ----
+            function init() {
+                // 加载保存的设置
+                const savedTheme = localStorage.getItem('demo_theme') || 'auto';
+                const savedColor = localStorage.getItem('demo_primaryColor') || '#16DA49';
+                const savedEngine = localStorage.getItem('demo_searchEngine') || 'internal';
+
+                currentSearchEngine = savedEngine;
+                applyTheme(savedTheme);
+                applyColor(savedColor);
+
+                // 渲染
+                renderEngineOptions();
+                renderPinned();
+                renderCategories();
+                loadAnnouncements();
+
+                // 显示Insider徽章（模拟登录）
+                document.getElementById('insiderBadge').classList.add('visible');
+
+                // ---- 事件绑定 ----
+                // 搜索
+                searchBtn.addEventListener('click', () => {
+                    const q = searchInput.value.trim();
+                    if (q) {
+                        if (q.toLowerCase() === 'i love dorn!' || q === '刺梨汁') {
+                            triggerEasterEgg();
+                            return;
+                        }
+                        performSearch(q);
+                    }
+                });
+
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const q = searchInput.value.trim();
+                        if (q) {
+                            if (q.toLowerCase() === 'i love dorn!' || q === '刺梨汁') {
+                                triggerEasterEgg();
+                                return;
+                            }
+                            performSearch(q);
+                        }
+                    }
+                });
+
+                searchInput.addEventListener('input', () => {
+                    const q = searchInput.value.trim();
+                    if (q && currentSearchEngine === 'internal') {
+                        const results = websites.filter(s =>
+                            s.name.toLowerCase().includes(q.toLowerCase()) ||
+                            s.url.toLowerCase().includes(q.toLowerCase())
+                        );
+                        showSuggestions(results, q);
+                    } else {
+                        suggestions.classList.remove('active');
+                    }
+                });
+
+                // 点击外部关闭建议
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.search-container')) {
+                        suggestions.classList.remove('active');
+                    }
+                });
+
+                // 搜索引擎下拉
+                engineTrigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    engineDropdown.classList.toggle('active');
+                    engineArrow.classList.toggle('open');
+                });
+
+                document.addEventListener('click', () => {
+                    engineDropdown.classList.remove('active');
+                    engineArrow.classList.remove('open');
+                });
+
+                // 设置
+                settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
+                closeSettingsBtn.addEventListener('click', () => settingsModal.style.display = 'none');
+                settingsModal.addEventListener('click', (e) => {
+                    if (e.target === settingsModal) settingsModal.style.display = 'none';
+                });
+
+                // 颜色选择
+                document.querySelectorAll('.color-option').forEach(el => {
+                    el.addEventListener('click', () => applyColor(el.dataset.color));
+                });
+
+                document.getElementById('applyCustomColor').addEventListener('click', () => {
+                    applyColor(document.getElementById('customColorInput').value);
+                });
+
+                // 主题选择
+                document.querySelectorAll('.theme-option').forEach(el => {
+                    el.addEventListener('click', () => applyTheme(el.dataset.theme));
+                });
+
+                // 固定网站添加
+                addPinnedBtn.addEventListener('click', () => {
+                    if (pinnedWebsites.length >= 10) return;
+                    pinnedTitleInput.value = '';
+                    pinnedUrlInput.value = '';
+                    addPinnedModal.style.display = 'flex';
+                });
+
+                closeAddPinnedBtn.addEventListener('click', () => addPinnedModal.style.display = 'none');
+                cancelAddPinnedBtn.addEventListener('click', () => addPinnedModal.style.display = 'none');
+                addPinnedModal.addEventListener('click', (e) => {
+                    if (e.target === addPinnedModal) addPinnedModal.style.display = 'none';
+                });
+
+                savePinnedBtn.addEventListener('click', () => {
+                    const title = pinnedTitleInput.value.trim() || pinnedUrlInput.value.trim();
+                    const url = pinnedUrlInput.value.trim();
+                    if (!url) {
+                        if (window.UI) UI.error('请输入网站地址');
+                        return;
+                    }
+                    if (pinnedWebsites.length >= 10) return;
+                    pinnedWebsites.push({ name: title, url: url, icon: 'fa-link' });
+                    localStorage.setItem('demo_pinnedWebsites', JSON.stringify(pinnedWebsites));
+                    renderPinned();
+                    renderCategories();
+                    addPinnedModal.style.display = 'none';
+                    if (window.UI) UI.success('已添加固定网站');
+                });
+
+                // 批量操作
+                batchOperateBtn.addEventListener('click', () => {
+                    if (pinnedWebsites.length === 0) return;
+                    isBatchMode = true;
+                    batchActions.classList.add('active');
+                    document.querySelectorAll('.pinned-card').forEach(c => c.classList.add('batch-mode'));
+                    selectedCards.clear();
+                    selectedCountEl.textContent = '0';
+                });
+
+                cancelBatchBtn.addEventListener('click', () => {
+                    isBatchMode = false;
+                    batchActions.classList.remove('active');
+                    document.querySelectorAll('.pinned-card').forEach(c => {
+                        c.classList.remove('batch-mode', 'batch-selected');
+                        c.querySelector('input[type="checkbox"]').checked = false;
+                    });
+                    selectedCards.clear();
+                    selectedCountEl.textContent = '0';
+                });
+
+                batchDeleteBtn.addEventListener('click', () => {
+                    if (selectedCards.size === 0) {
+                        if (window.UI) UI.warning('请先选择要删除的网站');
+                        return;
+                    }
+                    const indices = Array.from(selectedCards).map(c => parseInt(c.dataset.index)).sort((a, b) => b - a);
+                    indices.forEach(i => pinnedWebsites.splice(i, 1));
+                    localStorage.setItem('demo_pinnedWebsites', JSON.stringify(pinnedWebsites));
+                    renderPinned();
+                    renderCategories();
+                    isBatchMode = false;
+                    batchActions.classList.remove('active');
+                    selectedCards.clear();
+                    selectedCountEl.textContent = '0';
+                    if (window.UI) UI.success('已删除选中的网站');
+                });
+
+                // 彩蛋 - Logo点击
+                dornhubLogo.addEventListener('click', () => {
+                    if (!isEasterEggActive) {
+                        clickCount++;
+                        if (clickCount >= 5) {
+                            triggerEasterEgg();
+                            clickCount = 0;
+                        }
+                    }
+                });
+
+                // 清除数据
+                clearDataBtn.addEventListener('click', () => {
+                    if (confirm('确定要清除所有自定义数据吗？此操作不可撤销。')) {
+                        localStorage.clear();
+                        location.reload();
+                    }
+                });
+
+                // 更新说明
+                document.getElementById('settingsUpdateLogBtn').addEventListener('click', () => {
+                    const modal = document.getElementById('updateModal');
+                    const body = document.getElementById('updateModalBody');
+                    body.innerHTML = `
+                        <div class="update-panels" style="padding:24px 28px;">
+                            <div class="update-version">5.3.2607.2</div>
+                            <div class="update-date"><i class="fas fa-calendar-alt"></i> 2026-07-09</div>
+                            <div class="update-content">
+                                <h4>📦 组件展示版本</h4>
+                                <ul>
+                                    <li>展示主页所有核心UI组件</li>
+                                    <li>包含搜索、固定网站、分类导航、设置面板</li>
+                                    <li>演示数据均为示例，方便参考</li>
+                                    <li>所有CSS/JS使用绝对CDN引用</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    modal.style.display = 'flex';
+                });
+
+                document.getElementById('closeUpdateModalBtn').addEventListener('click', () => {
+                    document.getElementById('updateModal').style.display = 'none';
+                });
+                document.getElementById('closeUpdateModalFooterBtn').addEventListener('click', () => {
+                    document.getElementById('updateModal').style.display = 'none';
+                });
+                document.getElementById('updateModal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('updateModal')) {
+                        document.getElementById('updateModal').style.display = 'none';
+                    }
+                });
+
+                // Cookie偏好（简化）
+                document.getElementById('saveCookiePrefsBtn').addEventListener('click', () => {
+                    if (window.UI) UI.success('Cookie 偏好已保存');
+                });
+                document.getElementById('resetCookiePrefsBtn').addEventListener('click', () => {
+                    document.getElementById('functionalCookiesToggle').checked = true;
+                    document.getElementById('analyticsCookiesToggle').checked = true;
+                    if (window.UI) UI.info('已重置为默认');
+                });
+
+                // 显示选项
+                document.getElementById('showPinnedToggle').addEventListener('change', function() {
+                    document.getElementById('pinnedSection').style.display = this.checked ? 'block' : 'none';
+                });
+                document.getElementById('showNavigationToggle').addEventListener('change', function() {
+                    document.getElementById('categoriesContainer').style.display = this.checked ? 'block' : 'none';
+                });
+                document.getElementById('showAnnouncementToggle').addEventListener('change', function() {
+                    document.getElementById('announcementSection').style.display = this.checked ? 'block' : 'none';
+                });
+                document.getElementById('showDateToggle').addEventListener('change', function() {
+                    document.getElementById('datetime').style.display = this.checked ? 'block' : 'none';
+                });
+                document.getElementById('showTimeToggle').addEventListener('change', function() {
+                    document.getElementById('datetime').style.display = this.checked ? 'block' : 'none';
+                });
+
+                // 背景选项
+                document.querySelectorAll('.background-option').forEach(el => {
+                    el.addEventListener('click', function() {
+                        const type = this.dataset.bg;
+                        localStorage.setItem('demo_backgroundType', type);
+                        document.querySelectorAll('.background-option').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+
+                        // 移除旧背景层
+                        const old = document.querySelector('.background-layer');
+                        if (old) old.remove();
+
+                        if (type === 'none') return;
+
+                        const layer = document.createElement('div');
+                        layer.className = 'background-layer';
+                        layer.style.cssText =
+                            'position:fixed;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;z-index:-1;pointer-events:none;';
+
+                        if (type === 'default') {
+                            layer.style.backgroundImage = 'url(https://picsum.photos/1920/1080)';
+                        } else if (type === 'random') {
+                            layer.style.backgroundImage = 'url(https://picsum.photos/1920/1080?' + Date.now() + ')';
+                        } else if (type === 'custom') {
+                            const custom = localStorage.getItem('demo_customBackground');
+                            if (custom) layer.style.backgroundImage = 'url(' + custom + ')';
+                        }
+                        document.body.appendChild(layer);
+                    });
+                });
+
+                document.getElementById('applyCustomBackground').addEventListener('click', () => {
+                    const file = document.getElementById('customBackgroundInput').files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            localStorage.setItem('demo_customBackground', e.target.result);
+                            document.querySelector('.background-option[data-bg="custom"]').click();
+                            if (window.UI) UI.success('自定义背景已应用');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                // 日期时间更新
+                function updateDateTime() {
+                    const el = document.getElementById('datetime');
+                    if (!el) return;
+                    const now = new Date();
+                    el.textContent = now.toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        weekday: 'long'
+                    }) + ' ' + now.toLocaleTimeString('zh-CN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                }
+                updateDateTime();
+                setInterval(updateDateTime, 1000);
+
+                // 滚动效果
+                window.addEventListener('scroll', () => {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    header.classList.toggle('scrolled', scrollTop > 50);
+                    container.classList.toggle('scrolled', scrollTop > 50);
+                });
+
+                // 隐藏加载遮罩
+                setTimeout(() => {
+                    const mask = document.getElementById('loading-mask');
+                    if (mask) {
+                        mask.style.opacity = '0';
+                        setTimeout(() => mask.style.display = 'none', 400);
+                    }
+                }, 800);
+
+                // 初始化登录模块（模拟）
+                if (typeof LoginModule !== 'undefined' && LoginModule.init) {
+                    LoginModule.init('.header-right');
+                }
+
+                console.log('✅ 主页面模板已加载');
+            }
+
+            // 页面加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+
+</body>
+</html>

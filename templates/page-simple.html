@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单单内容页面模板 · 表单</title>
+    <meta name="description" content="简单单内容页面模板 - 以表单提交为代表，展示简洁页面核心组件">
+
+    <!-- ===== 绝对网址 CSS ===== -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+
+    <!-- ===== 项目样式 ===== -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+
+    <!-- ===== 页面特定样式 ===== -->
+    <style>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .simple-container {
+            max-width: 480px;
+            width: 92%;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+
+        /* 头部 */
+        .simple-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .simple-header .icon {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .simple-header h2 {
+            margin: 0 0 6px 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .simple-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: #d13438;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s var(--animation-curve);
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.15);
+            transform: scale(1.01);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        /* 按钮 */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s var(--animation-curve);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+            transform: translateY(-2px);
+        }
+
+        /* 消息反馈 */
+        .message {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.4s var(--animation-curve);
+        }
+
+        .message.success {
+            background: rgba(22, 218, 73, 0.12);
+            border: 1px solid #16DA49;
+            color: #16DA49;
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(209, 52, 56, 0.12);
+            border: 1px solid #d13438;
+            color: #d13438;
+            display: block;
+        }
+
+        .message.info {
+            background: rgba(100, 153, 255, 0.12);
+            border: 1px solid #6499FF;
+            color: #6499FF;
+            display: block;
+        }
+
+        /* Turnstile 容器 */
+        .turnstile-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        /* 底部链接 */
+        .bottom-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .bottom-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+
+        .bottom-link a:hover {
+            text-decoration: underline;
+            opacity: 0.8;
+        }
+
+        /* 按钮行（双按钮） */
+        .button-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .button-row .btn {
+            flex: 1;
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .simple-container {
+                padding: 20px 16px;
+            }
+            .simple-header .icon {
+                font-size: 36px;
+            }
+            .simple-header h2 {
+                font-size: 20px;
+            }
+            .button-row {
+                flex-direction: column;
+            }
+            .btn {
+                font-size: 14px;
+                padding: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 加载遮罩 ===== -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>加载中……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。</p>
+    </div>
+
+    <!-- ===== 页面主体 ===== -->
+    <div class="simple-container section-container">
+
+        <!-- ===== 头部 ===== -->
+        <div class="simple-header">
+            <span class="icon"><i class="fas fa-key"></i></span>
+            <h2>忘记密码</h2>
+            <p>输入您的身份证号，我们将向备用邮箱发送重置链接</p>
+        </div>
+
+        <!-- ===== 表单 ===== -->
+        <form id="simpleForm" data-turnstile="#turnstileContainer">
+
+            <div class="form-group">
+                <label for="idNumber">𣿅国身份证号 <span class="required">*</span></label>
+                <input type="text" id="idNumber" placeholder="请输入您的身份证号" required>
+            </div>
+
+            <!-- Turnstile 容器 -->
+            <div class="turnstile-wrapper">
+                <div id="turnstileContainer"></div>
+            </div>
+
+            <!-- 按钮 -->
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <i class="fas fa-paper-plane"></i> 发送重置邮件
+            </button>
+
+            <!-- 消息反馈 -->
+            <div id="message" class="message"></div>
+
+            <!-- 底部链接 -->
+            <div class="bottom-link">
+                <a href="#"><i class="fas fa-arrow-left"></i> 返回登录</a>
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== 绝对网址 JavaScript ===== -->
+    <!-- ============================================================ -->
+
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    <script src="https://dornhub.eu.org/resources/login.js"></script>
+    <script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+    <script>
+        // ============================================================
+        // 简单单内容页面 JavaScript
+        // ============================================================
+
+        (function() {
+            'use strict';
+
+            // ---- DOM 引用 ----
+            const form = document.getElementById('simpleForm');
+            const idInput = document.getElementById('idNumber');
+            const submitBtn = document.getElementById('submitBtn');
+            const messageEl = document.getElementById('message');
+
+            // ---- 消息显示 ----
+            function showMessage(text, type) {
+                messageEl.textContent = text;
+                messageEl.className = 'message ' + type;
+                messageEl.style.display = 'block';
+
+                if (type === 'success') {
+                    setTimeout(() => {
+                        messageEl.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            function hideMessage() {
+                messageEl.style.display = 'none';
+            }
+
+            // ---- 重置 Turnstile ----
+            function resetTurnstile() {
+                const container = document.getElementById('turnstileContainer');
+                if (container && typeof TurnstileManager !== 'undefined') {
+                    TurnstileManager.reset(container);
+                } else if (typeof turnstile !== 'undefined') {
+                    turnstile.reset();
+                }
+            }
+
+            // ---- 表单提交（由 turnstile-verified 事件触发） ----
+            form.addEventListener('turnstile-verified', async function(e) {
+                const idNumber = idInput.value.trim();
+
+                if (!idNumber) {
+                    showMessage('请输入身份证号', 'error');
+                    resetTurnstile();
+                    return;
+                }
+
+                // 演示：简单验证
+                if (idNumber.length < 6) {
+                    showMessage('身份证号格式不正确，请重新输入', 'error');
+                    resetTurnstile();
+                    return;
+                }
+
+                // 模拟提交
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发送中...';
+                hideMessage();
+
+                try {
+                    // 模拟 API 请求
+                    await new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            // 模拟成功（80% 概率）
+                            if (Math.random() > 0.2) {
+                                resolve({ success: true, message: '重置邮件已发送，请查收您的邮箱' });
+                            } else {
+                                reject({ error: '该身份证号未绑定邮箱，请先设置备用邮箱' });
+                            }
+                        }, 1500);
+                    });
+
+                    showMessage('✅ 重置邮件已发送，请查收您的邮箱', 'success');
+                    idInput.value = '';
+                    resetTurnstile();
+
+                } catch (error) {
+                    showMessage('❌ ' + (error.error || '发送失败，请稍后重试'), 'error');
+                    resetTurnstile();
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发送重置邮件';
+                }
+            });
+
+            // ---- 阻止原生表单提交 ----
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // TurnstileManager 会自动处理
+            });
+
+            // ---- 回车键提交 ----
+            idInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    // 触发 Turnstile 验证
+                    const container = document.getElementById('turnstileContainer');
+                    if (container && typeof TurnstileManager !== 'undefined') {
+                        // 如果有 TurnstileManager，它会自动处理
+                        // 否则手动触发表单提交
+                        form.dispatchEvent(new Event('submit'));
+                    }
+                }
+            });
+
+            // ---- 初始化登录模块（可选） ----
+            if (typeof LoginModule !== 'undefined' && LoginModule.init) {
+                LoginModule.init('.header-right');
+            }
+
+            // ---- 背景同步 ----
+            setTimeout(() => {
+                const bgType = localStorage.getItem('backgroundType') || 'default';
+                const customBg = localStorage.getItem('customBackground');
+                if (bgType !== 'none' && !document.querySelector('.background-layer')) {
+                    const bgLayer = document.createElement('div');
+                    bgLayer.className = 'background-layer';
+                    bgLayer.style.cssText =
+                        'position:fixed;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;z-index:-1;pointer-events:none';
+                    if (bgType === 'default') bgLayer.style.backgroundImage = "url('https://picsum.photos/1920/1080')";
+                    else if (bgType === 'random') bgLayer.style.backgroundImage =
+                        "url('https://picsum.photos/1920/1080?" + Date.now() + "')";
+                    else if (bgType === 'custom' && customBg) bgLayer.style.backgroundImage = "url('" + customBg + "')";
+                    if (bgLayer.style.backgroundImage) document.body.appendChild(bgLayer);
+                }
+            }, 200);
+
+            // ---- 隐藏加载遮罩 ----
+            setTimeout(() => {
+                const mask = document.getElementById('loading-mask');
+                if (mask) {
+                    mask.style.opacity = '0';
+                    setTimeout(() => mask.style.display = 'none', 400);
+                }
+            }, 600);
+
+            console.log('✅ 简单单内容页面模板已加载');
+
+        })();
+    </script>
+
+</body>
+</html>
