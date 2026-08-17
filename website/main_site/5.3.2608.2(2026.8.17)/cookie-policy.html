@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T6QTPSWXPV"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-T6QTPSWXPV');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="SatornhLogo.png">
+    <title>Cookie 政策 - Dorn Hub</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    
+    <style>
+        body {
+            font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 120px 20px 60px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .back-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .back-btn:hover {
+            background: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .page-title i {
+            color: var(--primary-color);
+            font-size: 28px;
+        }
+        
+        .page-title h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .update-date {
+            text-align: right;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        hr.divider {
+            border: none;
+            border-top: 3px double var(--primary-color);
+            margin: 50px 0;
+        }
+
+        .language-badge {
+            text-align: center;
+            margin: 30px 0 20px 0;
+        }
+
+        .language-badge span {
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .language-badge p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        
+        .cookie-card {
+            margin-bottom: 30px;
+        }
+        
+        .cookie-section {
+            margin-bottom: 35px;
+            scroll-margin-top: 100px;
+        }
+        
+        .cookie-section h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .cookie-section p {
+            margin: 10px 0;
+            line-height: 1.7;
+        }
+        
+        .cookie-section ul, .cookie-section ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        .cookie-section li {
+            margin: 8px 0;
+        }
+        
+        .cookie-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .cookie-table th,
+        .cookie-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .cookie-table th {
+            background: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-color);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+        }
+        
+        .back-to-top:hover {
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+            }
+            .cookie-section h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                返回主页
+            </a>
+            <div class="page-title">
+                <i class="fas fa-cookie-bite"></i>
+                <h1>Cookie 政策</h1>
+            </div>
+        </div>
+
+        <div class="update-date">
+            <i class="fas fa-calendar-alt"></i> Last updated: July 4, 2026
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 英文版 Cookie 政策                                           -->
+        <!-- ============================================================ -->
+        <div class="cookie-card section-container">
+            <!-- What Are Cookies -->
+            <div class="cookie-section">
+                <h2>What Are Cookies?</h2>
+                <p>Cookies are small text files that are placed on your computer or mobile device when you visit a website. They are widely used to make websites work, or to work more efficiently, as well as to provide information to website owners.</p>
+                <p>Cookies are typically divided into two categories:</p>
+                <ul>
+                    <li><strong>First-party cookies</strong>: Set by the website you are visiting (Dorn Hub).</li>
+                    <li><strong>Third-party cookies</strong>: Set by other websites or services that we use on our site.</li>
+                </ul>
+            </div>
+        
+            <!-- Consent Mechanism -->
+            <div class="cookie-section">
+                <h2>Your Consent Matters</h2>
+                <p>We respect your privacy and give you control over your data. We only load non-essential cookies (such as analytics cookies) <strong>after you have given your explicit consent</strong>.</p>
+                <p>When you first visit our website, a consent banner will appear asking for your permission to use:</p>
+                <ul>
+                    <li><strong>Functional Cookies</strong> — to remember your theme preferences, pinned websites, and display settings (stored in your browser's local storage).</li>
+                    <li><strong>Analytics Cookies</strong> — to help us understand how visitors use our site through Google Analytics.</li>
+                </ul>
+                <p>You can change your preferences at any time by:</p>
+                <ul>
+                    <li>Clicking the "Cookie Preferences" option in the settings panel on our homepage, or</li>
+                    <li>Using the "Preferences" button in the initial consent banner.</li>
+                </ul>
+                <p>If you decline analytics cookies, Google Analytics will not be loaded on your device, and no tracking data will be collected. If you decline functional cookies, your personalized settings (such as theme color and pinned websites) will not be saved between sessions.</p>
+            </div>
+        
+            <!-- Cookies We Use -->
+            <div class="cookie-section">
+                <h2>Cookies We Use</h2>
+                <p>We use Google Analytics to understand how visitors use our website. The following table lists the cookies we use:</p>
+                
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Cookie Name</th>
+                            <th>Purpose</th>
+                            <th>Expiration</th>
+                            <th>Consent Required</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>_ga</td>
+                            <td>Google Analytics — Distinguishes unique users</td>
+                            <td>2 years</td>
+                            <td>Yes (analytics consent)</td>
+                        </tr>
+                        <tr>
+                            <td>_ga_T6QTPSWXPV</td>
+                            <td>Google Analytics — Persists session state</td>
+                            <td>2 years</td>
+                            <td>Yes (analytics consent)</td>
+                        </tr>
+                        <tr>
+                            <td>__test</td>
+                            <td>Website functionality testing</td>
+                            <td>Session</td>
+                            <td>No (strictly necessary)</td>
+                        </tr>
+                        <tr>
+                            <td>cf.turnstile.u</td>
+                            <td>Cloudflare Turnstile — Used to differentiate real visitors from bots. This cookie is essential for site security and does not track your browsing activity.</td>
+                            <td>Session</td>
+                            <td>No (strictly necessary)</td>
+                        </tr>
+						<tr>
+						    <td>cf_clearance</td>
+						    <td>Cloudflare — Set after successful Turnstile verification to confirm you are a human. This cookie is essential for security and expires shortly after verification.</td>
+						    <td>Session (5-10 minutes)</td>
+						    <td>No (strictly necessary)</td>
+						</tr>
+                        <tr>
+                            <td>cookie_consent_v2</td>
+                            <td>Stores your cookie preference choices</td>
+                            <td>Persistent (localStorage)</td>
+                            <td>No (required for consent management)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        
+            <!-- Local Storage -->
+            <div class="cookie-section">
+                <h2>Local Storage</h2>
+                <p>In addition to cookies, we use browser local storage to store your personalization settings. This data is stored only on your device and is not sent to our servers.</p>
+                <p>Local storage data we maintain includes:</p>
+                <ul>
+                    <li><strong>Theme preference</strong> (light/dark/auto)</li>
+                    <li><strong>Primary color selection</strong> (your chosen accent color)</li>
+                    <li><strong>Pinned websites list</strong> (your saved quick access links)</li>
+                    <li><strong>Display settings</strong> (show/hide pinned section, navigation, date, time)</li>
+                    <li><strong>Background type and custom background images</strong> (default, random, custom, or none)</li>
+                    <li><strong>Last visited version</strong> (used to display update notifications when the site is updated)</li>
+                    <li><strong>Cookie consent preference</strong> (whether you have accepted or declined analytics cookies)</li>
+                    <li><strong>User login session</strong> (if you choose to stay logged in)</li>
+                </ul>
+                <p><strong>Important:</strong> Local storage for functional data (theme, pinned websites, etc.) is only used if you have consented to functional cookies. If you decline functional cookies or withdraw your consent later, these settings will not be saved between sessions, and any existing functional data will be cleared from your device.</p>
+            </div>
+        
+            <!-- How to Manage Cookies -->
+            <div class="cookie-section">
+                <h2>How to Manage Cookies</h2>
+                <p>You can manage cookies through your browser settings. Most browsers allow you to:</p>
+                <ul>
+                    <li>View cookies that are set on your device</li>
+                    <li>Block all cookies</li>
+                    <li>Delete existing cookies</li>
+                </ul>
+                <p>You may also customize your Cookie settings when you first visit our website, or later via your account profile page or homepage settings panel.</p>
+                <p>Please note that disabling cookies may affect the functionality of our website. For instructions on how to manage cookies in your browser, please visit your browser's help section.</p>
+            </div>
+        
+            <!-- How to Withdraw Consent -->
+            <div class="cookie-section">
+                <h2>How to Withdraw Your Consent</h2>
+                <p>You can withdraw your consent for non-essential cookies at any time. Once withdrawn, we will stop loading analytics cookies and will not store new functional data on your device.</p>
+                
+                <p><strong>To withdraw consent:</strong></p>
+                <ul>
+                    <li><strong>Via our website:</strong> Log in to your account (if applicable), open the settings panel, and click "Cookie Preferences." Uncheck "Analytics Cookies" and/or "Functional Cookies," then click "Save Preferences."</li>
+                    <li><strong>Via your browser:</strong> Clear your browser's cookies and local storage. The consent banner will reappear on your next visit, allowing you to make a new choice.</li>
+                    <li><strong>Google Analytics opt-out:</strong> You can install the official Google Analytics Opt-out Browser Add-on at <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" style="color: var(--primary-color);">https://tools.google.com/dlpage/gaoptout</a> to prevent Google Analytics from collecting your data across all websites.</li>
+                </ul>
+                
+                <p><strong>What happens after you withdraw consent?</strong></p>
+                <ul>
+                    <li>If you withdraw analytics consent: Google Analytics will be disabled, and any existing Google Analytics cookies will be removed from your device.</li>
+                    <li>If you withdraw functional consent: Your personalized settings (theme, pinned websites, display options) will no longer be saved. The page will refresh to apply this change.</li>
+                </ul>
+                
+                <p>Withdrawing consent does not affect the lawfulness of processing based on consent before its withdrawal.</p>
+            </div>
+        
+            <!-- Updates to This Policy -->
+            <div class="cookie-section">
+                <h2>Updates to This Policy</h2>
+                <p>We may update this Cookie Policy from time to time to reflect changes in the cookies we use or for other operational, legal, or regulatory reasons. Please revisit this page regularly to stay informed about our use of cookies and related technologies.</p>
+                <p>The date at the top of this Cookie Policy indicates when it was last updated.</p>
+            </div>
+        
+            <!-- Contact Us -->
+            <div class="cookie-section">
+                <h2>Contact Us</h2>
+                <p>If you have any questions about our use of cookies or other technologies, please contact us at:</p>
+                <p>
+                    Email: <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a><br>
+                    Contact page: <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 分隔线 & 中文版标识                                          -->
+        <!-- ============================================================ -->
+        <hr class="divider">
+
+        <div class="language-badge">
+            <span><i class="fas fa-language"></i> 中文版本</span>
+            <p>本译文仅供参考，如与英文版本存在歧义，以英文版本为准。</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 中文版 Cookie 政策                                           -->
+        <!-- ============================================================ -->
+        <div class="cookie-card section-container">
+            <!-- 什么是 Cookie -->
+            <div class="cookie-section">
+                <h2>什么是 Cookie？</h2>
+                <p>Cookie 是当您访问网站时放置在您计算机或移动设备上的小型文本文件。它们被广泛用于使网站正常运行或更高效地运行，以及向网站所有者提供信息。</p>
+                <p>Cookie 通常分为两类：</p>
+                <ul>
+                    <li><strong>第一方 Cookie</strong>：由您正在访问的网站（Dorn Hub）设置。</li>
+                    <li><strong>第三方 Cookie</strong>：由我们在网站上使用的其他网站或服务设置。</li>
+                </ul>
+            </div>
+        
+            <!-- 同意机制 -->
+            <div class="cookie-section">
+                <h2>您的同意很重要</h2>
+                <p>我们尊重您的隐私，并让您控制自己的数据。我们仅在您<strong>明确同意之后</strong>才加载非必要的 Cookie（如分析 Cookie）。</p>
+                <p>当您首次访问我们的网站时，会出现一个同意横幅，征得您的许可使用：</p>
+                <ul>
+                    <li><strong>功能性 Cookie</strong> — 用于记住您的主题偏好、固定网站和显示设置（存储在浏览器的本地存储中）。</li>
+                    <li><strong>分析 Cookie</strong> — 帮助我们通过 Google Analytics 了解访问者如何使用我们的网站。</li>
+                </ul>
+                <p>您可以随时更改偏好设置：</p>
+                <ul>
+                    <li>点击我们主页设置面板中的 "Cookie 偏好" 选项，或</li>
+                    <li>使用初始同意横幅中的 "偏好" 按钮。</li>
+                </ul>
+                <p>如果您拒绝分析 Cookie，Google Analytics 将不会在您的设备上加载，也不会收集任何跟踪数据。如果您拒绝功能性 Cookie，您的个性化设置（如主题颜色和固定网站）将不会在会话之间保存。</p>
+            </div>
+        
+            <!-- 我们使用的 Cookie -->
+            <div class="cookie-section">
+                <h2>我们使用的 Cookie</h2>
+                <p>我们使用 Google Analytics 来了解访问者如何使用我们的网站。下表列出了我们使用的 Cookie：</p>
+                
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Cookie 名称</th>
+                            <th>用途</th>
+                            <th>有效期</th>
+                            <th>是否需要同意</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>_ga</td>
+                            <td>Google Analytics — 区分唯一用户</td>
+                            <td>2 年</td>
+                            <td>是（分析同意）</td>
+                        </tr>
+                        <tr>
+                            <td>_ga_T6QTPSWXPV</td>
+                            <td>Google Analytics — 保持会话状态</td>
+                            <td>2 年</td>
+                            <td>是（分析同意）</td>
+                        </tr>
+                        <tr>
+                            <td>__test</td>
+                            <td>网站功能测试</td>
+                            <td>会话</td>
+                            <td>否（严格必要）</td>
+                        </tr>
+                        <tr>
+                            <td>cf.turnstile.u</td>
+                            <td>Cloudflare Turnstile — 用于区分真实访客和机器人。此 Cookie 对网站安全至关重要，不会跟踪您的浏览活动。</td>
+                            <td>会话</td>
+                            <td>否（严格必要）</td>
+                        </tr>
+						<tr>
+						    <td>cf_clearance</td>
+						    <td>Cloudflare — 在 Turnstile 验证成功后设置，用于确认您是真实人类。此 Cookie 对安全至关重要，在验证完成后不久过期。</td>
+						    <td>会话（5-10 分钟）</td>
+						    <td>否（严格必要）</td>
+						</tr>
+                        <tr>
+                            <td>cookie_consent_v2</td>
+                            <td>存储您的 Cookie 偏好选择</td>
+                            <td>持久（localStorage）</td>
+                            <td>否（同意管理所需）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        
+            <!-- 本地存储 -->
+            <div class="cookie-section">
+                <h2>本地存储</h2>
+                <p>除了 Cookie 之外，我们还使用浏览器的本地存储来存储您的个性化设置。此数据仅存储在您的设备上，不会发送到我们的服务器。</p>
+                <p>我们维护的本地存储数据包括：</p>
+                <ul>
+                    <li><strong>主题偏好</strong>（亮色/暗色/自动）</li>
+                    <li><strong>主色选择</strong>（您选择的强调色）</li>
+                    <li><strong>固定网站列表</strong>（您保存的快速访问链接）</li>
+                    <li><strong>显示设置</strong>（显示/隐藏固定板块、导航、日期、时间）</li>
+                    <li><strong>背景类型和自定义背景图片</strong>（默认、随机、自定义或无）</li>
+                    <li><strong>上次访问版本</strong>（用于在网站更新时显示更新通知）</li>
+                    <li><strong>Cookie 同意偏好</strong>（您是否接受或拒绝分析 Cookie）</li>
+                    <li><strong>用户登录会话</strong>（如果您选择保持登录状态）</li>
+                </ul>
+                <p><strong>重要提示：</strong> 功能性数据（主题、固定网站等）的本地存储仅在您同意功能性 Cookie 时使用。如果您拒绝功能性 Cookie 或之后撤回同意，这些设置将不会在会话之间保存，任何现有的功能性数据将从您的设备中清除。</p>
+            </div>
+        
+            <!-- 如何管理 Cookie -->
+            <div class="cookie-section">
+                <h2>如何管理 Cookie</h2>
+                <p>您可以通过浏览器设置管理 Cookie。大多数浏览器允许您：</p>
+                <ul>
+                    <li>查看设备上设置的 Cookie</li>
+                    <li>阻止所有 Cookie</li>
+                    <li>删除现有 Cookie</li>
+                </ul>
+                <p>您也可以在首次访问我们的网站时自定义 Cookie 设置，或稍后通过您的账户资料页面或主页设置面板进行自定义。</p>
+                <p>请注意，禁用 Cookie 可能会影响我们网站的功能。有关如何在浏览器中管理 Cookie 的说明，请访问浏览器的帮助部分。</p>
+            </div>
+        
+            <!-- 如何撤回同意 -->
+            <div class="cookie-section">
+                <h2>如何撤回您的同意</h2>
+                <p>您可以随时撤回对非必要 Cookie 的同意。撤回后，我们将停止加载分析 Cookie，并且不会在您的设备上存储新的功能性数据。</p>
+                
+                <p><strong>撤回同意的方式：</strong></p>
+                <ul>
+                    <li><strong>通过我们的网站：</strong> 登录您的账户（如适用），打开设置面板，点击 "Cookie 偏好"。取消勾选 "分析 Cookie" 和/或 "功能性 Cookie"，然后点击 "保存偏好"。</li>
+                    <li><strong>通过您的浏览器：</strong> 清除浏览器的 Cookie 和本地存储。同意横幅将在您下次访问时重新出现，让您做出新的选择。</li>
+                    <li><strong>Google Analytics 退出：</strong> 您可以安装官方的 Google Analytics 退出浏览器插件，访问 <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" style="color: var(--primary-color);">https://tools.google.com/dlpage/gaoptout</a>，以防止 Google Analytics 在所有网站上收集您的数据。</li>
+                </ul>
+                
+                <p><strong>撤回同意后会发生什么？</strong></p>
+                <ul>
+                    <li>如果您撤回分析同意：Google Analytics 将被禁用，任何现有的 Google Analytics Cookie 将从您的设备中删除。</li>
+                    <li>如果您撤回功能同意：您的个性化设置（主题、固定网站、显示选项）将不再保存。页面将刷新以应用此更改。</li>
+                </ul>
+                
+                <p>撤回同意不影响撤回前基于同意的处理的合法性。</p>
+            </div>
+        
+            <!-- 政策更新 -->
+            <div class="cookie-section">
+                <h2>政策更新</h2>
+                <p>我们可能不时更新本 Cookie 政策，以反映我们使用的 Cookie 的变化，或出于其他运营、法律或监管原因。请定期重新访问此页面，以了解我们使用 Cookie 及相关技术的最新信息。</p>
+                <p>本 Cookie 政策顶部的日期表示最后更新时间。</p>
+            </div>
+        
+            <!-- 联系我们 -->
+            <div class="cookie-section">
+                <h2>联系我们</h2>
+                <p>如果您对我们使用 Cookie 或其他技术有任何疑问，请通过以下方式联系我们：</p>
+                <p>
+                    邮箱：<a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a><br>
+                    联系页面：<a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a>
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('visible', window.scrollY > 300);
+        });
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        setTimeout(() => {
+            const bgType = localStorage.getItem('backgroundType') || 'default';
+            const customBg = localStorage.getItem('customBackground');
+            if (bgType !== 'none' && !document.querySelector('.background-layer')) {
+                const bgLayer = document.createElement('div');
+                bgLayer.className = 'background-layer';
+                bgLayer.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;z-index:-1;pointer-events:none`;
+                if (bgType === 'default') bgLayer.style.backgroundImage = "url('flag.jpg')";
+                else if (bgType === 'random') bgLayer.style.backgroundImage = "url('https://picsum.photos/1920/1080')";
+                else if (bgType === 'custom' && customBg) bgLayer.style.backgroundImage = `url('${customBg}')`;
+                if (bgLayer.style.backgroundImage) document.body.appendChild(bgLayer);
+            }
+        }, 100);
+    </script>
+</body>
+</html>

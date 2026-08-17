@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://dornhub.eu.org/SatornhLogo.png" type="image/png" sizes="161x161">
+    
+    <title>关于 Dorn Hub</title>
+    <meta name="description" content="Dorn Hub 是一个网站，也是一个世界。它起源于初中教室里的一个玩笑，后来成长为一个完整的虚拟国家——𣿅国。">
+    <meta name="keywords" content="Dorn Hub,关于,𣿅国,虚拟国家,IP,𣿅子">
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    
+    <style>
+        /* ==================== About 页面专用样式 ==================== */
+        
+        .about-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 20px 80px;
+        }
+        
+        .header-placeholder {
+            height: 80px;
+        }
+        
+        /* ==================== 滚动动画 ==================== */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .delay-1 { transition-delay: 0.05s; }
+        .delay-2 { transition-delay: 0.1s; }
+        .delay-3 { transition-delay: 0.15s; }
+        .delay-4 { transition-delay: 0.2s; }
+        .delay-5 { transition-delay: 0.25s; }
+        
+        /* ==================== 主标题 ==================== */
+        .page-main-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .page-main-title h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #20EE66 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 16px;
+        }
+        
+        .page-main-title p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* ==================== 时间线 ==================== */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+            margin: 40px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: var(--border-color);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 32px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .timeline-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 2px solid var(--bg-color);
+            box-shadow: 0 0 0 2px var(--primary-color);
+            flex-shrink: 0;
+        }
+        
+        .timeline-date {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        
+        .timeline-content {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-color);
+        }
+        
+        .timeline-content strong {
+            color: var(--primary-color);
+        }
+        
+        /* ==================== 时间线图片占位 ==================== */
+        .timeline-image {
+            margin-top: 12px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            max-width: 300px;
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-image img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+        
+        .timeline-image .image-placeholder {
+            padding: 30px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .timeline-image .image-placeholder i {
+            font-size: 32px;
+            color: var(--border-color);
+        }
+        
+        .timeline-image:hover {
+            border-color: var(--primary-color);
+        }
+        
+        /* ==================== 团队表格 ==================== */
+        .team-section {
+            margin: 60px 0 40px;
+        }
+        
+        .team-section h2 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+        
+        .team-section .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .team-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .team-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 16px var(--shadow-color);
+        }
+        
+        .team-card .name {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        
+        .team-card .location {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        .team-card .role {
+            font-size: 12px;
+            color: var(--primary-color);
+            margin-top: 6px;
+            opacity: 0.8;
+        }
+		
+		.team-card .tze-role {
+		    font-size: 16px;
+			color: var(--text-color);
+		    margin-top: 6px;
+		    opacity: 1;
+		}
+        
+        .team-card .github-link {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .team-card .github-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .team-card .github-link i {
+            margin-right: 4px;
+        }
+        
+        /* ==================== 版权与开源 ==================== */
+        .license-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: var(--secondary-color);
+            border-radius: 16px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .license-section h2 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: var(--primary-color);
+        }
+        
+        .license-section p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+        
+        .license-section a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .license-section a:hover {
+            text-decoration: underline;
+        }
+        
+        /* ==================== 致谢 ==================== */
+        .thanks-section {
+            text-align: center;
+            padding: 50px 20px;
+            margin-top: 40px;
+            background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.05) 0%, rgba(var(--primary-color-rgb), 0.01) 100%);
+            border-radius: 32px;
+        }
+        
+        .thanks-section h2 {
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+        
+        .thanks-section p {
+            font-size: 16px;
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 0 auto 12px;
+            color: var(--text-color);
+        }
+        
+        /* ==================== 返回链接 ==================== */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 40px;
+            padding: 12px 24px;
+            background: var(--secondary-color);
+            border-radius: 40px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(-5px);
+        }
+        
+        /* ==================== 响应式 ==================== */
+        @media (max-width: 768px) {
+            .page-main-title h1 {
+                font-size: 32px;
+            }
+            
+            .page-main-title p {
+                font-size: 16px;
+            }
+            
+            .timeline {
+                padding-left: 28px;
+            }
+            
+            .timeline::before {
+                left: 8px;
+            }
+            
+            .timeline-item::before {
+                left: -25px;
+                width: 12px;
+                height: 12px;
+            }
+            
+            .timeline-date {
+                font-size: 12px;
+            }
+            
+            .timeline-content {
+                font-size: 14px;
+            }
+            
+            .team-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .license-section {
+                padding: 20px;
+            }
+            
+            .thanks-section h2 {
+                font-size: 24px;
+            }
+            
+            .timeline-image {
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载遮罩 -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+
+    <!-- 头部 -->
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1>
+                    <span id="navname1">Dorn</span>
+                    <span id="navname2">Hub</span>
+                </h1>
+            </div>
+            <div class="header-right">
+                <a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none;">
+                    <i class="fas fa-home"></i> 主页
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="header-placeholder"></div>
+
+    <div class="about-container">
+        <!-- 主标题 -->
+        <div class="page-main-title fade-up">
+            <h1>关于 Dorn Hub</h1>
+            <p>一个 IP 的诞生</p>
+        </div>
+
+        <!-- 引言 -->
+        <div class="fade-up delay-1" style="text-align: center; margin-bottom: 50px; font-size: 18px; line-height: 1.9; color: var(--text-color);">
+            <p>Dorn Hub 是一个网站，也是一个世界。它起源于初中教室里的一个玩笑，后来成长为一个完整的虚拟国家——𣿅国。这里有国歌、有总统、有文化、有历史，甚至有属于自己的文学经典。而这一切，都始于一个叫 Valéry 的人。</p>
+        </div>
+
+        <!-- ==================== 时间线 ==================== -->
+		<div class="section-container">
+        <div class="fade-up delay-2">
+            <h2 style="font-size: 28px; margin-bottom: 30px; color: var(--primary-color); text-align: center;">历史时间线</h2>
+            
+            <div class="timeline">
+                <!-- 2019 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">2019.9</div>
+                    <div class="timeline-content"><strong>灵感来源：Valéry</strong><br>同班的 Valéry 是个矛盾体：身高 183，会法语、足球、小提琴，成绩优异——但上课吃东西、盒饭吃一周不扔、考试吃泡面撒到答题卡。这些行为成了项目创作的灵感源泉。</div>
+                </div>
+                
+                <!-- 2021 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">2021某月</div>
+                    <div class="timeline-content"><strong>洒水车事件</strong><br>初中英语考试期间，窗外洒水车循环播放《兰花草》，噪音持续了整个下午，全班无法专心答题。有人开玩笑说：“我们要建一个国家，国歌就用《兰花草》。”</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2021.10</div>
+                    <div class="timeline-content"><strong>“𣿅”字诞生</strong><br>Léo 以 Valéry 为核心开始构建虚拟国家世界观。Valéry 真实姓名中有字眼与“𣿅”音近，而“𣿅”字本身来源于一次化学试卷的印刷错误。<br>基于洒水车事件，决定以《兰花草》为国歌。𣿅国虚拟国家概念正式确立，奉 Valéry 为大总统。</div>
+                </div>
+                
+                <!-- 2022 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">2022.2</div>
+                    <div class="timeline-content"><strong>羟基班</strong><br>核心成员进入同一所高中的“强基班”（戏称“羟基班”）。班级内部关系紧密，为项目发展提供了土壤。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2022.3</div>
+                    <div class="timeline-content"><strong>Dornhub 创建</strong><br>Léo 取“𣿅”的音译“Dorn”，创建 Dornhub 网页，用于介绍𣿅国世界观。域名 dornhub.github.io 诞生。同步发布的是“𣿅国国运模拟器”。</div>
+                    <div class="timeline-image">
+                        <div class="image-placeholder">
+                            <img src="https://dornhub.eu.org/resources/images/about/2022.3.png" alt="第1代Dorn Hub网页">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2022.4</div>
+                    <div class="timeline-content"><strong>cgy22 加入</strong><br>Ade 向本班的 cgy22 介绍了该项目，把班级电脑的时钟时区命名为“𣿅国时间”。cgy22 表现出强烈兴趣，开始自学前端开发。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2022.5</div>
+                    <div class="timeline-content"><strong>Valéry 被甩</strong><br>一个阳光明媚的星期五下午，Valéry 被女朋友甩了。Léo 是目击证人。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2022.9</div>
+                    <div class="timeline-content"><strong>Grabac 开始记录 · 第一次国宴</strong><br>Grabac 开始模仿《论语》，用文言文记录 Valéry 与老师言行，称其为“𣿅子”。老师和同学都被抽象成“某子”。𣿅国诸子体系正式形成。<br>隔壁班 Debussy 带来一桶 2L 刺梨原汁到教室。味道极其奇特——酸到发苦。当天品尝者日后大多成为项目核心成员。称此为“𣿅国第一次国宴”。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2022.10</div>
+                    <div class="timeline-content"><strong>运动会加油稿</strong><br>运动会要写加油稿，投稿就有机会上台公开朗读，而小语种稿件必定能有机会朗读，但是要有小语种老师签名审稿。见此，Léo 用𣿅语写了一篇加油稿，抓了一位同学，签了一个很潦草的名字假装老师签名。接稿的审核看不懂小语种，直接放行。于是 Léo 成功在主席台上推广了𣿅语。</div>
+					<div class="timeline-image">
+                        <div class="image-placeholder">
+                            <img src="https://dornhub.eu.org/resources/images/about/2022.10.jpg" alt="𣿅语运动会加油稿原稿">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2022.12</div>
+                    <div class="timeline-content"><strong>国庆节活动</strong><br>Léo 制作𣿅国宣传海报，张贴在学校社团信息栏。首次公开宣传。对联是“建𣿅二载铸盛世，年方十六正青春”。团队正式成立。</div>
+                </div>
+                
+                <!-- 2023 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.1</div>
+                    <div class="timeline-content"><strong>世界观页面重写</strong><br>Léo 重写𣿅国世界观介绍页面，做了更完整的呈现（dornhub.github.io/index2）。</div>
+					<div class="timeline-image">
+					    <div class="image-placeholder">
+					        <img src="https://dornhub.eu.org/resources/images/about/2023.1.png" alt="世界观介绍页面">
+					    </div>
+					</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.3</div>
+                    <div class="timeline-content"><strong>班级电脑主页</strong><br>cgy22 受启发，在 Dorn Hub 中加入搜索框和网页链接，设为班级电脑主页。现代 Dorn Hub 雏形诞生。</div>
+					<div class="timeline-image">
+                        <div class="image-placeholder">
+                            <img src="https://dornhub.eu.org/resources/images/about/2023.3.png" alt="第2代Dorn Hub页面">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.4</div>
+                    <div class="timeline-content"><strong>独立域名</strong><br>cgy22 学会部署网站，获得免费域名 dorn.rf.gd。Dorn Hub 拥有独立域名。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.5</div>
+                    <div class="timeline-content"><strong>《主干子》</strong><br>Léo 开始记录地理老师的言行，命名为《主干子》——因地理老师上课要求 30 秒背完思维导图主干知识，背不出要唱歌。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.6</div>
+                    <div class="timeline-content"><strong>生化危机</strong><br>Valéry 在某次市质检中生物和化学均获得班级第一。证明他平时不认真，但认真起来确实很强。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.8</div>
+                    <div class="timeline-content"><strong>作诗</strong><br>Léo 曰：“刺梨醇香四溢，泡面沁芳十里。星环闪耀之处，𣿅国生生不息。”</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.9</div>
+                    <div class="timeline-content"><strong>Grabac 完成《𣿅子》前三册</strong><br>Grabac 完成高一阶段《𣿅子》三册记录。后续记录工作由 cgy22 接手。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.10</div>
+                    <div class="timeline-content"><strong>随机抽号器</strong><br>各种随机抽号器在团队及班级之间开始盛行，不过它们都被调高了抽到 49 号的概率。49 号是 Valéry。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.11</div>
+                    <div class="timeline-content"><strong>“你去哪呀”</strong><br>Valéry 逃美术课去实验楼玩原神，被监控拍到。美术老师将监控画面做成视频全年段公映。此乃：“头上三尺有监控，身前九寸是原神”。</div>
+					<div class="timeline-image">
+                        <div class="image-placeholder">
+                            <img src="https://dornhub.eu.org/resources/images/about/2023.11.png" alt="逃课监控画面">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023.12</div>
+                    <div class="timeline-content"><strong>升旗仪式</strong><br>OwenMeng 定制了一批𣿅国国旗，在𣿅国国庆节插在“支持𣿅国”的班级班牌上，称为“升旗仪式”。𣿅子 IP 进入快速传播期。</div>
+                </div>
+                
+                <!-- 2024 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">2024.2</div>
+                    <div class="timeline-content"><strong>第一次选举</strong><br>𣿅国第一次全民总统及外阁选举举行。5 位参选人中，Valéry 以 50% 投票率胜选连任。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2024.3</div>
+                    <div class="timeline-content"><strong>版本3</strong><br>cgy22 多次迭代，Dorn Hub 版本3 诞生。页面仍较为简陋（现可查看 dorn-old.dorn.rf.gd）。</div>
+					<div class="timeline-image">
+					    <div class="image-placeholder">
+					        <img src="https://dornhub.eu.org/resources/images/about/2024.3.png" alt="第3代Dorn Hub页面">
+					    </div>
+					</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2024.4</div>
+                    <div class="timeline-content"><strong>瓦莱西雅大辞典</strong><br>Léo 大力开发瓦莱西雅大辞典（valencia.dorn.rf.gd），系统性整理𣿅国世界观词汇。cgy22 进行了改进。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2024.5</div>
+                    <div class="timeline-content"><strong>周边售卖活动</strong><br>团队制作𣿅国周边在校内售卖，效果显著。活动成果的特别鸣谢现为“𣿅国名人堂”（dhof.dorn.rf.gd）。大𣿅子 IP 正式形成。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2024.6</div>
+                    <div class="timeline-content"><strong>虎扑评分</strong><br>Valéry 在“虎扑名人堂”的评分和记录遭到删除。此前同学热衷于为其刷分。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2024.7</div>
+                    <div class="timeline-content"><strong>再次生化危机</strong><br>Valéry 在期末考试再次发力，生物选择题只错了一道。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2024.10</div>
+                    <div class="timeline-content"><strong>总统故里</strong><br>Léo 来到武平县。这是总统故里。Ade 曰：“富贵不归故乡，如衣锦夜行。”</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2024.11</div>
+                    <div class="timeline-content"><strong>灵格斯</strong><br>cgy22 为班级电脑里的电子词典软件“灵格斯”加入了𣿅国元素。这将成为“文化遗产”在高中永远流传。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2024.12</div>
+                    <div class="timeline-content"><strong>原神画册</strong><br>今年没有𣿅国国庆庆典，不过团队给粉丝众筹了原神画册。</div>
+                </div>
+                
+                <!-- 2025 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.1</div>
+                    <div class="timeline-content"><strong>版本4 诞生</strong><br>cgy22 发现 mdui 框架，引入 Dorn Hub。外观和功能大幅提升，版本4 诞生（可查看 index-v4.3.html）。</div>
+					<div class="timeline-image">
+					    <div class="image-placeholder">
+					        <img src="https://dornhub.eu.org/resources/images/about/2025.1.png" alt="第4代Dorn Hub页面">
+					    </div>
+					</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.2</div>
+                    <div class="timeline-content"><strong>《𣿅子集校注》成书</strong><br>cgy22 整理所有贡献者记录，集结成《𣿅子集校注》——模仿《论语》语录体，用文言文记录三年师生言行，相当于班史。在同学和老师间广泛传播，获认可。</div>
+					<div class="timeline-image">
+					    <div class="image-placeholder">
+					        <img src="https://dornhub.eu.org/resources/images/about/2025.2.png" alt="《𣿅子集校注》封面">
+					    </div>
+					</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.4</div>
+                    <div class="timeline-content"><strong>毕业合照</strong><br>毕业合照时，cgy22 拍了 Valéry 的很多帅照。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.6</div>
+                    <div class="timeline-content"><strong>𣿅子外传</strong><br>Léo 记录了些许 Valéry 的言行，作为《𣿅子外传》。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.7</div>
+                    <div class="timeline-content"><strong>高考结束</strong><br>高考结束，团队成员各奔东西，进入不同大学。项目转为线上协作模式。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.8</div>
+                    <div class="timeline-content"><strong>漫展</strong><br>Valéry 参加漫展，拍了很多集邮的照片。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.9</div>
+                    <div class="timeline-content"><strong>大学开学</strong><br>团队成员分赴各地：上海、沈阳、青岛、南京、长沙、北京、厦门等地。线上成为主要协作方式。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.10</div>
+                    <div class="timeline-content"><strong>大香蕉</strong><br>Léo 开发了基于 Unity 引擎的 3D 𣿅国游戏“逃离大香蕉”。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.11</div>
+                    <div class="timeline-content"><strong>版本5 诞生</strong><br>cgy22 自研 UI 框架，Dorn Hub 版本5 诞生。外观焕然一新，代码质量显著提升。</div>
+					<div class="timeline-image">
+					    <div class="image-placeholder">
+					        <img src="https://dornhub.eu.org/resources/images/about/2025.11.png" alt="第5代Dorn Hub页面">
+					    </div>
+					</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2025.12</div>
+                    <div class="timeline-content"><strong>国宴规定</strong><br>一个国宴规定逐渐产生：国宴菜品容器必须要是圆形的，左右各有两个弧形把手。</div>
+                </div>
+                
+                <!-- 2026 -->
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.1</div>
+                    <div class="timeline-content"><strong>豪华厕所</strong><br>Léo 前往南京德基豪华厕所参观。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.2</div>
+                    <div class="timeline-content"><strong>地图</strong><br>cgy22 发布了非常详细的电子版“2026年第六版𣿅国行政区划图”。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.3</div>
+                    <div class="timeline-content"><strong>最大规模更新</strong><br>为交课程作业，cgy22 开始进行 Dorn Hub 史上最大更新。引入游戏、安全配置、多项功能，又搞到了一个好看的新免费域名 dornhub.eu.org。网站完善程度超过一些小型网站。<br>cgy22 开始编撰《后𣿅子集校注》，记录《𣿅子集校注》成书后 Valéry 的新事迹。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.4</div>
+                    <div class="timeline-content"><strong>DornGames</strong><br>Léo 利用 DornGames 子团队，开发博饼、吃𣿅人等游戏，上线 dorngames.gamer.gd。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.5</div>
+                    <div class="timeline-content"><strong>DornGames 域名暂停</strong><br>因 Léo 管理不善，dorngames.gamer.gd 域名被暂停，所有文件被托管方删除。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.6</div>
+                    <div class="timeline-content"><strong>开源</strong><br>cgy22 在 GitHub 上开源 Dorn Hub 前端代码。</div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.7</div>
+                    <div class="timeline-content"><strong>瓦莱西雅大辞典3</strong><br>假期， Léo 开发热情高涨，编写出了“瓦莱西雅大辞典”第三代，辞典词汇量破万。</div>
+                </div>
+				
+				<div class="timeline-item">
+				    <div class="timeline-date">2026.8</div>
+				    <div class="timeline-content"><strong>现在</strong><br>故事还在继续。</div>
+				</div>
+            </div>
+        </div>
+		</div>
+
+        <!-- ==================== 团队 ==================== -->
+		<div class="section-container">
+        <div class="team-section fade-up delay-4">
+            <h2>团队</h2>
+            <p class="subtitle">Dorn Hub 项目由核心团队及众多贡献者共同完成。</p>
+            
+            <h3 style="font-size: 20px; margin-bottom: 16px; color: var(--primary-color);">核心团队</h3>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="name">	Léo WEE (Koloyaaa)</div>
+                    <div class="location">📍 上海</div>
+					<div class="role">鹏子的原型</div>
+                    <div class="role">项目创始人 · 初始开发者 · 主要开发者</div>
+                    <a href="https://github.com/Koloyaaa" class="github-link"><i class="fab fa-github"></i> @Koloyaaa</a>
+                </div>
+                
+                <div class="team-card">
+                    <div class="name">cgy22</div>
+                    <div class="location">📍 厦门</div>
+					<div class="role">史官陈的原型</div>
+                    <div class="role">项目维护者 · 主要开发者</div>
+                    <a href="https://github.com/cgy22" class="github-link"><i class="fab fa-github"></i> @cgy22</a>
+                </div>
+            </div>
+            
+            <h3 style="font-size: 20px; margin-bottom: 16px; color: var(--primary-color);">其他成员</h3>
+			
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="name">Valéry</div>
+					<div class="role">𣿅子的原型</div>
+					<div class="role">团队形象大使</div>
+                    <div class="location">📍 秦皇岛</div>
+                    <div class="role"></div>
+                </div>
+                <div class="team-card">
+                    <div class="name">Ade-No-Sine</div>
+                    <div class="location">📍 南京</div>
+					<a href="https://github.com/Ade-No-Sine" class="github-link"><i class="fab fa-github"></i> @Ade-No-Sine</a>
+                    <div class="role"></div>
+                </div>
+                <div class="team-card">
+                    <div class="name">houseey</div>
+					<div class="role">兰花子的原型</div>
+                    <div class="location">📍 南京</div>
+                    <div class="role"></div>
+                </div>
+                <div class="team-card">
+                    <div class="name">Peacheey</div>
+                    <div class="location">📍 长沙</div>
+                    <div class="role"></div>
+                </div>
+                <div class="team-card">
+                    <div class="name">Grabac</div>
+					<div class="role">史官高的原型</div>
+                    <div class="location">📍 北京</div>
+                    <div class="role"></div>
+                </div>
+                <div class="team-card">
+                    <div class="name">Debussy</div>
+                    <div class="location">📍 北京</div>
+                    <div class="role"></div>
+                </div>
+				<div class="team-card">
+				    <div class="name">	MatteaX Anlin (Stradlin1)</div>
+				    <div class="location">📍 沈阳</div>
+				    <a href="https://github.com/Stradlin1" class="github-link"><i class="fab fa-github"></i> @Stradlin1</a>
+				</div>
+				<div class="team-card">
+				    <div class="name">OwenMeng (ER-snow)</div>
+				    <div class="location">📍 青岛</div>
+				    <a href="https://github.com/ER-snow" class="github-link"><i class="fab fa-github"></i> @ER-snow</a>
+				</div>
+                <div class="team-card">
+                    <div class="name">Mudais</div>
+                    <div class="location">📍 北京</div>
+                    <div class="role"></div>
+                </div>
+            </div>
+            
+            <!-- <p style="font-size: 15px; color: var(--text-secondary); margin-top: 20px;">
+                还有来自广州、深圳、多伦多、波士顿等地的贡献者。许多老师也为世界观的发展提供了重要支持。
+            </p> -->
+            <p style="font-size: 14px; color: var(--text-secondary); opacity: 0.8;">
+                以及更多未具名的贡献者——包括早期体验刺梨原汁的同学们、参与周边售卖活动的志愿者们、提供反馈与建议的用户们——都在不同阶段为 Dorn Hub 的成长贡献了一份力量。
+            </p>
+        </div>
+		</div>
+
+        <!-- ==================== 版权与开源 ==================== -->
+        <div class="license-section fade-up delay-5">
+            <h2>版权与开源</h2>
+            <p>
+                本项目的代码使用 <strong>GNU Affero General Public License v3.0 (AGPL-3.0)</strong> 开源协议发布。
+                绘画、音乐、文章等原创内容作品使用 <strong>CC BY-NC-ND 4.0</strong> 许可证。
+            </p>
+            <p>
+                源代码托管在 GitHub：<a href="https://github.com/cgy22/Dorn-Hub" target="_blank">https://github.com/cgy22/Dorn-Hub</a>
+            </p>
+        </div>
+
+        <!-- ==================== 致谢 ==================== -->
+        <div class="thanks-section fade-up delay-5">
+            <h2>致谢</h2>
+            <p>感谢 Valéry，没有你就没有这个故事。</p>
+            <p>感谢 Léo 的创意。</p>
+            <p>感谢 Debussy 和那桶 2L 的刺梨原汁。</p>
+            <p>感谢所有𣿅𣿅和贡献者，你们让一个初中教室的玩笑变成了今天的样子。</p>
+            <p>感谢每一位访问 Dorn Hub 的用户。</p>
+            <p style="margin-top: 20px; font-size: 20px; font-weight: 500; color: var(--primary-color);">𣿅子的故事仍在继续……</p>
+            
+            <a href="https://dornhub.eu.org" class="back-link">
+                <i class="fas fa-arrow-left"></i> 返回 Dorn Hub 首页
+            </a>
+        </div>
+    </div>
+
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    
+    <script>
+        (function() {
+            'use strict';
+            
+            // ==================== 加载遮罩处理 ====================
+            const loadingMask = document.getElementById('loading-mask');
+            const stopButton = document.getElementById('stop-button');
+            let isLoading = true;
+            
+            function hideLoadingMask() {
+                if (!isLoading) return;
+                isLoading = false;
+                if (loadingMask) {
+                    loadingMask.style.transition = 'opacity 0.5s ease';
+                    loadingMask.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingMask.style.display = 'none';
+                    }, 500);
+                }
+            }
+            
+            if (stopButton) {
+                stopButton.addEventListener('click', function() {
+                    if (isLoading) {
+                        console.log('用户中断加载');
+                        hideLoadingMask();
+                    }
+                });
+            }
+            
+            window.addEventListener('load', function() {
+                setTimeout(hideLoadingMask, 500);
+            });
+            
+            setTimeout(function() {
+                if (isLoading) {
+                    hideLoadingMask();
+                }
+            }, 5000);
+            
+            // ==================== 滚动触发动画 ====================
+            const fadeElements = document.querySelectorAll('.fade-up');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.15,
+                rootMargin: '0px 0px -30px 0px'
+            });
+            
+            fadeElements.forEach(el => {
+                observer.observe(el);
+            });
+            
+            setTimeout(() => {
+                fadeElements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 50) {
+                        el.classList.add('visible');
+                    }
+                });
+            }, 200);
+            
+            
+            
+            // ==================== 主题与颜色同步 ====================
+            function applyThemeAndColor() {
+                const theme = localStorage.getItem('theme') || 'auto';
+                const primaryColor = localStorage.getItem('primaryColor') || '#16DA49';
+                
+                if (theme === 'auto') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+                
+                document.documentElement.style.setProperty('--primary-color', primaryColor);
+                
+                const hex = primaryColor.replace('#', '');
+                const r = parseInt(hex.substring(0, 2), 16);
+                const g = parseInt(hex.substring(2, 4), 16);
+                const b = parseInt(hex.substring(4, 6), 16);
+                document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
+            }
+            
+            applyThemeAndColor();
+            
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                const theme = localStorage.getItem('theme') || 'auto';
+                if (theme === 'auto') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                }
+            });
+            
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'primaryColor') {
+                    const newColor = e.newValue || '#16DA49';
+                    document.documentElement.style.setProperty('--primary-color', newColor);
+                    const hex = newColor.replace('#', '');
+                    const r = parseInt(hex.substring(0, 2), 16);
+                    const g = parseInt(hex.substring(2, 4), 16);
+                    const b = parseInt(hex.substring(4, 6), 16);
+                    document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
+                }
+                if (e.key === 'theme') {
+                    const newTheme = e.newValue || 'auto';
+                    if (newTheme === 'auto') {
+                        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+                    } else {
+                        document.documentElement.setAttribute('data-theme', newTheme);
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

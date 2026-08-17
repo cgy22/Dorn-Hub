@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T6QTPSWXPV"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-T6QTPSWXPV');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="SatornhLogo.png">
+    <title>使用条款 - Dorn Hub</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    
+    <style>
+        body {
+            font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 120px 20px 60px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .back-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .back-btn:hover {
+            background: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .page-title i {
+            color: var(--primary-color);
+            font-size: 28px;
+        }
+        
+        .page-title h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .update-date {
+            text-align: right;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        hr.divider {
+            border: none;
+            border-top: 3px double var(--primary-color);
+            margin: 50px 0;
+        }
+
+        .language-badge {
+            text-align: center;
+            margin: 30px 0 20px 0;
+        }
+
+        .language-badge span {
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .language-badge p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        
+        .terms-card {
+            margin-bottom: 30px;
+            padding: 30px;
+        }
+        
+        .table-of-contents {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .table-of-contents h3 {
+            margin: 0 0 15px 0;
+            color: var(--primary-color);
+        }
+        
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+        }
+        
+        .toc-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 13px;
+            display: block;
+            padding: 5px 0;
+            transition: all 0.2s;
+        }
+        
+        .toc-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .terms-section {
+            margin-bottom: 35px;
+            scroll-margin-top: 100px;
+        }
+        
+        .terms-section h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .terms-section p {
+            margin: 10px 0;
+            line-height: 1.7;
+        }
+        
+        .terms-section ul, .terms-section ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        .terms-section li {
+            margin: 8px 0;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-color);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+        }
+        
+        .back-to-top:hover {
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+            }
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+            .terms-section h2 {
+                font-size: 20px;
+            }
+            .terms-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                返回主页
+            </a>
+            <div class="page-title">
+                <i class="fas fa-file-contract"></i>
+                <h1>使用条款</h1>
+            </div>
+        </div>
+
+        <div class="update-date">
+            <i class="fas fa-calendar-alt"></i> Last updated April 7, 2026
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 英文版使用条款                                               -->
+        <!-- ============================================================ -->
+        <div class="terms-card section-container">
+            <p><strong>TERMS OF USE</strong><br>
+            Last updated April 7, 2026</p>
+
+            <p><strong>AGREEMENT TO OUR LEGAL TERMS</strong></p>
+            <p>We are Dorn Hub. We operate, as well as any other related products and services that refer or link to these legal terms (the "Legal Terms") (collectively, the "Services").</p>
+            <p>You can contact us by email at <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> or by visiting <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a></p>
+            <p>These Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you"), and Dorn Hub, concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY. Supplemental terms and conditions or documents that may be posted on the Services from time to time are hereby expressly incorporated herein by reference. We reserve the right, in our sole discretion, to make changes or modifications to these Legal Terms at any time and for any reason. We will alert you about any changes by updating the "Last updated" date of these Legal Terms, and you waive any right to receive specific notice of each such change. It is your responsibility to periodically review these Legal Terms to stay informed of updates. You will be subject to, and will be deemed to have been made aware of and to have accepted, the changes in any revised Legal Terms by your continued use of the Services after the date such revised Legal Terms are posted.</p>
+            <p>We recommend that you print a copy of these Legal Terms for your records.</p>
+
+            <div class="table-of-contents">
+                <h3><i class="fas fa-list"></i> TABLE OF CONTENTS</h3>
+                <div class="toc-grid">
+                    <a href="#section1" class="toc-link">1. OUR SERVICES</a>
+                    <a href="#section2" class="toc-link">2. INTELLECTUAL PROPERTY RIGHTS</a>
+                    <a href="#section3" class="toc-link">3. USER REPRESENTATIONS</a>
+                    <a href="#section4" class="toc-link">4. PROHIBITED ACTIVITIES</a>
+                    <a href="#section5" class="toc-link">5. USER GENERATED CONTRIBUTIONS</a>
+                    <a href="#section6" class="toc-link">6. CONTRIBUTION LICENSE</a>
+                    <a href="#section7" class="toc-link">7. SERVICES MANAGEMENT</a>
+                    <a href="#section8" class="toc-link">8. TERM AND TERMINATION</a>
+                    <a href="#section9" class="toc-link">9. MODIFICATIONS AND INTERRUPTIONS</a>
+                    <a href="#section10" class="toc-link">10. GOVERNING LAW</a>
+                    <a href="#section11" class="toc-link">11. DISPUTE RESOLUTION</a>
+                    <a href="#section12" class="toc-link">12. CORRECTIONS</a>
+                    <a href="#section13" class="toc-link">13. DISCLAIMER</a>
+                    <a href="#section14" class="toc-link">14. LIMITATIONS OF LIABILITY</a>
+                    <a href="#section15" class="toc-link">15. INDEMNIFICATION</a>
+                    <a href="#section16" class="toc-link">16. USER DATA</a>
+                    <a href="#section17" class="toc-link">17. ELECTRONIC COMMUNICATIONS, TRANSACTIONS, AND SIGNATURES</a>
+                    <a href="#section18" class="toc-link">18. MISCELLANEOUS</a>
+                    <a href="#section19" class="toc-link">19. CONTACT US</a>
+                </div>
+            </div>
+
+            <!-- 1. OUR SERVICES -->
+            <div id="section1" class="terms-section">
+                <h2>1. OUR SERVICES</h2>
+                <p>The information provided when using the Services is not intended for distribution to or use by any person or entity in any jurisdiction or country where such distribution or use would be contrary to law or regulation or which would subject us to any registration requirement within such jurisdiction or country. Accordingly, those persons who choose to access the Services from other locations do so on their own initiative and are solely responsible for compliance with local laws, if and to the extent local laws are applicable.</p>
+                <p>Our Services may contain links to third-party websites or services that are not owned or controlled by us. We have no control over, and assume no responsibility for, the content, privacy policies, or practices of any third-party websites. You acknowledge and agree that we shall not be responsible or liable for any damage or loss caused by your use of any third-party content or services.</p>
+            </div>
+
+            <!-- 2. INTELLECTUAL PROPERTY RIGHTS -->
+            <div id="section2" class="terms-section">
+                <h2>2. INTELLECTUAL PROPERTY RIGHTS</h2>
+                <p><strong>Our intellectual property</strong> We are the owner or the licensee of all intellectual property rights in our Services, including all source code, databases, functionality, software, website designs, audio, video, text, photographs, and graphics in the Services (collectively, the "Content"), as well as the trademarks, service marks, and logos contained therein (the "Marks").</p>
+                <p>Our Content and Marks are protected by copyright and trademark laws (and various other intellectual property rights and unfair competition laws) and treaties around the world.</p>
+                <p>The Content and Marks are provided in or through the Services "AS IS" for your personal, non-commercial use or internal business purpose only.</p>
+                <p><strong>Your use of our Services</strong> Subject to your compliance with these Legal Terms, including the "PROHIBITED ACTIVITIES" section below, we grant you a non-exclusive, non-transferable, revocable license to: access the Services; and download or print a copy of any portion of the Content to which you have properly gained access, solely for your personal, non-commercial use or internal business purpose. Except as set out in this section or elsewhere in our Legal Terms, no part of the Services and no Content or Marks may be copied, reproduced, aggregated, republished, uploaded, posted, publicly displayed, encoded, translated, transmitted, distributed, sold, licensed, or otherwise exploited for any commercial purpose whatsoever, without our express prior written permission.</p>
+                <p>If you wish to make any use of the Services, Content, or Marks other than as set out in this section or elsewhere in our Legal Terms, please contact us by the mentioned means. If we ever grant you the permission to post, reproduce, or publicly display any part of our Services or Content, you must identify us as the owners or licensors of the Services, Content, or Marks and ensure that any copyright or proprietary notice appears or is visible on posting, reproducing, or displaying our Content. We reserve all rights not expressly granted to you in and to the Services, Content, and Marks. Any breach of these Intellectual Property Rights will constitute a material breach of our Legal Terms and your right to use our Services will terminate immediately.</p>
+                <p><strong>Your submissions</strong> Please review this section and the "PROHIBITED ACTIVITIES" section carefully prior to using our Services to understand the (a) rights you give us and (b) obligations you have when you post or upload any content through the Services. Submissions: By directly sending us any question, comment, suggestion, idea, feedback, or other information about the Services ("Submissions"), you agree to assign to us all intellectual property rights in such Submission. You agree that we shall own this Submission and be entitled to its unrestricted use and dissemination for any lawful purpose, commercial or otherwise, without acknowledgment or compensation to you. You are responsible for what you post or upload: By sending us Submissions through any part of the Services you: confirm that you have read and agree with our "PROHIBITED ACTIVITIES" and will not post, send, publish, upload, or transmit through the Services any Submission that is illegal, harassing, hateful, harmful, defamatory, obscene, bullying, abusive, discriminatory, threatening to any person or group, sexually explicit, false, inaccurate, deceitful, or misleading; to the extent permissible by applicable law, waive any and all moral rights to any such Submission; warrant that any such Submission are original to you or that you have the necessary rights and licenses to submit such Submissions and that you have full authority to grant us the above-mentioned rights in relation to your Submissions; and warrant and represent that your Submissions do not constitute confidential information. You are solely responsible for your Submissions and you expressly agree to reimburse us for any and all losses that we may suffer because of your breach of (a) this section, (b) any third party's intellectual property rights, or (c) applicable law.</p>
+            </div>
+
+            <!-- 3. USER REPRESENTATIONS -->
+            <div id="section3" class="terms-section">
+                <h2>3. USER REPRESENTATIONS</h2>
+                <p>By using the Services, you represent and warrant that: (1) you have the legal capacity and you agree to comply with these Legal Terms; (2) you are not a minor in the jurisdiction in which you reside; (3) you will not access the Services through automated or non-human means, whether through a bot, script or otherwise; (4) you will not use the Services for any illegal or unauthorized purpose; and (5) your use of the Services will not violate any applicable law or regulation.</p>
+                <p>If you provide any information that is untrue, inaccurate, not current, or incomplete, we have the right to suspend or terminate your account and refuse any and all current or future use of the Services (or any portion thereof).</p>
+            </div>
+
+            <!-- 4. PROHIBITED ACTIVITIES -->
+            <div id="section4" class="terms-section">
+                <h2>4. PROHIBITED ACTIVITIES</h2>
+                <p>You may not access or use the Services for any purpose other than that for which we make the Services available. The Services may not be used in connection with any commercial endeavors except those that are specifically endorsed or approved by us. As a user of the Services, you agree not to:</p>
+                <ul>
+                    <li>Systematically retrieve data or other content from the Services to create or compile, directly or indirectly, a collection, compilation, database, or directory without written permission from us.</li>
+                    <li>Trick, defraud, or mislead us and other users, especially in any attempt to learn sensitive account information such as user passwords.</li>
+                    <li>Circumvent, disable, or otherwise interfere with security-related features of the Services, including features that prevent or restrict the use or copying of any Content or enforce limitations on the use of the Services and/or the Content contained therein.</li>
+                    <li>Disparage, tarnish, or otherwise harm, in our opinion, us and/or the Services.</li>
+                    <li>Use any information obtained from the Services in order to harass, abuse, or harm another person.</li>
+                    <li>Make improper use of our support services or submit false reports of abuse or misconduct.</li>
+                    <li>Use the Services in a manner inconsistent with any applicable laws or regulations.</li>
+                    <li>Engage in unauthorized framing of or linking to the Services.</li>
+                    <li>Upload or transmit (or attempt to upload or to transmit) viruses, Trojan horses, or other material, including excessive use of capital letters and spamming (continuous posting of repetitive text), that interferes with any party's uninterrupted use and enjoyment of the Services or modifies, impairs, disrupts, alters, or interferes with the use, features, functions, operation, or maintenance of the Services.</li>
+                    <li>Engage in any automated use of the system, such as using scripts to send comments or messages, or using any data mining, robots, or similar data gathering and extraction tools.</li>
+                    <li>Delete the copyright or other proprietary rights notice from any Content.</li>
+                    <li>Attempt to impersonate another user or person or use the username of another user.</li>
+                    <li>Upload or transmit (or attempt to upload or to transmit) any material that acts as a passive or active information collection or transmission mechanism, including without limitation, clear graphics interchange formats ("gifs"), 1×1 pixels, web bugs, cookies, or other similar devices (sometimes referred to as "spyware" or "passive collection mechanisms" or "pcms").</li>
+                    <li>Interfere with, disrupt, or create an undue burden on the Services or the networks or services connected to the Services.</li>
+                    <li>Harass, annoy, intimidate, or threaten any of our employees or agents engaged in providing any portion of the Services to you.</li>
+                    <li>Attempt to bypass any measures of the Services designed to prevent or restrict access to the Services, or any portion of the Services.</li>
+                    <li>Copy or adapt the Services' software, including but not limited to Flash, PHP, HTML, JavaScript, or other code.</li>
+                    <li>Except as permitted by applicable law, decipher, decompile, disassemble, or reverse engineer any of the software comprising or in any way making up a part of the Services.</li>
+                    <li>Except as may be the result of standard search engine or Internet browser usage, use, launch, develop, or distribute any automated system, including without limitation, any spider, robot, cheat utility, scraper, or offline reader that accesses the Services, or use or launch any unauthorized script or other software.</li>
+                    <li>Use a buying agent or purchasing agent to make purchases on the Services.</li>
+                    <li>Make any unauthorized use of the Services, including collecting usernames and/or email addresses of users by electronic or other means for the purpose of sending unsolicited email, or creating user accounts by automated means or under false pretenses.</li>
+                    <li>Use the Services as part of any effort to compete with us or otherwise use the Services and/or the Content for any revenue-generating endeavor or commercial enterprise.</li>
+                </ul>
+            </div>
+
+            <!-- 5. USER GENERATED CONTRIBUTIONS -->
+            <div id="section5" class="terms-section">
+                <h2>5. USER GENERATED CONTRIBUTIONS</h2>
+                <p>The Services do not allow users to upload, submit, post, or publish any content, comments, or other materials to our servers. Any feedback, suggestions, or other information you voluntarily provide to us through contact forms or email ("Submissions") shall be governed by the Contribution License section below.</p>
+                <p><strong>Custom Background Feature Exception</strong> The Services include a "custom background" feature that allows you to select an image from your device as a personalized background. When using this feature, the image file is stored exclusively in your browser's local storage on your own device. The image is never uploaded to our servers, is not stored or processed by us, does not synchronize across devices, and is not visible to any other user. Because the image remains entirely on your device and we do not access, store, or transmit it, this feature does not create any copyright or intellectual property liability for us. You remain solely responsible for ensuring that any image you use with this feature complies with applicable laws and does not infringe any third-party rights.</p>
+            </div>
+
+            <!-- 6. CONTRIBUTION LICENSE -->
+            <div id="section6" class="terms-section">
+                <h2>6. CONTRIBUTION LICENSE</h2>
+                <p>By submitting suggestions, feedback, or other information ("Submissions") to us via email, contact forms, or other communication channels, you agree that we may access, store, process, and use such Submissions for any purpose, including improving our Services, without any obligation to compensate you. You retain full ownership of your Submissions, and we do not claim any ownership over them. You represent and warrant that your Submissions do not contain confidential information and do not infringe any third-party rights. We are not liable for any Submissions you provide.</p>
+            </div>
+
+            <!-- 7. SERVICES MANAGEMENT -->
+            <div id="section7" class="terms-section">
+                <h2>7. SERVICES MANAGEMENT</h2>
+                <p>We reserve the right, but not the obligation, to: (1) monitor the Services for violations of these Legal Terms; (2) take appropriate legal action against anyone who, in our sole discretion, violates the law or these Legal Terms, including without limitation, reporting such user to law enforcement authorities; (3) in our sole discretion and without limitation, refuse, restrict access to, limit the availability of, or disable (to the extent technologically feasible) any of your Contributions or any portion thereof; (4) in our sole discretion and without limitation, notice, or liability, to remove from the Services or otherwise disable all files and content that are excessive in size or are in any way burdensome to our systems; and (5) otherwise manage the Services in a manner designed to protect our rights and property and to facilitate the proper functioning of the Services.</p>
+            </div>
+
+            <!-- 8. TERM AND TERMINATION -->
+            <div id="section8" class="terms-section">
+                <h2>8. TERM AND TERMINATION</h2>
+                <p>These Legal Terms shall remain in full force and effect while you use the Services. WITHOUT LIMITING ANY OTHER PROVISION OF THESE LEGAL TERMS, WE RESERVE THE RIGHT TO, IN OUR SOLE DISCRETION AND WITHOUT NOTICE OR LIABILITY, DENY ACCESS TO AND USE OF THE SERVICES (INCLUDING BLOCKING CERTAIN IP ADDRESSES), TO ANY PERSON FOR ANY REASON OR FOR NO REASON, INCLUDING WITHOUT LIMITATION FOR BREACH OF ANY REPRESENTATION, WARRANTY, OR COVENANT CONTAINED IN THESE LEGAL TERMS OR OF ANY APPLICABLE LAW OR REGULATION. WE MAY TERMINATE YOUR USE OR PARTICIPATION IN THE SERVICES OR DELETE ANY CONTENT OR INFORMATION THAT YOU POSTED AT ANY TIME, WITHOUT WARNING, IN OUR SOLE DISCRETION.</p>
+                <p>If we terminate or suspend your account for any reason, you are prohibited from registering and creating a new account under your name, a fake or borrowed name, or the name of any third party, even if you may be acting on behalf of the third party. In addition to terminating or suspending your account, we reserve the right to take appropriate legal action, including without limitation pursuing civil, criminal, and injunctive redress.</p>
+            </div>
+
+            <!-- 9. MODIFICATIONS AND INTERRUPTIONS -->
+            <div id="section9" class="terms-section">
+                <h2>9. MODIFICATIONS AND INTERRUPTIONS</h2>
+                <p>We reserve the right to change, modify, or remove the contents of the Services at any time or for any reason at our sole discretion without notice. However, we have no obligation to update any information on our Services. We will not be liable to you or any third party for any modification, price change, suspension, or discontinuance of the Services.</p>
+                <p>We cannot guarantee the Services will be available at all times. We may experience hardware, software, or other problems or need to perform maintenance related to the Services, resulting in interruptions, delays, or errors. We reserve the right to change, revise, update, suspend, discontinue, or otherwise modify the Services at any time or for any reason without notice to you. You agree that we have no liability whatsoever for any loss, damage, or inconvenience caused by your inability to access or use the Services during any downtime or discontinuance of the Services. Nothing in these Legal Terms will be construed to obligate us to maintain and support the Services or to supply any corrections, updates, or releases in connection therewith.</p>
+            </div>
+
+            <!-- 10. GOVERNING LAW -->
+            <div id="section10" class="terms-section">
+                <h2>10. GOVERNING LAW</h2>
+                <p>These Legal Terms shall be governed by and defined following the laws of People's Republic of China. Dorn Hub and yourself irrevocably consent that the courts of People's Republic of China shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these Legal Terms.</p>
+            </div>
+
+            <!-- 11. DISPUTE RESOLUTION -->
+            <div id="section11" class="terms-section">
+                <h2>11. DISPUTE RESOLUTION</h2>
+                <p>Any dispute, controversy, or claim arising out of or in connection with these Legal Terms, or the breach, termination, or validity thereof, shall be submitted to the exclusive jurisdiction of the courts located in People's Republic of China. You agree to waive any objection to such jurisdiction based on forum non conveniens or any other grounds. The Parties agree that any legal proceedings shall be conducted in the Chinese language.</p>
+            </div>
+
+            <!-- 12. CORRECTIONS -->
+            <div id="section12" class="terms-section">
+                <h2>12. CORRECTIONS</h2>
+                <p>There may be information on the Services that contains typographical errors, inaccuracies, or omissions, including descriptions, pricing, availability, and various other information. We reserve the right to correct any errors, inaccuracies, or omissions and to change or update the information on the Services at any time, without prior notice.</p>
+            </div>
+
+            <!-- 13. DISCLAIMER -->
+            <div id="section13" class="terms-section">
+                <h2>13. DISCLAIMER</h2>
+                <p>THE SERVICES ARE PROVIDED ON AN AS-IS AND AS-AVAILABLE BASIS. YOU AGREE THAT YOUR USE OF THE SERVICES WILL BE AT YOUR SOLE RISK. TO THE FULLEST EXTENT PERMITTED BY LAW, WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, IN CONNECTION WITH THE SERVICES AND YOUR USE THEREOF, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. WE MAKE NO WARRANTIES OR REPRESENTATIONS ABOUT THE ACCURACY OR COMPLETENESS OF THE SERVICES' CONTENT OR THE CONTENT OF ANY WEBSITES OR MOBILE APPLICATIONS LINKED TO THE SERVICES AND WE WILL ASSUME NO LIABILITY OR RESPONSIBILITY FOR ANY (1) ERRORS, MISTAKES, OR INACCURACIES OF CONTENT AND MATERIALS, (2) PERSONAL INJURY OR PROPERTY DAMAGE, OF ANY NATURE WHATSOEVER, RESULTING FROM YOUR ACCESS TO AND USE OF THE SERVICES, (3) ANY UNAUTHORIZED ACCESS TO OR USE OF OUR SECURE SERVERS AND/OR ANY AND ALL PERSONAL INFORMATION AND/OR FINANCIAL INFORMATION STORED THEREIN, (4) ANY INTERRUPTION OR CESSATION OF TRANSMISSION TO OR FROM THE SERVICES, (5) ANY BUGS, VIRUSES, TROJAN HORSES, OR THE LIKE WHICH MAY BE TRANSMITTED TO OR THROUGH THE SERVICES BY ANY THIRD PARTY, AND/OR (6) ANY ERRORS OR OMISSIONS IN ANY CONTENT AND MATERIALS OR FOR ANY LOSS OR DAMAGE OF ANY KIND INCURRED AS A RESULT OF THE USE OF ANY CONTENT POSTED, TRANSMITTED, OR OTHERWISE MADE AVAILABLE VIA THE SERVICES. WE DO NOT WARRANT, ENDORSE, GUARANTEE, OR ASSUME RESPONSIBILITY FOR ANY PRODUCT OR SERVICE ADVERTISED OR OFFERED BY A THIRD PARTY THROUGH THE SERVICES, ANY HYPERLINKED WEBSITE, OR ANY WEBSITE OR MOBILE APPLICATION FEATURED IN ANY BANNER OR OTHER ADVERTISING, AND WE WILL NOT BE A PARTY TO OR IN ANY WAY BE RESPONSIBLE FOR MONITORING ANY TRANSACTION BETWEEN YOU AND ANY THIRD-PARTY PROVIDERS OF PRODUCTS OR SERVICES. AS WITH THE PURCHASE OF A PRODUCT OR SERVICE THROUGH ANY MEDIUM OR IN ANY ENVIRONMENT, YOU SHOULD USE YOUR BEST JUDGMENT AND EXERCISE CAUTION WHERE APPROPRIATE.</p>
+            </div>
+
+            <!-- 14. LIMITATIONS OF LIABILITY -->
+            <div id="section14" class="terms-section">
+                <h2>14. LIMITATIONS OF LIABILITY</h2>
+                <p>IN NO EVENT WILL WE OR OUR DIRECTORS, EMPLOYEES, OR AGENTS BE LIABLE TO YOU OR ANY THIRD PARTY FOR ANY DIRECT, INDIRECT, CONSEQUENTIAL, EXEMPLARY, INCIDENTAL, SPECIAL, OR PUNITIVE DAMAGES, INCLUDING LOST PROFIT, LOST REVENUE, LOSS OF DATA, OR OTHER DAMAGES ARISING FROM YOUR USE OF THE SERVICES, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. NOTWITHSTANDING ANYTHING TO THE CONTRARY CONTAINED HEREIN, WILL AT ALL TIMES BE LIMITED TO THE AMOUNT PAID BY YOU TO US, IF ANY. SINCE OUR SERVICES ARE PROVIDED FREE OF CHARGE, THIS LIMITATION OF LIABILITY SHALL BE ZERO. CERTAIN US STATE LAWS AND INTERNATIONAL LAWS DO NOT ALLOW LIMITATIONS ON IMPLIED WARRANTIES OR THE EXCLUSION OR LIMITATION OF CERTAIN DAMAGES. IF THESE LAWS APPLY TO YOU, SOME OR ALL OF THE ABOVE DISCLAIMERS OR LIMITATIONS MAY NOT APPLY TO YOU, AND YOU MAY HAVE ADDITIONAL RIGHTS.</p>
+            </div>
+
+            <!-- 15. INDEMNIFICATION -->
+            <div id="section15" class="terms-section">
+                <h2>15. INDEMNIFICATION</h2>
+                <p>You agree to defend, indemnify, and hold us harmless, including our subsidiaries, affiliates, and all of our respective officers, agents, partners, and employees, from and against any loss, damage, liability, claim, or demand, including reasonable attorneys' fees and expenses, made by any third party due to or arising out of: (1) use of the Services; (2) breach of these Legal Terms; (3) any breach of your representations and warranties set forth in these Legal Terms; (4) your violation of the rights of a third party, including but not limited to intellectual property rights; or (5) any overt harmful act toward any other user of the Services with whom you connected via the Services. Notwithstanding the foregoing, we reserve the right, at your expense, to assume the exclusive defense and control of any matter for which you are required to indemnify us, and you agree to cooperate, at your expense, with our defense of such claims. We will use reasonable efforts to notify you of any such claim, action, or proceeding which is subject to this indemnification upon becoming aware of it.</p>
+            </div>
+
+            <!-- 16. USER DATA -->
+            <div id="section16" class="terms-section">
+                <h2>16. USER DATA</h2>
+                <p>We will maintain certain data that you transmit to the Services for the purpose of managing the performance of the Services, as well as data relating to your use of the Services. Although we perform regular routine backups of data, you are solely responsible for all data that you transmit or that relates to any activity you have undertaken using the Services. You agree that we shall have no liability to you for any loss or corruption of any such data, and you hereby waive any right of action against us arising from any such loss or corruption of such data.</p>
+            </div>
+
+            <!-- 17. ELECTRONIC COMMUNICATIONS, TRANSACTIONS, AND SIGNATURES -->
+            <div id="section17" class="terms-section">
+                <h2>17. ELECTRONIC COMMUNICATIONS, TRANSACTIONS, AND SIGNATURES</h2>
+                <p>Visiting the Services, sending us emails, and completing online forms constitute electronic communications. You consent to receive electronic communications, and you agree that all agreements, notices, disclosures, and other communications we provide to you electronically, via email and on the Services, satisfy any legal requirement that such communication be in writing. YOU HEREBY AGREE TO THE USE OF ELECTRONIC SIGNATURES, CONTRACTS, ORDERS, AND OTHER RECORDS, AND TO ELECTRONIC DELIVERY OF NOTICES, POLICIES, AND RECORDS OF TRANSACTIONS INITIATED OR COMPLETED BY US OR VIA THE SERVICES. You hereby waive any rights or requirements under any statutes, regulations, rules, ordinances, or other laws in any jurisdiction which require an original signature or delivery or retention of non-electronic records, or to payments or the granting of credits by any means other than electronic means.</p>
+            </div>
+
+            <!-- 18. MISCELLANEOUS -->
+            <div id="section18" class="terms-section">
+                <h2>18. MISCELLANEOUS</h2>
+                <p>These Legal Terms and any policies or operating rules posted by us on the Services or in respect to the Services constitute the entire agreement and understanding between you and us. Our failure to exercise or enforce any right or provision of these Legal Terms shall not operate as a waiver of such right or provision. These Legal Terms operate to the fullest extent permissible by law. We may assign any or all of our rights and obligations to others at any time. We shall not be responsible or liable for any loss, damage, delay, or failure to act caused by any cause beyond our reasonable control. If any provision or part of a provision of these Legal Terms is determined to be unlawful, void, or unenforceable, that provision or part of the provision is deemed severable from these Legal Terms and does not affect the validity and enforceability of any remaining provisions. There is no joint venture, partnership, employment or agency relationship created between you and us as a result of these Legal Terms or use of the Services. You agree that these Legal Terms will not be construed against us by virtue of having drafted them. You hereby waive any and all defenses you may have based on the electronic form of these Legal Terms and the lack of signing by the parties hereto to execute these Legal Terms.</p>
+            </div>
+
+            <!-- 19. CONTACT US -->
+            <div id="section19" class="terms-section">
+                <h2>19. CONTACT US</h2>
+                <p>In order to resolve a complaint regarding the Services or to receive further information regarding use of the Services, please contact us at:</p>
+                <p><a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> or by visiting <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a></p>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 分隔线 & 中文版标识                                          -->
+        <!-- ============================================================ -->
+        <hr class="divider">
+
+        <div class="language-badge">
+            <span><i class="fas fa-language"></i> 中文版本</span>
+            <p>本译文仅供参考，如与英文版本存在歧义，以英文版本为准。</p>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- 中文版使用条款                                               -->
+        <!-- ============================================================ -->
+        <div class="terms-card section-container">
+            <p><strong>使用条款</strong><br>
+            最后更新日期：2026年4月7日</p>
+
+            <p><strong>同意我们的法律条款</strong></p>
+            <p>我们是 Dorn Hub。我们运营本网站以及任何引用或链接到这些法律条款（"法律条款"）的其他相关产品和服务（统称为"服务"）。</p>
+            <p>您可以通过邮件 <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> 或访问 <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a> 联系我们。</p>
+            <p>这些法律条款构成您（无论是个人还是代表实体，"您"）与 Dorn Hub 之间关于您访问和使用服务的具有法律约束力的协议。您同意，通过访问服务，您已阅读、理解并同意受所有这些法律条款的约束。如果您不同意所有这些法律条款，则明确禁止您使用服务，您必须立即停止使用。我们可能不时在服务上发布的补充条款和条件或文件在此明确通过引用并入。我们保留自行决定随时以任何理由更改或修改这些法律条款的权利。我们将通过更新这些法律条款的"最后更新"日期来通知您任何变更，您放弃接收每项此类变更的具体通知的权利。您有责任定期查看这些法律条款以了解更新。在修订后的法律条款发布之日后，您继续使用服务即表示您将受到任何修订后的法律条款的约束，并被视为已知悉并已接受这些变更。</p>
+            <p>我们建议您打印一份这些法律条款以供记录。</p>
+
+            <div class="table-of-contents">
+                <h3><i class="fas fa-list"></i> 目录</h3>
+                <div class="toc-grid">
+                    <a href="#zh-section1" class="toc-link">1. 我们的服务</a>
+                    <a href="#zh-section2" class="toc-link">2. 知识产权</a>
+                    <a href="#zh-section3" class="toc-link">3. 用户声明</a>
+                    <a href="#zh-section4" class="toc-link">4. 禁止活动</a>
+                    <a href="#zh-section5" class="toc-link">5. 用户生成的内容</a>
+                    <a href="#zh-section6" class="toc-link">6. 贡献许可</a>
+                    <a href="#zh-section7" class="toc-link">7. 服务管理</a>
+                    <a href="#zh-section8" class="toc-link">8. 期限与终止</a>
+                    <a href="#zh-section9" class="toc-link">9. 修改与中断</a>
+                    <a href="#zh-section10" class="toc-link">10. 管辖法律</a>
+                    <a href="#zh-section11" class="toc-link">11. 争议解决</a>
+                    <a href="#zh-section12" class="toc-link">12. 更正</a>
+                    <a href="#zh-section13" class="toc-link">13. 免责声明</a>
+                    <a href="#zh-section14" class="toc-link">14. 责任限制</a>
+                    <a href="#zh-section15" class="toc-link">15. 赔偿</a>
+                    <a href="#zh-section16" class="toc-link">16. 用户数据</a>
+                    <a href="#zh-section17" class="toc-link">17. 电子通信、交易和签名</a>
+                    <a href="#zh-section18" class="toc-link">18. 杂项</a>
+                    <a href="#zh-section19" class="toc-link">19. 联系我们</a>
+                </div>
+            </div>
+
+            <!-- 1. 我们的服务 -->
+            <div id="zh-section1" class="terms-section">
+                <h2>1. 我们的服务</h2>
+                <p>使用服务时提供的信息不旨在分发给或供任何司法管辖区或国家中的任何个人或实体使用，如果此类分发或使用会违反法律或法规，或会使我们在该司法管辖区或国家内受到任何注册要求。因此，那些选择从其他位置访问服务的人是基于自己的主动行为，并全权负责遵守当地法律（如果且在当地法律适用的范围内）。</p>
+                <p>我们的服务可能包含指向非我们拥有或控制的第三方网站或服务的链接。我们对任何第三方网站的内容、隐私政策或做法没有控制权，也不承担任何责任。您承认并同意，我们不对因您使用任何第三方内容或服务而造成的任何损害或损失负责或承担责任。</p>
+            </div>
+
+            <!-- 2. 知识产权 -->
+            <div id="zh-section2" class="terms-section">
+                <h2>2. 知识产权</h2>
+                <p><strong>我们的知识产权</strong> 我们是服务中所有知识产权的所有者或被许可人，包括服务中的所有源代码、数据库、功能、软件、网站设计、音频、视频、文本、照片和图形（统称为"内容"），以及其中包含的商标、服务标志和徽标（"标志"）。</p>
+                <p>我们的内容和标志受全球版权和商标法（以及各种其他知识产权和不正当竞争法）和条约的保护。</p>
+                <p>内容和标志在服务中或通过服务以"按原样"提供，仅供您个人、非商业用途或内部商业目的使用。</p>
+                <p><strong>您对我们服务的使用</strong> 在您遵守这些法律条款（包括下文"禁止活动"部分）的前提下，我们授予您一项非独占、不可转让、可撤销的许可，以：访问服务；以及下载或打印您已合法获得访问权限的任何部分内容的副本，仅用于您的个人、非商业用途或内部商业目的。除非在本节或我们的法律条款其他部分中规定，否则未经我们事先明确的书面许可，不得复制、转载、聚合、重新发布、上传、张贴、公开展示、编码、翻译、传输、分发、销售、许可或以其他方式利用服务的任何部分以及任何内容或标志用于任何商业目的。</p>
+                <p>如果您希望以本节或我们的法律条款其他部分中规定以外的方式使用服务、内容或标志，请通过上述方式联系我们。如果我们曾经授予您许可来发布、复制或公开展示我们服务或内容的任何部分，您必须将我们标识为服务、内容或标志的所有者或许可人，并确保在发布、复制或展示我们的内容时出现或可见任何版权或专有权利声明。我们保留未明确授予您的所有服务和内容及标志的权利。任何违反这些知识产权的行为将构成对我们法律条款的重大违反，您使用我们服务的权利将立即终止。</p>
+                <p><strong>您的提交内容</strong> 在使用我们的服务之前，请仔细阅读本节和"禁止活动"部分，以了解（a）您授予我们的权利和（b）您通过服务发布或上传任何内容时的义务。提交内容：通过直接向我们发送任何问题、评论、建议、想法、反馈或其他关于服务的信息（"提交内容"），您同意将此类提交内容中的所有知识产权转让给我们。您同意我们将拥有此提交内容，并有权为任何合法目的（商业或其他）不受限制地使用和传播，而无需向您确认或补偿。您对您发布或上传的内容负责：通过服务的任何部分向我们发送提交内容，即表示您：确认您已阅读并同意我们的"禁止活动"，并且不会通过服务发布、发送、发布、上传或传输任何非法、骚扰、仇恨、有害、诽谤、淫秽、欺凌、辱骂、歧视、威胁任何个人或团体、露骨色情、虚假、不准确、欺骗或误导的提交内容；在适用法律允许的范围内，放弃对此类提交内容的所有精神权利；保证此类提交内容为您原创，或者您拥有提交此类提交内容所需的必要权利和许可，并且您拥有授予我们上述与您提交内容相关的权利的完全权限；并保证和声明您的提交内容不构成机密信息。您对您的提交内容全权负责，并且您明确同意赔偿我们因您违反（a）本节、（b）任何第三方的知识产权或（c）适用法律而可能遭受的任何及所有损失。</p>
+            </div>
+
+            <!-- 3. 用户声明 -->
+            <div id="zh-section3" class="terms-section">
+                <h2>3. 用户声明</h2>
+                <p>通过使用服务，您声明并保证：（1）您具有法律行为能力，并同意遵守这些法律条款；（2）您在居住地司法管辖区内不是未成年人；（3）您不会通过自动化或非人工方式访问服务，无论是通过机器人、脚本还是其他方式；（4）您不会将服务用于任何非法或未经授权的目的；以及（5）您对服务的使用不会违反任何适用法律或法规。</p>
+                <p>如果您提供的任何信息不真实、不准确、不是最新的或不完整，我们有权暂停或终止您的账户，并拒绝您当前和未来对服务（或其任何部分）的任何及所有使用。</p>
+            </div>
+
+            <!-- 4. 禁止活动 -->
+            <div id="zh-section4" class="terms-section">
+                <h2>4. 禁止活动</h2>
+                <p>您不得以除我们提供服务目的之外的任何目的访问或使用服务。除经我们特别认可或批准的活动外，服务不得与任何商业活动相关联使用。作为服务的用户，您同意不进行以下行为：</p>
+                <ul>
+                    <li>未经我们书面许可，系统地检索服务中的数据或其他内容，以直接或间接创建或编译集合、汇编、数据库或目录。</li>
+                    <li>欺骗、欺诈或误导我们和其他用户，尤其是试图获取敏感账户信息（如用户密码）。</li>
+                    <li>规避、禁用或以其他方式干扰服务的安全相关功能，包括防止或限制使用或复制任何内容的功能，或对服务和/或其中包含的内容的使用施加限制的功能。</li>
+                    <li>在我们看来，诋毁、玷污或以其他方式损害我们和/或服务。</li>
+                    <li>使用从服务中获得的任何信息来骚扰、虐待或伤害他人。</li>
+                    <li>不当使用我们的支持服务，或提交虚假的滥用或不当行为报告。</li>
+                    <li>以不符合任何适用法律或法规的方式使用服务。</li>
+                    <li>未经授权对服务进行框架或链接。</li>
+                    <li>上传或传输（或试图上传或传输）病毒、特洛伊木马或其他材料，包括过度使用大写字母和垃圾邮件（持续发布重复文本），干扰任何一方不间断地使用和享受服务，或修改、损害、中断、改变或干扰服务的使用、功能、操作或维护。</li>
+                    <li>进行任何自动化使用系统，例如使用脚本发送评论或消息，或使用任何数据挖掘、机器人或类似的数据收集和提取工具。</li>
+                    <li>删除任何内容中的版权或其他专有权利声明。</li>
+                    <li>试图冒充其他用户或人员，或使用其他用户的用户名。</li>
+                    <li>上传或传输（或试图上传或传输）任何充当被动或主动信息收集或传输机制的材料，包括但不限于清晰的图形交换格式（"gif"）、1×1像素、网络信标、Cookie或其他类似设备（有时称为"间谍软件"或"被动收集机制"或"pcms"）。</li>
+                    <li>干扰、破坏或对服务或与服务连接的网络或服务造成不当负担。</li>
+                    <li>骚扰、烦扰、恐吓或威胁向我们提供服务的任何部分给您的任何员工或代理人。</li>
+                    <li>试图绕过服务旨在防止或限制访问服务或服务任何部分的任何措施。</li>
+                    <li>复制或改编服务的软件，包括但不限于Flash、PHP、HTML、JavaScript或其他代码。</li>
+                    <li>除非适用法律允许，否则解码、反编译、反汇编或逆向工程构成服务一部分或以任何方式构成服务一部分的任何软件。</li>
+                    <li>除非是标准搜索引擎或互联网浏览器使用的结果，否则使用、启动、开发或分发任何自动化系统，包括但不限于任何访问服务的蜘蛛、机器人、作弊工具、爬虫或离线阅读器，或使用或启动任何未经授权的脚本或其他软件。</li>
+                    <li>使用购买代理或采购代理在服务上进行购买。</li>
+                    <li>对服务进行任何未经授权的使用，包括通过电子或其他方式收集用户的用户名和/或电子邮件地址以发送未经请求的电子邮件，或通过自动化方式或虚假借口创建用户账户。</li>
+                    <li>将服务作为与我们竞争的任何努力的一部分，或以其他方式将服务和/或内容用于任何创收活动或商业企业。</li>
+                </ul>
+            </div>
+
+            <!-- 5. 用户生成的内容 -->
+            <div id="zh-section5" class="terms-section">
+                <h2>5. 用户生成的内容</h2>
+                <p>服务不允许用户向我们的服务器上传、提交、发布或发布任何内容、评论或其他材料。您通过联系表单或电子邮件自愿向我们提供的任何反馈、建议或其他信息（"提交内容"）应受下文贡献许可部分的约束。</p>
+                <p><strong>自定义背景功能例外</strong> 服务包括"自定义背景"功能，允许您从设备中选择图像作为个性化背景。使用此功能时，图像文件仅存储在您自己设备上的浏览器本地存储中。图像永远不会上传到我们的服务器，不会被我们存储或处理，不会跨设备同步，也不会对其他任何用户可见。由于图像完全保留在您的设备上，我们不会访问、存储或传输它，因此此功能不会对我们产生任何版权或知识产权责任。您仍全权负责确保您使用此功能使用的任何图像符合适用法律，并且不侵犯任何第三方的权利。</p>
+            </div>
+
+            <!-- 6. 贡献许可 -->
+            <div id="zh-section6" class="terms-section">
+                <h2>6. 贡献许可</h2>
+                <p>通过电子邮件、联系表单或其他沟通渠道向我们提交建议、反馈或其他信息（"提交内容"），即表示您同意我们可以为任何目的（包括改进我们的服务）访问、存储、处理和使用此类提交内容，而无需承担向您补偿的义务。您保留对提交内容的全部所有权，我们不主张对其拥有任何所有权。您声明并保证您的提交内容不包含机密信息，且不侵犯任何第三方的权利。我们对您提供的任何提交内容不承担责任。</p>
+            </div>
+
+            <!-- 7. 服务管理 -->
+            <div id="zh-section7" class="terms-section">
+                <h2>7. 服务管理</h2>
+                <p>我们保留但无义务：（1）监控服务是否存在违反这些法律条款的行为；（2）对我们自行判断违反法律或这些法律条款的任何人采取适当的法律行动，包括但不限于向执法机关报告此类用户；（3）自行决定并无限制地拒绝、限制访问、限制可用性或禁用（在技术上可行的范围内）您的任何贡献或其任何部分；（4）自行决定并无限制、通知或责任地从服务中删除或以其他方式禁用所有过大或以任何方式对我们的系统造成负担的文件和内容；以及（5）以旨在保护我们的权利和财产并促进服务正常运作的方式管理服务。</p>
+            </div>
+
+            <!-- 8. 期限与终止 -->
+            <div id="zh-section8" class="terms-section">
+                <h2>8. 期限与终止</h2>
+                <p>这些法律条款在您使用服务期间保持完全有效。在不限制这些法律条款任何其他规定的情况下，我们保留自行决定且无需通知或承担责任的情况下，以任何理由或无理由拒绝任何人访问和使用服务（包括阻止某些IP地址）的权利，包括但不限于违反这些法律条款中包含的任何声明、保证或约定，或违反任何适用法律或法规。我们可能随时自行决定终止您使用或参与服务，或删除您发布的任何内容或信息，恕不另行警告。</p>
+                <p>如果我们因任何原因终止或暂停您的账户，您不得以您的姓名、虚假或借用姓名或任何第三方的姓名注册和创建新账户，即使您可能代表第三方行事。除了终止或暂停您的账户外，我们保留采取适当法律行动的权利，包括但不限于寻求民事、刑事和禁令救济。</p>
+            </div>
+
+            <!-- 9. 修改与中断 -->
+            <div id="zh-section9" class="terms-section">
+                <h2>9. 修改与中断</h2>
+                <p>我们保留自行决定随时以任何理由更改、修改或删除服务内容的权利，恕不另行通知。但是，我们没有义务更新我们服务上的任何信息。对于服务的任何修改、价格变更、暂停或中止，我们不对您或任何第三方承担责任。</p>
+                <p>我们不能保证服务始终可用。我们可能会遇到硬件、软件或其他问题，或需要进行与服务相关的维护，从而导致中断、延迟或错误。我们保留随时以任何理由更改、修订、更新、暂停、中止或以其他方式修改服务的权利，恕不另行通知。您同意，对于在服务任何停机或中止期间因您无法访问或使用服务而造成的任何损失、损害或不便，我们不承担任何责任。这些法律条款中的任何内容均不得解释为有义务维护和支持服务或提供与之相关的任何更正、更新或发布。</p>
+            </div>
+
+            <!-- 10. 管辖法律 -->
+            <div id="zh-section10" class="terms-section">
+                <h2>10. 管辖法律</h2>
+                <p>这些法律条款应受中华人民共和国法律管辖并依其解释。Dorn Hub 和您不可撤销地同意，中华人民共和国法院对解决与这些法律条款相关的任何争议具有专属管辖权。</p>
+            </div>
+
+            <!-- 11. 争议解决 -->
+            <div id="zh-section11" class="terms-section">
+                <h2>11. 争议解决</h2>
+                <p>因这些法律条款或其违约、终止或有效性而产生的或与之相关的任何争议、争议或索赔，应提交至位于中华人民共和国的法院的专属管辖权。您同意放弃基于不方便法院或其他任何理由对此类管辖权提出的任何异议。双方同意任何法律程序应以中文进行。</p>
+            </div>
+
+            <!-- 12. 更正 -->
+            <div id="zh-section12" class="terms-section">
+                <h2>12. 更正</h2>
+                <p>服务上的信息可能存在印刷错误、不准确或遗漏，包括描述、定价、可用性和各种其他信息。我们保留随时更正任何错误、不准确或遗漏以及更改或更新服务上信息的权利，恕不另行通知。</p>
+            </div>
+
+            <!-- 13. 免责声明 -->
+            <div id="zh-section13" class="terms-section">
+                <h2>13. 免责声明</h2>
+                <p>服务按"按原样"和"按可用性"提供。您同意您使用服务将完全由您自行承担风险。在法律允许的最大范围内，我们不提供与服务及您使用服务相关的所有明示或暗示的保证，包括但不限于适销性、特定用途适用性和非侵权的暗示保证。我们不对服务内容的准确性或完整性，或链接到服务的任何网站或移动应用程序的内容作出任何保证或陈述，并且我们对以下情况不承担任何责任或义务：（1）内容和材料的错误、失误或不准确；（2）因您访问和使用服务而导致的任何性质的人身伤害或财产损失；（3）任何未经授权访问或使用我们的安全服务器和/或其中存储的任何及所有个人信息和/或财务信息；（4）服务传输的任何中断或停止；（5）任何第三方可能通过服务传输或传播的任何漏洞、病毒、特洛伊木马等；和/或（6）任何内容和材料中的任何错误或遗漏，或因使用通过服务发布、传输或以其他方式提供的任何内容而产生的任何类型的损失或损害。我们不保证、认可、担保或承担任何通过服务、任何超链接网站或任何横幅或其他广告中展示的任何网站或移动应用程序广告或提供的任何产品或服务的责任，我们也不会成为或对监控您与任何第三方产品或服务提供商之间的任何交易承担任何责任。如同通过任何媒介或在任何环境中购买产品或服务一样，您应在适当时运用最佳判断并谨慎行事。</p>
+            </div>
+
+            <!-- 14. 责任限制 -->
+            <div id="zh-section14" class="terms-section">
+                <h2>14. 责任限制</h2>
+                <p>在任何情况下，我们或我们的董事、员工或代理人均不对您或任何第三方因您使用服务而产生的任何直接、间接、附带、惩戒性、偶然性、特殊或惩罚性损害承担责任，包括利润损失、收入损失、数据丢失或其他损害，即使我们已被告知发生此类损害的可能性。尽管本协议中有任何相反规定，我们的责任始终限于您向我们支付的金额（如有）。由于我们的服务是免费提供的，此责任限制应为零。某些美国州法律和国际法律不允许对默示保证进行限制，或排除或限制某些损害。如果这些法律适用于您，上述免责声明或限制中的部分或全部可能不适用于您，您可能拥有额外的权利。</p>
+            </div>
+
+            <!-- 15. 赔偿 -->
+            <div id="zh-section15" class="terms-section">
+                <h2>15. 赔偿</h2>
+                <p>您同意辩护、赔偿并使我们（包括我们的子公司、关联公司以及我们各自的所有高管、代理人、合作伙伴和员工）免于因以下原因引起的任何第三方提出的任何损失、损害、责任、索赔或要求（包括合理的律师费和费用）：（1）使用服务；（2）违反这些法律条款；（3）违反您在这些法律条款中作出的任何声明和保证；（4）您侵犯第三方的权利，包括但不限于知识产权；或（5）对通过服务与您连接的任何其他服务用户的任何明显有害行为。尽管有上述规定，我们保留自费承担您需要赔偿我们的任何事项的独家辩护和控制权，并且您同意自费配合我们对此类索赔的辩护。我们将在知晓任何受此赔偿约束的索赔、诉讼或程序后，尽合理努力通知您。</p>
+            </div>
+
+            <!-- 16. 用户数据 -->
+            <div id="zh-section16" class="terms-section">
+                <h2>16. 用户数据</h2>
+                <p>我们将维护您传输到服务的某些数据，以管理服务的性能，以及与您使用服务相关的数据。尽管我们对数据进行常规备份，但您对您传输的或与您使用服务进行的任何活动相关的所有数据全权负责。您同意我们对任何此类数据的丢失或损坏不承担任何责任，并且您特此放弃因此类数据的任何丢失或损坏而对我们提起任何诉讼的权利。</p>
+            </div>
+
+            <!-- 17. 电子通信、交易和签名 -->
+            <div id="zh-section17" class="terms-section">
+                <h2>17. 电子通信、交易和签名</h2>
+                <p>访问服务、向我们发送电子邮件和填写在线表单构成电子通信。您同意接收电子通信，并且您同意我们通过电子邮件和在服务上以电子方式向您提供的所有协议、通知、披露和其他通信满足此类通信应为书面形式的任何法律要求。您特此同意使用电子签名、合同、订单和其他记录，以及我们或通过服务发起或完成的交易的通知、政策和记录的电子交付。您特此放弃任何司法管辖区下的任何法规、条例、规章、法令或其他法律要求原始签名或非电子记录的交付或保留，或以电子方式以外的方式付款或授予信用的任何权利或要求。</p>
+            </div>
+
+            <!-- 18. 杂项 -->
+            <div id="zh-section18" class="terms-section">
+                <h2>18. 杂项</h2>
+                <p>这些法律条款以及我们在服务上或关于服务发布的任何政策或操作规则构成您与我们之间的完整协议和谅解。我们未能行使或执行这些法律条款的任何权利或规定不应视为放弃该权利或规定。这些法律条款在法律允许的最大范围内适用。我们可以随时将我们的任何或所有权利和义务转让给他人。对于超出我们合理控制范围的任何原因造成的任何损失、损害、延迟或未能采取行动，我们概不负责。如果这些法律条款的任何规定或部分规定被确定为非法、无效或不可执行，则该规定或部分规定被视为可与这些法律条款分离，并且不影响任何其余规定的有效性和可执行性。这些法律条款或使用服务不会在您与我们之间建立合资、合伙、雇佣或代理关系。您同意这些法律条款不会因为是我们起草的而被对我们不利地解释。您特此放弃基于这些法律条款的电子形式以及双方未签署这些法律条款而可能拥有的任何及所有抗辩。</p>
+            </div>
+
+            <!-- 19. 联系我们 -->
+            <div id="zh-section19" class="terms-section">
+                <h2>19. 联系我们</h2>
+                <p>为了解决有关服务的投诉或获取有关使用服务的进一步信息，请通过以下方式联系我们：</p>
+                <p><a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> 或访问 <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a></p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('visible', window.scrollY > 300);
+        });
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        document.querySelectorAll('.toc-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                if (targetId && targetId.startsWith('#')) {
+                    document.querySelector(targetId)?.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        setTimeout(() => {
+            const bgType = localStorage.getItem('backgroundType') || 'default';
+            const customBg = localStorage.getItem('customBackground');
+            if (bgType !== 'none' && !document.querySelector('.background-layer')) {
+                const bgLayer = document.createElement('div');
+                bgLayer.className = 'background-layer';
+                bgLayer.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;z-index:-1;pointer-events:none`;
+                if (bgType === 'default') bgLayer.style.backgroundImage = "url('flag.jpg')";
+                else if (bgType === 'random') bgLayer.style.backgroundImage = "url('https://picsum.photos/1920/1080')";
+                else if (bgType === 'custom' && customBg) bgLayer.style.backgroundImage = `url('${customBg}')`;
+                if (bgLayer.style.backgroundImage) document.body.appendChild(bgLayer);
+            }
+        }, 100);
+    </script>
+</body>
+</html>

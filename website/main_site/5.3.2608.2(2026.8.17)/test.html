@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://dornhub-cz.eu.org/SatornhLogo.png">
+    
+    <title>Dorn Hub</title>
+    <meta name="description" content="Dorn Hub是大𣿅子IP的核心数字平台，也是用户进入𣿅国世界的第一道大门。用户在这里注册成为“𣿅国公民”，获得唯一的身份证号，然后通过每日签到、玩抛水壶小游戏、参与股市模拟等方式赚取𣿅元。Dorn Hub还提供了个性化设置（主题色、明暗模式、背景图片）、固定网站、成就系统等功能，让每个用户都能打造属于自己的𣿅国生活空间。">
+    <meta name="Keywords" content="Dorn,Dornhub,多恩,𣿅国,donh,tonh,Dorn Hub,𣿅子,懂子,懂国,𣿅">
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub-cz.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub-cz.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="https://dornhub-cz.eu.org/resources/loading.js"></script>
+	<!-- Cookie 同意组件 -->
+	<script src="https://dornhub-cz.eu.org/resources/cookie-consent.js"></script>
+    
+    <style>
+        
+        
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+        
+        .add-pinned-btn:disabled, .batch-operate-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .batch-actions {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: var(--secondary-color);
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .batch-actions.active {
+            display: flex;
+        }
+        
+        .batch-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .batch-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .batch-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .batch-btn.delete {
+            background: #d13438;
+            color: white;
+        }
+        
+        .batch-btn.delete:hover {
+            background: #b02a2e;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .search-btn {
+            min-width: 100px;
+        }
+        
+        /* 分类头部样式 - 用于每个独立的 section */
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .category-header i {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+        
+        .category-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .category-count {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-left: auto;
+        }
+        
+        /* 保持原有的网格样式 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+		
+		/* Cookie 警告样式 */
+		.cookie-warning {
+		    margin-top: 10px;
+		    padding: 10px;
+		    background: rgba(209, 52, 56, 0.1);
+		    border-left: 3px solid #d13438;
+		    border-radius: 6px;
+		    font-size: 13px;
+		    color: #d13438;
+		    animation: fadeIn 0.3s var(--animation-curve);
+		}
+		
+		.cookie-warning i {
+		    margin-right: 8px;
+		}
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-header h2 {
+                font-size: 20px;
+            }
+        }
+        
+        /* 保留彩蛋相关样式 */
+        #easter-egg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+        }
+        
+        .falling-text {
+            position: absolute;
+            top: -50px;
+            font-weight: bold;
+            color: #16DA49;
+            opacity: 0.8;
+            animation: falling-text 3s linear forwards;
+            pointer-events: none;
+            z-index: 10001;
+        }
+        
+        @keyframes falling-text {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: confetti-fall 3s ease-out forwards, confetti-rotate 1s ease-out infinite;
+            pointer-events: none;
+            z-index: 10000;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                top: -10px;
+                opacity: 1;
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+            }
+        }
+        
+        @keyframes confetti-rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- 加载遮罩 -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <!-- 转圈圈加载动画 -->
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="ms-fontSize-32 ms-fontWeight-semibold">
+                        <span id="navname1">Dorn</span>
+                        <span id="navname2">Hub</span>
+                        <span class="insider-badge" id="insiderBadge">Insider</span>
+                    </h1>
+                </div>
+                <div class="header-right">
+                    <div class="datetime" id="datetime"></div>
+                    <!-- 修改点：添加 btn 类 -->
+                    <button class="settings-btn btn" id="settingsBtn">
+                        <i class="fas fa-cog"></i> 设置
+                    </button>
+                    <div class="user-menu-container">
+                        <!-- 修改点：添加 btn 类 -->
+                        <button class="login-btn btn" id="loginBtn">
+                            <span id="loginText">登录/注册</span>
+                            <i class="fas fa-chevron-down" id="dropdownArrow"></i>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <!-- 用户信息区域 -->
+                            <div class="user-info-section">
+                                <div class="user-nickname" id="userNicknameDisplay"></div>
+                                <div class="user-certification" id="userCertificationDisplay"></div>
+                                <div class="user-funds" id="userFundsDisplay"></div>
+                                <div class="user-days" id="userDaysDisplay"></div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" id="personalCenterBtn">
+                                <i class="fas fa-user"></i>
+                                <span>个人中心</span>
+                            </div>
+							<div class="dropdown-item" id="dropdownUpdateLogBtn">
+							    <i class="fas fa-history"></i>
+							    <span>查看更新说明</span>
+							</div>
+                            <div class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>退出登录</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <br><br><br><br>
+        <div class="logo-container">
+            <div class="dornhub-logo">
+                <span class="logo-part1">Dorn</span>
+                <span class="logo-part2">Hub</span>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-box-wrapper">
+                <input type="text" class="search-box" placeholder="I question everything..." id="searchInput">
+                <!-- 修改点：添加 btn 和 btn-primary 类 -->
+                <button class="search-btn btn btn-primary" id="searchBtn">
+                    <i class="fas fa-search"></i> 搜索
+                </button>
+                <div class="search-engine-select-wrapper">
+                    <select class="search-engine-select" id="searchEngineSelect">
+                        <!-- 搜索引擎选项将通过JavaScript动态生成 -->
+                    </select>
+                </div>
+            </div>
+            <div class="suggestions" id="suggestions"></div>
+        </div>
+        <br>
+        
+        <!-- 固定网站部分 -->
+        <div class="pinned-section" id="pinnedSection">
+            <div class="section-container">
+                <div class="section-title">
+                    <h2>固定网站</h2>
+                    <div class="section-buttons">
+                        <!-- 修改点：添加 btn 和 btn-primary 类，移除原有的背景色定义 -->
+                        <button class="batch-operate-btn btn btn-primary" id="batchOperateBtn">
+                            <i class="fas fa-tasks"></i> 批量操作
+                        </button>
+                        <button class="add-pinned-btn btn btn-primary" id="addPinnedBtn">
+                            <i class="fas fa-plus"></i> 添加网站
+                        </button>
+                    </div>
+                </div>
+                <div class="batch-actions" id="batchActions">
+                    <div class="batch-checkbox">
+                        <span>已选择 <span id="selectedCount">0</span> 个网站</span>
+                    </div>
+                    <div class="batch-buttons">
+                        <!-- 修改点：添加 btn 类 -->
+                        <button class="batch-btn delete btn" id="batchDeleteBtn">
+                            <i class="fas fa-trash"></i> 删除选中
+                        </button>
+                        <button class="batch-btn btn" id="cancelBatchBtn">
+                            <i class="fas fa-times"></i> 取消
+                        </button>
+                    </div>
+                </div>
+                <div class="pinned-grid" id="pinnedGrid">
+                    <!-- 固定网站将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 分类导航部分 - 每个分类独立为 section -->
+        <div id="categoriesContainer"></div>
+        
+    </div>
+    
+    <!-- 设置模态框 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>设置</h2>
+                <button class="close-btn" id="closeSettingsBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <h3>配色方案</h3>
+                    <div class="color-options" id="colorOptions">
+                        <div class="color-option active" style="background-color:#16DA49;" data-color="#16DA49">𣿅国绿</div>
+                        <div class="color-option" style="background-color:#6499FF;" data-color="#6499FF">大江蓝</div>
+                        <div class="color-option" style="background-color:#A51515;" data-color="#A51515">秋茗红</div>
+                        <div class="color-option" style="background-color:#349DA5;" data-color="#349DA5">铁山青</div>
+                        <div class="color-option" style="background-color:#FFB500;" data-color="#FFB500">凤凰金</div>
+                        <div class="color-option" style="background-color:#DA70D6;" data-color="#DA70D6">兰花紫</div>
+                        <div class="color-option" style="background-color:#FF69B4;" data-color="#FF69B4">梨花粉</div>
+                        <div class="color-option" style="background-color:#0078d4;" data-color="#0078d4">深蓝色</div>
+                    </div>
+                    <div class="custom-color-container">
+                        <div class="custom-color-btn" id="customColorBtn" style="background-color: var(--primary-color);"></div>
+                        <div class="custom-color-input">
+                            <input type="color" id="customColorInput" value="#0078d4">
+                            <!-- 修改点：添加 btn 和 btn-primary 类 -->
+                            <button class="apply-color-btn btn btn-primary" id="applyCustomColor">应用</button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="setting-group">
+                    <h3>明暗模式</h3>
+                    <div class="theme-options">
+                        <div class="theme-option active" data-theme="light">浅色</div>
+                        <div class="theme-option" data-theme="dark">深色</div>
+                        <div class="theme-option" data-theme="auto">跟随系统</div>
+                    </div>
+                </div>
+                <br>
+                <div class="setting-group">
+                    <h3>显示选项</h3>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示固定网站栏</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showPinnedToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group navigation-toggle-group">
+                        <span class="toggle-label">显示网址导航</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showNavigationToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示日期</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showDateToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-group">
+                        <span class="toggle-label">显示时间</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showTimeToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <br>
+                <div class="setting-group">
+                    <h3>页面背景</h3>
+                    <div class="background-options">
+                        <div class="background-option" data-bg="default" style="background:linear-gradient(135deg, #16DA49 0%, #20EE66 100%); color: white;">默认背景</div>
+                        <div class="background-option active" data-bg="none" style="background-color:var(--bg-color); color:yellow;">无背景</div>
+                        <div class="background-option" data-bg="random" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);">随机图片</div>
+                        <div class="background-option" data-bg="custom" style="background:linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">自定义</div>
+                    </div>
+                    <div class="custom-color-input-file">
+                        <input type="file" id="customBackgroundInput" accept="image/*">
+                        <!-- 修改点：添加 btn 和 btn-primary 类 -->
+                        <button class="apply-background-btn btn btn-primary" id="applyCustomBackground">应用自定义背景</button>
+                    </div>
+                </div>
+				<br>
+				<div class="setting-group">
+				    <h3><i class="fas fa-cookie-bite"></i> Cookie 偏好设置</h3>
+				    <div style="margin-bottom: 15px;">
+				        <div class="toggle-group">
+				            <span class="toggle-label">功能 Cookie</span>
+				            <label class="toggle-switch">
+				                <input type="checkbox" id="functionalCookiesToggle" checked>
+				                <span class="toggle-slider"></span>
+				            </label>
+				        </div>
+				        <div class="toggle-group">
+				            <span class="toggle-label">分析 Cookie (Google Analytics)</span>
+				            <label class="toggle-switch">
+				                <input type="checkbox" id="analyticsCookiesToggle" checked>
+				                <span class="toggle-slider"></span>
+				            </label>
+				        </div>
+				        <div id="cookieWarning" class="cookie-warning" style="display: none; margin-top: 10px; padding: 10px; background: rgba(209, 52, 56, 0.1); border-left: 3px solid #d13438; border-radius: 6px; font-size: 13px;">
+				            <i class="fas fa-exclamation-triangle"></i> 
+				            <span id="cookieWarningText"></span>
+				        </div>
+				    </div>
+				    <div style="display: flex; gap: 12px;">
+				        <button class="btn btn-primary" id="saveCookiePrefsBtn" style="flex: 1;">
+				            <i class="fas fa-save"></i> 保存偏好设置
+				        </button>
+				        <button class="btn btn-secondary" id="resetCookiePrefsBtn" style="flex: 1;">
+				            <i class="fas fa-undo"></i> 重置为默认
+				        </button>
+				    </div>
+				    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 12px;">
+				        <i class="fas fa-info-circle"></i> 功能 Cookie 用于记住您的主题颜色、固定网站等个性化设置。分析 Cookie 用于帮助我们了解网站使用情况，改进用户体验。
+				    </p>
+				</div>
+				<br>
+				<button class="btn btn-primary" id="settingsUpdateLogBtn"><i class="fas fa-history"></i>查看更新说明</button>
+                <button class="btn clear-data-btn" id="clearDataBtn">清除所有数据</button>
+                <div class="setting-group" style="margin-top: 20px;">
+                    <h3>法律信息</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                        <a href="privacy-policy.html" style="color: var(--primary-color); text-decoration: none;">
+                            <i class="fas fa-shield-alt"></i> 隐私政策
+                        </a>
+                        <a href="terms.html" style="color: var(--primary-color); text-decoration: none;">
+                            <i class="fas fa-file-contract"></i> 使用条款
+                        </a>
+                        <a href="cookie-policy.html" style="color: var(--primary-color); text-decoration: none;">
+                            <i class="fas fa-cookie-bite"></i> Cookie 政策
+                        </a>
+                        <a href="disclaimer.html" style="color: var(--primary-color); text-decoration: none;">
+                            <i class="fas fa-exclamation-triangle"></i> 免责声明
+                        </a>
+						<a href="contact.html" style="color: var(--primary-color); text-decoration: none;">
+						    <i class="fas fa-exclamation-triangle"></i> 联系我们
+						</a>
+                    </div>
+                </div>
+                <p>Copyright © 2021-2026 Dorn Hub, All Rights Reserved.</p>
+                <p>Produced by Dorn Hub. | 版本号: 5.3 | 更新号: 2603.8</p>
+                <p>网站尚不完善，正在改进中。</p>
+            </div>
+        </div>
+    </div>
+    
+	<!-- 更新说明弹窗 -->
+	<div class="modal update-modal" id="updateModal">
+	    <div class="modal-content">
+	        <div class="modal-header">
+	            <h2><i class="fas fa-info-circle"></i> 更新说明</h2>
+	            <button class="close-btn" id="closeUpdateModalBtn">&times;</button>
+	        </div>
+	        <div class="modal-body" id="updateModalBody"></div>
+	        <div class="form-actions" style="margin: 0; padding: 16px 20px; border-top: 1px solid var(--border-color);">
+	            <button class="btn btn-primary" id="closeUpdateModalFooterBtn">关闭</button>
+	        </div>
+	    </div>
+	</div>
+	
+    <!-- 添加固定网站模态框 -->
+    <div class="modal" id="addPinnedModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>添加固定网站</h2>
+                <button class="close-btn" id="closeAddPinnedBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pinnedTitle">网站标题 (可选)</label>
+                    <input type="text" id="pinnedTitle" placeholder="输入网站标题，留空则使用网址">
+                </div>
+                <div class="form-group">
+                    <label for="pinnedUrl">网站地址 *</label>
+                    <input type="text" id="pinnedUrl" placeholder="https://example.com" required>
+                </div>
+                <div class="form-actions">
+                    <!-- 以下按钮已经使用了 btn 类，无需修改 -->
+                    <button class="btn btn-secondary" id="cancelAddPinnedBtn">取消</button>
+                    <button class="btn btn-primary" id="savePinnedBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 登录模态框 -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>登录</h2>
+                <button class="close-btn" id="closeLoginBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="idNumber">𣿅国身份证号</label>
+                    <input type="text" id="idNumber" placeholder="请输入𣿅国身份证号">
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" placeholder="请输入密码">
+                </div>
+                <div style="text-align: left; margin: 10px 0;">
+                    <a href="https://dornhub-cz.eu.org/forgot-password.html" style="color: var(--primary-color); text-decoration: none; font-size: 13px;">
+                        <i class="fas fa-key"></i> 忘记密码？！
+                    </a>
+                </div>
+                <div style="text-align: left; margin: 10px 0;">
+                    <a href="http://id.dorn.rf.gd" style="color: var(--primary-color); text-decoration: none; font-size: 13px;">
+                        <i class="fas fa-user-plus"></i> 还没有账号？点此注册
+                    </a>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelLoginBtn">取消</button>
+                    <button class="btn btn-primary" id="submitLoginBtn">登录</button>
+                </div>
+                <div id="loginMessage" style="margin-top: 15px; text-align: center;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub-cz.eu.org/resources/ui.js"></script>
+    <!-- 网站数据 -->
+    <script>
+		const categories = {
+		    official: { name: "官方服务", icon: "fa-crown", order: 1 },
+		    entertainment: { name: "娱乐游戏", icon: "fa-gamepad", order: 2 },
+		    culture: { name: "文化历史", icon: "fa-landmark", order: 3 },
+		    classic: { name: "经典版本", icon: "fa-history", order: 4 },
+		    ancient: { name: "远古时期", icon: "fa-fossil", order: 5 },
+		    other: { name: "其他", icon: "fa-ellipsis-h", order: 6 }
+		};
+		
+		const websites = [
+		    // 官方服务类
+		    { name: "𣿅国电子文史资料库", url: "https://dornhub-cz.eu.org/cloud", icon: "fa-book", category: "official" },
+		    //{ name: "𣿅国电子文史资料库-文件上传", url: "https://dornhub-cz.eu.org/upload", icon: "fa-upload", category: "official" },
+		    { name: "𣿅国小百科竞赛", url: "http://contest.dorn.rf.gd", icon: "fa-trophy", category: "official" },
+		    { name: "𣿅国公民绿卡系统", url: "http://id.dorn.rf.gd", icon: "fa-id-card", category: "official" },
+		    { name: "𣿅国股市", url: "https://dornhub-cz.eu.org/stock-market.html", icon: "fa-chart-line", category: "official" },
+			{ name: "总统议事日程管理", url: "https://knowl.rf.gd/", icon: "fa-border-all", category: "official" },
+		    { name: "𣿅国大总统选举", url: "http://election.dorn.rf.gd", icon: "fa-vote-yea", category: "official" },
+		    { name: "𣿅国国家博物馆", url: "http://museum.dorn.rf.gd", icon: "fa-landmark", category: "ancient" },
+		    { name: "多恩官方", url: "http://official.dorn.rf.gd", icon: "fa-crown", category: "ancient" },
+		    { name: "多恩官方-旧", url: "https://dornhub.github.io/index2", icon: "fa-crown", category: "ancient" },
+		    
+		    // 娱乐游戏类
+		    { name: "Dorn大转盘", url: "https://dornhub-cz.eu.org/lottery.html", icon: "fa-dice", category: "entertainment" },
+		    { name: "武宗子抛水壶", url: "https://dornhub-cz.eu.org/games/bottle.html", icon: "fa-kitchen-set", category: "entertainment" },
+		    { name: "𣿅国夫人爱购物", url: "https://dornhub-cz.eu.org/games/shopping.html", icon: "fa-shopping-bag", category: "entertainment" },
+			{ name: "江城子的打字竞速", url: "https://dornhub-cz.eu.org/games/type.html", icon: "fa-keyboard", category: "entertainment" },
+		    { name: "多恩游戏（吃𣿅人）", url: "https://dorngames.gamer.gd/eatdorn", icon: "fa-gamepad", category: "entertainment" },
+		    { name: "多恩游戏（博饼）-1站", url: "https://dorngames.github.io/boabia/index.html", icon: "fa-dice", category: "entertainment" },
+		    { name: "多恩游戏（博饼）-2站", url: "https://dorngames.gamer.gd/buabia", icon: "fa-dice", category: "entertainment" },
+		    { name: "多恩游戏（𣿅国国运模拟器）-1站", url: "https://dornhub.github.io/valeriette/donh-destiny-forecast.html", icon: "fa-chart-line", category: "entertainment" },
+		    { name: "多恩游戏（𣿅国国运模拟器）-2站", url: "https://dorngames.gamer.gd/nationdestin", icon: "fa-chart-line", category: "entertainment" },
+		    { name: "多恩游戏-旧", url: "http://games.dorn.rf.gd", icon: "fa-gamepad", category: "entertainment" },
+		    
+		    // 文化历史类
+		    { name: "𣿅国名人堂-1站", url: "http://dhof.dorn.rf.gd", icon: "fa-star", category: "culture" },
+		    { name: "𣿅国名人堂-2站", url: "https://cgy22.github.io/dhof/", icon: "fa-star", category: "culture" },
+		    { name: "瓦莱希雅大辞典-1站", url: "http://valencia.dorn.rf.gd", icon: "fa-book-open", category: "culture" },
+		    { name: "瓦莱希雅大辞典-2站", url: "https://cgy22.github.io/valencia/", icon: "fa-book-open", category: "culture" },
+		    { name: "𣿅国画廊-总统篇", url: "https://cgy22.github.io/paintings/tonh", icon: "fa-palette", category: "culture" },
+		    { name: "多恩音乐", url: "http://music.dorn.rf.gd", icon: "fa-music", category: "culture" },
+		    
+		    // 经典版本类
+		    { name: "Dorn主页-1站", url: "http://dorn.rf.gd", icon: "fa-globe", category: "classic" },
+		    { name: "Dorn主页-2站", url: "https://dornhub.github.io", icon: "fa-globe-asia", category: "classic" },
+		    { name: "Dorn主页-版本4.3", url: "https://dornhub-cz.eu.org/index-v4.3.html", icon: "fas fa-search", category: "classic" },
+		    { name: "Dorn主页-版本4", url: "https://dornhub-cz.eu.org/index-v4.html", icon: "fas fa-search", category: "classic" },
+		    { name: "Dorn主页-版本3.2", url: "http://dorn-old.dorn.rf.gd", icon: "fa-home", category: "classic" },
+		    { name: "Dorn主页-版本3", url: "https://cgy22.github.io/dorn/dornsearch", icon: "fas fa-search", category: "classic" },
+		    { name: "Dorn主页-版本2", url: "https://cgy22.github.io/dorn/dornsearch_en", icon: "fas fa-search", category: "classic" },
+		    
+		    // 远古时期类
+		    { name: "随机抽号器", url: "http://random.dorn.rf.gd", icon: "fa-random", category: "entertainment" },
+		    { name: "随机抽号器2", url: "http://random2.dorn.rf.gd", icon: "fa-random", category: "entertainment" },
+		    { name: "远古时期-随机抽号器", url: "https://dornhub.github.io/classtools/get-random-number.html", icon: "fa-random", category: "ancient" },
+		    { name: "远古时期-随机抽皓器", url: "https://dornhub.github.io/classtools/get-random-tonh.html", icon: "fa-random", category: "ancient" },
+		    { name: "远古时期-𣿅国主页", url: "https://dornhub.github.io/dgzl.html", icon: "fa-flag", category: "ancient" },
+		    { name: "远古时期-多功能机器人小懂", url: "https://dornhub.github.io/valeriette/index.html", icon: "fa-smile", category: "ancient" },
+		    { name: "远古时期-𣿅国商城", url: "https://dornstore.wordpress.com", icon: "fa-shopping-bag", category: "ancient" },
+		    { name: "远古时期-𣿅国百科", url: "https://dornhubpedia.wordpress.com", icon: "fas fa-atlas", category: "ancient" },
+		    
+		    // 其他类
+		    { name: "羟基人快乐老家", url: "https://dornhub.github.io/irelav/", icon: "fa-smile", category: "other" }
+		];
+		
+		// 按分类获取网站
+		function getWebsitesByCategory(category) {
+		    return websites.filter(site => site.category === category);
+		}
+		
+		// 获取所有分类（按order排序）
+		function getCategories() {
+		    return Object.entries(categories)
+		        .sort((a, b) => a[1].order - b[1].order)
+		        .map(([key, value]) => ({ key, ...value }));
+		}
+	</script>
+    
+    <script>
+        // 搜索引擎数据
+        const searchEngines = {
+            bing: { name: "Bing", url: "https://www.bing.com/search?q=" },
+            baidu: { name: "百度", url: "https://www.baidu.com/s?wd=" },
+            bilibili: { name: "Bilibili", url: "https://search.bilibili.com/all?keyword=" },
+            yandex: { name: "Yandex", url: "https://yandex.com/search/?text=" },
+            google: { name: "Google", url: "https://www.google.com/search?q=" },
+            youtube: { name: "Youtube", url: "https://www.youtube.com/results?search_query=" },
+            duckduckgo: { name: "DuckDuckGo", url: "https://duckduckgo.com/?q=" },
+            qwant: { name: "Qwant", url: "https://www.qwant.com/?q=" },
+            wikipedia: { name: "维基百科", url: "https://zh.wikipedia.org/wiki/Special:搜索?search=" }
+        };
+		
+		const CURRENT_VERSION = '5.3.2603.8';
+        // DOM元素
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        const pinnedGrid = document.getElementById('pinnedGrid');
+        const searchInput = document.getElementById('searchInput');
+        const searchEngineSelect = document.getElementById('searchEngineSelect');
+        const suggestions = document.getElementById('suggestions');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        const addPinnedBtn = document.getElementById('addPinnedBtn');
+        const batchOperateBtn = document.getElementById('batchOperateBtn');
+        const batchActions = document.getElementById('batchActions');
+        const selectedCountElement = document.getElementById('selectedCount');
+        const batchDeleteBtn = document.getElementById('batchDeleteBtn');
+        const cancelBatchBtn = document.getElementById('cancelBatchBtn');
+        const addPinnedModal = document.getElementById('addPinnedModal');
+        const closeAddPinnedBtn = document.getElementById('closeAddPinnedBtn');
+        const cancelAddPinnedBtn = document.getElementById('cancelAddPinnedBtn');
+        const savePinnedBtn = document.getElementById('savePinnedBtn');
+        const pinnedTitleInput = document.getElementById('pinnedTitle');
+        const pinnedUrlInput = document.getElementById('pinnedUrl');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const themeOptions = document.querySelectorAll('.theme-option');
+        const customColorBtn = document.getElementById('customColorBtn');
+        const customColorInput = document.getElementById('customColorInput');
+        const applyCustomColorBtn = document.getElementById('applyCustomColor');
+        const showPinnedToggle = document.getElementById('showPinnedToggle');
+        const showNavigationToggle = document.getElementById('showNavigationToggle');
+        const showDateToggle = document.getElementById('showDateToggle');
+        const showTimeToggle = document.getElementById('showTimeToggle');
+        const backgroundOptions = document.querySelectorAll('.background-option');
+        const customBackgroundInput = document.getElementById('customBackgroundInput');
+        const applyCustomBackgroundBtn = document.getElementById('applyCustomBackground');
+        const clearDataBtn = document.getElementById('clearDataBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginText = document.getElementById('loginText');
+        const loginModal = document.getElementById('loginModal');
+        const closeLoginBtn = document.getElementById('closeLoginBtn');
+        const cancelLoginBtn = document.getElementById('cancelLoginBtn');
+        const submitLoginBtn = document.getElementById('submitLoginBtn');
+        const idNumberInput = document.getElementById('idNumber');
+        const passwordInput = document.getElementById('password');
+        const loginMessage = document.getElementById('loginMessage');
+        const navigationToggleGroup = document.querySelector('.navigation-toggle-group');
+        const userMenuContainer = document.querySelector('.user-menu-container');
+        const userDropdown = document.getElementById('userDropdown');
+        const dropdownArrow = document.getElementById('dropdownArrow');
+        const logoutBtn = document.getElementById('logoutBtn');
+		const settingsUpdateLogBtn = document.getElementById('settingsUpdateLogBtn');
+		const updateModal = document.getElementById('updateModal');
+		const closeUpdateModalBtn = document.getElementById('closeUpdateModalBtn');
+		const closeUpdateModalFooterBtn = document.getElementById('closeUpdateModalFooterBtn');
+		const updateModalBody = document.getElementById('updateModalBody');
+		// Cookie 相关 DOM 元素
+		const functionalCookiesToggle = document.getElementById('functionalCookiesToggle');
+		const analyticsCookiesToggle = document.getElementById('analyticsCookiesToggle');
+		const saveCookiePrefsBtn = document.getElementById('saveCookiePrefsBtn');
+		const resetCookiePrefsBtn = document.getElementById('resetCookiePrefsBtn');
+		const cookieWarning = document.getElementById('cookieWarning');
+		const cookieWarningText = document.getElementById('cookieWarningText');
+    
+        // 初始化
+        let pinnedWebsites = JSON.parse(localStorage.getItem('pinnedWebsites')) || [];
+        let currentTheme = localStorage.getItem('theme') || 'auto';
+        let currentColor = localStorage.getItem('primaryColor') || '#16DA49';
+        let showPinned = localStorage.getItem('showPinned') !== 'false';
+        let showNavigation = localStorage.getItem('showNavigation') !== 'false';
+        let backgroundType = localStorage.getItem('backgroundType') || 'default';
+        let searchEngine = localStorage.getItem('searchEngine') || 'bing';
+        let isBatchMode = false;
+        let selectedCards = new Set();
+        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+    
+        // 应用保存的设置
+        function applySavedSettings() {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            document.documentElement.style.setProperty('--primary-color', currentColor);
+            customColorBtn.style.backgroundColor = currentColor;
+            customColorInput.value = currentColor;
+            showPinnedToggle.checked = showPinned;
+            showNavigationToggle.checked = showNavigation;
+            updateSearchEngineOptions();
+            applyBackground(backgroundType);
+            updatePinnedSectionVisibility();
+            updateNavigationVisibility();
+            updateAddPinnedButton();
+            updateActiveOptions();
+            updateLoginState();
+        }
+    
+        // 更新搜索引擎选项
+        function updateSearchEngineOptions() {
+            searchEngineSelect.innerHTML = '';
+            if (isLoggedIn) {
+                const internalOption = document.createElement('option');
+                internalOption.value = 'internal';
+                internalOption.textContent = '站内搜索';
+                searchEngineSelect.appendChild(internalOption);
+            }
+            for (const [key, engine] of Object.entries(searchEngines)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = engine.name;
+                searchEngineSelect.appendChild(option);
+            }
+            searchEngineSelect.value = searchEngine;
+        }
+    
+        // 应用背景
+        function applyBackground(type) {
+            backgroundType = type;
+            localStorage.setItem('backgroundType', type);
+            const existingBgLayer = document.querySelector('.background-layer');
+            if (existingBgLayer) existingBgLayer.remove();
+            document.body.style.backgroundImage = 'none';
+            document.body.style.backgroundColor = 'var(--bg-color)';
+            if (type === 'none') {
+                return;
+            }
+            const bgLayer = document.createElement('div');
+            bgLayer.className = 'background-layer';
+            if (type === 'random') {
+                const imageSources = ['https://picsum.photos/1920/1080', 'flag.jpg'];
+                tryLoadImage(imageSources, 0, bgLayer);
+            } else if (type === 'default') {
+                bgLayer.style.backgroundImage = `url('flag.jpg')`;
+                document.body.appendChild(bgLayer);
+            } else if (type === 'custom') {
+                const customBg = localStorage.getItem('customBackground');
+                if (customBg) {
+                    const tempImg = new Image();
+                    tempImg.onload = function() {
+                        bgLayer.style.backgroundImage = `url('${customBg}')`;
+                        document.body.appendChild(bgLayer);
+                    };
+                    tempImg.src = customBg;
+                }
+            }
+            updateActiveOptions();
+        }
+        
+        function tryLoadImage(sources, index, bgLayer) {
+            if (index >= sources.length) {
+                console.error('所有图片源都加载失败');
+                return;
+            }
+            const tempImg = new Image();
+            tempImg.onload = function() {
+                bgLayer.style.backgroundImage = `url('${sources[index]}')`;
+                document.body.appendChild(bgLayer);
+            };
+            tempImg.onerror = function() {
+                tryLoadImage(sources, index + 1, bgLayer);
+            };
+            tempImg.src = sources[index];
+        }
+    
+        function updateActiveOptions() {
+            colorOptions.forEach(option => {
+                if (option.getAttribute('data-color') === currentColor) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            themeOptions.forEach(option => {
+                if (option.getAttribute('data-theme') === currentTheme) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            backgroundOptions.forEach(option => {
+                if (option.getAttribute('data-bg') === backgroundType) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+        }
+    
+        function updateAddPinnedButton() {
+            if (pinnedWebsites.length >= 10) {
+                addPinnedBtn.disabled = true;
+                addPinnedBtn.title = "最多只能固定10个网站";
+            } else {
+                addPinnedBtn.disabled = false;
+                addPinnedBtn.title = "";
+            }
+        }
+		
+		function calculateCitizenDays(issueDate) {
+		    const issue = new Date(issueDate);
+		    const today = new Date();
+		    const diffTime = Math.abs(today - issue);
+		    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+		}
+		
+		function updateUserInfoDisplay() {
+		    if (!isLoggedIn || !currentUser) return;
+		    const nicknameDisplay = document.getElementById('userNicknameDisplay');
+		    nicknameDisplay.textContent = currentUser.nickname || currentUser.name;
+		    const certificationDisplay = document.getElementById('userCertificationDisplay');
+		    if (currentUser.certification && currentUser.certification.trim() !== '') {
+		        certificationDisplay.textContent = currentUser.certification;
+		        certificationDisplay.style.display = 'block';
+		    } else {
+		        certificationDisplay.style.display = 'none';
+		    }
+		    const fundsDisplay = document.getElementById('userFundsDisplay');
+		    const funds = currentUser.funds || 10.00;
+		    fundsDisplay.innerHTML = `<i class="fas fa-coins"></i> ${funds} 𣿅元`;
+		    const daysDisplay = document.getElementById('userDaysDisplay');
+		    const issueDate = currentUser.issue_date;
+		    if (issueDate) {
+		        daysDisplay.textContent = `已成为𣿅国公民 ${calculateCitizenDays(issueDate)} 天`;
+		    } else {
+		        daysDisplay.textContent = '欢迎新公民！';
+		    }
+		}
+    
+        function updateLoginState() {
+            if (isLoggedIn && currentUser) {
+                loginText.textContent = currentUser.nickname || currentUser.name;
+                updateUserInfoDisplay();
+                document.querySelectorAll('.insider-badge').forEach(badge => {
+                    badge.style.display = 'inline-block';
+                });
+                // 注意：不要自动关闭下拉菜单，让用户自己控制
+                updateNavigationVisibility();
+                updateSettingsVisibility();
+                updateSearchEngineOptions();
+            } else {
+                loginText.textContent = "登录/注册";
+                document.querySelectorAll('.insider-badge').forEach(badge => {
+                    badge.style.display = 'none';
+                });
+                userDropdown.classList.remove('active');
+                dropdownArrow.style.transform = 'rotate(0deg)';
+                updateNavigationVisibility();
+                updateSettingsVisibility();
+                updateSearchEngineOptions();
+            }
+        }
+        
+        function updateNavigationVisibility() {
+            categoriesContainer.style.display = showNavigation ? 'block' : 'none';
+        }
+    
+        function updateSettingsVisibility() {
+            navigationToggleGroup.style.display = 'flex';
+        }
+    
+        function updatePinnedSectionVisibility() {
+            const pinnedSection = document.getElementById('pinnedSection');
+            pinnedSection.style.display = showPinned ? 'block' : 'none';
+        }
+    
+        function displayWebsites() {
+            categoriesContainer.innerHTML = '';
+            const categoriesList = getCategories();
+            let hasContent = false;
+            for (const category of categoriesList) {
+                const categoryWebsites = getWebsitesByCategory(category.key);
+                if (categoryWebsites.length === 0) continue;
+                hasContent = true;
+                const categorySection = document.createElement('div');
+                categorySection.className = 'section-container';
+                categorySection.setAttribute('data-category', category.key);
+                const categoryHeader = document.createElement('div');
+                categoryHeader.className = 'category-header';
+                categoryHeader.innerHTML = `
+                    <i class="fas ${category.icon}"></i>
+                    <h2>${category.name}</h2>
+                    <span class="category-count">(${categoryWebsites.length})</span>
+                `;
+                categorySection.appendChild(categoryHeader);
+                const grid = document.createElement('div');
+                grid.className = 'grid';
+                categoryWebsites.forEach(website => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.setAttribute('data-url', website.url);
+                    card.innerHTML = `
+                        <h3><i class="fas ${website.icon}"></i> ${website.name}</h3>
+                        <p>${website.url}</p>
+                        <button class="pin-btn" ${pinnedWebsites.length >= 10 ? 'disabled' : ''}>
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    `;
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.closest('.pin-btn')) {
+                            window.open(website.url, '_blank');
+                        }
+                    });
+                    const pinBtn = card.querySelector('.pin-btn');
+                    pinBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (pinnedWebsites.length < 10) {
+                            addPinnedWebsite(website);
+                            pinBtn.disabled = true;
+                        }
+                    });
+                    const isAlreadyPinned = pinnedWebsites.some(pinned => 
+                        pinned.name === website.name && pinned.url === website.url
+                    );
+                    if (isAlreadyPinned) {
+                        pinBtn.disabled = true;
+                    }
+                    grid.appendChild(card);
+                });
+                categorySection.appendChild(grid);
+                categoriesContainer.appendChild(categorySection);
+            }
+            if (!hasContent) {
+                categoriesContainer.innerHTML = '<div class="section-container"><div class="no-results">暂无网站数据</div></div>';
+            }
+        }
+    
+        function displayPinnedWebsites() {
+            pinnedGrid.innerHTML = '';
+            if (pinnedWebsites.length === 0) {
+                pinnedGrid.innerHTML = '<div class="empty">暂无固定网站，点击"添加网站"添加</div>';
+                pinnedGrid.classList.add('empty');
+                return;
+            }
+            pinnedGrid.classList.remove('empty');
+            pinnedWebsites.forEach((website, index) => {
+                const card = document.createElement('div');
+                card.className = 'pinned-card';
+                card.setAttribute('data-index', index);
+                card.innerHTML = `
+                    <div class="batch-checkbox">
+                        <input type="checkbox" id="card-${index}" data-index="${index}">
+                    </div>
+                    <h3><i class="fas ${website.icon || 'fa-link'}"></i> ${website.name}</h3>
+                    <p>${website.url}</p>
+                    <button class="remove-btn"><i class="fas fa-times"></i></button>
+                `;
+                card.addEventListener('click', (e) => {
+                    if (isBatchMode) {
+                        if (!e.target.closest('.batch-checkbox') && !e.target.closest('.remove-btn')) {
+                            const checkbox = card.querySelector('input[type="checkbox"]');
+                            checkbox.checked = !checkbox.checked;
+                            toggleCardSelection(card, checkbox.checked);
+                        }
+                    } else {
+                        if (!e.target.closest('.remove-btn')) {
+                            window.open(website.url, '_blank');
+                        }
+                    }
+                });
+                card.querySelector('.remove-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!isBatchMode) {
+                        removePinnedWebsite(index);
+                    }
+                });
+                const checkbox = card.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', (e) => {
+                    e.stopPropagation();
+                    toggleCardSelection(card, checkbox.checked);
+                });
+                pinnedGrid.appendChild(card);
+            });
+        }
+    
+        function toggleCardSelection(card, isSelected) {
+            if (isSelected) {
+                card.classList.add('batch-selected');
+                selectedCards.add(card);
+            } else {
+                card.classList.remove('batch-selected');
+                selectedCards.delete(card);
+            }
+            updateSelectedCount();
+        }
+    
+        function updateSelectedCount() {
+            selectedCountElement.textContent = selectedCards.size;
+        }
+    
+        function addPinnedWebsite(website) {
+            if (pinnedWebsites.length >= 10) return;
+            pinnedWebsites.push(website);
+            localStorage.setItem('pinnedWebsites', JSON.stringify(pinnedWebsites));
+            displayPinnedWebsites();
+            updateAddPinnedButton();
+            savePinnedWebsitesToServer();
+            displayWebsites(websites);
+        }
+        
+        function removePinnedWebsite(index) {
+            pinnedWebsites.splice(index, 1);
+            localStorage.setItem('pinnedWebsites', JSON.stringify(pinnedWebsites));
+            displayPinnedWebsites();
+            updateAddPinnedButton();
+            savePinnedWebsitesToServer();
+            displayWebsites(websites);
+        }
+    
+        function displaySuggestions(filteredWebsites) {
+            suggestions.innerHTML = '';
+            if (filteredWebsites.length === 0) {
+                const noResult = document.createElement('div');
+                noResult.className = 'suggestion-item';
+                noResult.innerHTML = '<i class="fas fa-search"></i> 未找到匹配的网站';
+                suggestions.appendChild(noResult);
+                return;
+            }
+            filteredWebsites.forEach(website => {
+                const suggestionItem = document.createElement('div');
+                suggestionItem.className = 'suggestion-item';
+                suggestionItem.innerHTML = `
+                    <i class="fas ${website.icon}"></i>
+                    <span>${website.name}</span>
+                    <small style="margin-left: auto; font-size: 12px; color: var(--text-secondary);">${categories[website.category]?.name || '其他'}</small>
+                `;
+                suggestionItem.setAttribute('data-url', website.url);
+                suggestions.appendChild(suggestionItem);
+            });
+        }
+    
+        function performSearch(searchTerm) {
+            if (!searchTerm) return;
+            const searchEngine = searchEngineSelect.value;
+            if (searchEngine === 'internal' && isLoggedIn) {
+                const matchedWebsite = websites.find(website => 
+                    website.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                    website.url.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                if (matchedWebsite) {
+                    window.open(matchedWebsite.url, '_blank');
+                } else {
+                    alert(`未找到与 "${searchTerm}" 相关的网站`);
+                }
+            } else {
+                const searchUrl = searchEngines[searchEngine].url + encodeURIComponent(searchTerm);
+                window.open(searchUrl, '_blank');
+            }
+            suggestions.style.display = 'none';
+        }
+    
+        function showNotification(message, type = 'info') {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) existingNotification.remove();
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<span>${message}</span><button class="notification-close">&times;</button>`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#d4edda' : '#f8d7da'};
+                color: ${type === 'success' ? '#155724' : '#721c24'};
+                padding: 12px 20px;
+                border-radius: 4px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: slideInRight 0.3s ease;
+            `;
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.style.cssText = `background: none; border: none; font-size: 18px; cursor: pointer; padding: 0; margin: 0; line-height: 1;`;
+            closeBtn.addEventListener('click', () => notification.remove());
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 3000);
+        }
+    
+        function loadUserSettings() {
+            if (!isLoggedIn || !currentUser) return;
+            fetch(`user_settings.php?id_number=${currentUser.id_number}&type=settings`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        const userSettings = data.data;
+                        if (userSettings.theme) {
+                            currentTheme = userSettings.theme;
+                            document.documentElement.setAttribute('data-theme', currentTheme);
+                        }
+                        if (userSettings.primary_color) {
+                            currentColor = userSettings.primary_color;
+                            document.documentElement.style.setProperty('--primary-color', currentColor);
+                            customColorBtn.style.backgroundColor = currentColor;
+                            customColorInput.value = currentColor;
+                        }
+                        if (userSettings.show_pinned !== undefined) {
+                            showPinned = Boolean(userSettings.show_pinned);
+                            showPinnedToggle.checked = showPinned;
+                        }
+                        if (userSettings.show_navigation !== undefined) {
+                            showNavigation = Boolean(userSettings.show_navigation);
+                            showNavigationToggle.checked = showNavigation;
+                        }
+                        if (userSettings.show_date !== undefined) {
+                            showDate = Boolean(userSettings.show_date);
+                            showDateToggle.checked = showDate;
+                        }
+                        if (userSettings.show_time !== undefined) {
+                            showTime = Boolean(userSettings.show_time);
+                            showTimeToggle.checked = showTime;
+                        }
+                        if (userSettings.background_type) {
+                            backgroundType = userSettings.background_type;
+                            applyBackground(backgroundType);
+                        }
+                        if (userSettings.search_engine) {
+                            searchEngine = userSettings.search_engine;
+                            searchEngineSelect.value = searchEngine;
+                        }
+                        updatePinnedSectionVisibility();
+                        updateNavigationVisibility();
+                        updateDateTimeVisibility();
+                        updateAddPinnedButton();
+                        updateActiveOptions();
+                    } else {
+                        applySavedSettings();
+                    }
+                })
+                .catch(() => applySavedSettings());
+        }
+    
+        function saveUserSettings() {
+            if (!isLoggedIn || !currentUser) return;
+            const userSettings = {
+                action: 'save_settings',
+                id_number: currentUser.id_number,
+                theme: currentTheme,
+                primary_color: currentColor,
+                show_pinned: showPinned ? 1 : 0,
+                show_navigation: showNavigation ? 1 : 0,
+                show_date: localStorage.getItem('showDate') !== 'false' ? 1 : 0,
+                show_time: localStorage.getItem('showTime') !== 'false' ? 1 : 0,
+                background_type: backgroundType,
+                search_engine: searchEngine
+            };
+            fetch('user_settings.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userSettings)
+            }).catch(error => console.error('保存用户设置请求失败:', error));
+            localStorage.setItem(`userSettings_${currentUser.id}`, JSON.stringify(userSettings));
+        }
+		
+		function savePinnedWebsitesToServer() {
+		    if (!isLoggedIn || !currentUser) return;
+		    const pinnedData = {
+		        action: 'save_pinned_websites',
+		        id_number: currentUser.id_number,
+		        websites: pinnedWebsites
+		    };
+		    fetch('user_settings.php', {
+		        method: 'POST',
+		        headers: { 'Content-Type': 'application/json' },
+		        body: JSON.stringify(pinnedData)
+		    }).catch(error => console.error('保存固定网址请求失败:', error));
+		}
+		
+		function loadPinnedWebsitesFromServer() {
+		    if (!isLoggedIn || !currentUser) return;
+		    fetch(`user_settings.php?id_number=${currentUser.id_number}&type=pinned_websites`)
+		        .then(response => response.json())
+		        .then(data => {
+		            if (data.success && data.data) {
+		                pinnedWebsites = data.data;
+		                localStorage.setItem('pinnedWebsites', JSON.stringify(pinnedWebsites));
+		                displayPinnedWebsites();
+		                updateAddPinnedButton();
+		            } else {
+		                pinnedWebsites = JSON.parse(localStorage.getItem('pinnedWebsites')) || [];
+		                displayPinnedWebsites();
+		                updateAddPinnedButton();
+		            }
+		        })
+		        .catch(() => {
+		            pinnedWebsites = JSON.parse(localStorage.getItem('pinnedWebsites')) || [];
+		            displayPinnedWebsites();
+		            updateAddPinnedButton();
+		        });
+		}
+		
+        function handleLogout() {
+            saveUserSettings();
+            savePinnedWebsitesToServer();
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUser');
+            isLoggedIn = false;
+            currentUser = null;
+            updateLoginState();
+            userDropdown.classList.remove('active');
+            dropdownArrow.style.transform = 'rotate(0deg)';
+            showNotification('已成功退出登录', 'success');
+        }
+    
+        function initUserMenu() {
+            // 登录按钮点击事件
+            loginBtn.addEventListener('click', (e) => {
+                const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+                if (isLoggedIn) {
+                    // 已登录：切换下拉菜单
+                    userDropdown.classList.toggle('active');
+                    dropdownArrow.style.transform = userDropdown.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+                } else {
+                    // 未登录：显示登录模态框
+                    loginModal.style.display = 'flex';
+                    userDropdown.classList.remove('active');
+                    dropdownArrow.style.transform = 'rotate(0deg)';
+                }
+                e.stopPropagation();
+            });
+            
+            // 点击外部关闭菜单
+            document.addEventListener('click', (e) => {
+                if (!userMenuContainer.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                    dropdownArrow.style.transform = 'rotate(0deg)';
+                }
+            });
+            
+            // 个人中心按钮事件
+            document.getElementById('personalCenterBtn').addEventListener('click', () => {
+                window.location.href = 'account.html';
+                userDropdown.classList.remove('active');
+                dropdownArrow.style.transform = 'rotate(0deg)';
+            });
+            
+			// 查看更新说明按钮事件 (新增)
+			document.getElementById('dropdownUpdateLogBtn').addEventListener('click', () => {
+			    openUpdateModal();  // 调用原有的打开更新模态框的函数
+			    userDropdown.classList.remove('active');
+			    dropdownArrow.style.transform = 'rotate(0deg)';
+			});
+            // 退出登录
+            logoutBtn.addEventListener('click', handleLogout);
+        }
+		
+		function addCheckinToDropdown() {
+		    const personalCenterBtn = document.querySelector('#personalCenterBtn');
+		    if (personalCenterBtn) {
+		        const checkinItem = document.createElement('div');
+		        checkinItem.className = 'dropdown-item';
+		        checkinItem.id = 'dropdownCheckinBtn';
+		        checkinItem.innerHTML = `
+		            <i class="fas fa-calendar-check"></i>
+		            <span>每日签到（以UTC时间计）</span>
+		        `;
+		        checkinItem.addEventListener('click', function() {
+		            performDropdownCheckin();
+		            userDropdown.classList.remove('active');
+		            dropdownArrow.style.transform = 'rotate(0deg)';
+		        });
+		        personalCenterBtn.parentNode.insertBefore(checkinItem, personalCenterBtn);
+		    }
+		}
+		
+		function performDropdownCheckin() {
+		    if (!isLoggedIn) return;
+		    fetch('checkin.php', {
+		        method: 'POST',
+		        headers: { 'Content-Type': 'application/json' },
+		        body: JSON.stringify({ id_number: currentUser.id_number })
+		    })
+		    .then(response => response.json())
+		    .then(data => {
+		        if (data.success) {
+		            currentUser.funds = parseFloat(currentUser.funds || 10.00) + data.total_amount;
+		            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+		            updateLoginState();
+		            showNotification(`🎉 签到成功！获得 ${data.total_amount.toFixed(2)}𣿅元，连续签到 ${data.streak_days} 天`, 'success');
+		        } else {
+		            showNotification('签到失败: ' + data.error, 'error');
+		        }
+		    })
+		    .catch(error => {
+		        showNotification('网络错误，请刷新页面后重试', 'error');
+		    });
+		}
+		
+		function closeUpdateModal() {
+		    updateModal.style.display = 'none';
+		}
+		
+		async function openUpdateModal() {
+		    updateModal.style.display = 'flex';
+		    updateModalBody.innerHTML = `<div class="update-loading"><i class="fas fa-spinner fa-spin"></i><p>加载更新日志中...</p></div>`;
+		    try {
+		        const res = await fetch('https://dornhub-cz.eu.org/php/get_update_logs.php');
+		        const data = await res.json();
+		        if (data.success && data.data && data.data.length > 0) {
+		            let tabsHtml = '<div class="update-tabs">';
+		            let panelsHtml = '<div class="update-panels">';
+		            data.data.forEach((log, index) => {
+		                const isActive = index === 0;
+		                tabsHtml += `<button class="update-tab ${isActive ? 'active' : ''}" data-version="${index}">${escapeHtml(log.version)}</button>`;
+		                panelsHtml += `<div class="update-panel ${isActive ? 'active' : ''}" data-version="${index}"><div class="update-version">${escapeHtml(log.version)}</div><div class="update-date"><i class="fas fa-calendar-alt"></i> ${formatDate(log.release_date)}</div><div class="update-content">${log.content}</div></div>`;
+		            });
+		            tabsHtml += '</div>';
+		            panelsHtml += '</div>';
+		            updateModalBody.innerHTML = tabsHtml + panelsHtml;
+		            const tabs = document.querySelectorAll('.update-tab');
+		            const panels = document.querySelectorAll('.update-panel');
+		            tabs.forEach(tab => {
+		                tab.addEventListener('click', () => {
+		                    const versionIndex = tab.getAttribute('data-version');
+		                    tabs.forEach(t => t.classList.remove('active'));
+		                    tab.classList.add('active');
+		                    panels.forEach(p => p.classList.remove('active'));
+		                    document.querySelector(`.update-panel[data-version="${versionIndex}"]`).classList.add('active');
+		                });
+		            });
+		        } else {
+		            updateModalBody.innerHTML = `<div class="update-empty"><i class="fas fa-inbox"></i><p>暂无更新记录</p></div>`;
+		        }
+		    } catch (error) {
+		        updateModalBody.innerHTML = `<div class="update-empty"><i class="fas fa-exclamation-triangle" style="color: #d13438;"></i><p style="color: #d13438;">加载失败，请刷新页面后重试</p></div>`;
+		    }
+		}
+		
+		function checkVersionAndShowModal() {
+		    const lastVisitedVersion = localStorage.getItem('lastVisitedVersion');
+		    if (lastVisitedVersion !== CURRENT_VERSION) {
+		        setTimeout(() => openUpdateModal(), 500);
+		        localStorage.setItem('lastVisitedVersion', CURRENT_VERSION);
+		    }
+		}
+		
+		function escapeHtml(text) {
+		    const div = document.createElement('div');
+		    div.textContent = text;
+		    return div.innerHTML;
+		}
+		
+		function formatDate(dateString) {
+		    const date = new Date(dateString);
+		    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+		}
+		
+		if (settingsUpdateLogBtn) settingsUpdateLogBtn.addEventListener('click', openUpdateModal);
+		if (closeUpdateModalBtn) closeUpdateModalBtn.addEventListener('click', closeUpdateModal);
+		if (closeUpdateModalFooterBtn) closeUpdateModalFooterBtn.addEventListener('click', closeUpdateModal);
+		if (updateModal) updateModal.addEventListener('click', (e) => { if (e.target === updateModal) closeUpdateModal(); });
+		
+		addCheckinToDropdown();
+    
+        // 事件监听器
+        displayWebsites(websites);
+        displayPinnedWebsites();
+    
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const searchEngine = searchEngineSelect.value;
+            if (searchEngine === 'internal' && isLoggedIn) {
+                if (searchTerm.length > 0) {
+                    const filteredWebsites = websites.filter(website => 
+                        website.name.toLowerCase().includes(searchTerm) || 
+                        website.url.toLowerCase().includes(searchTerm) ||
+                        (categories[website.category]?.name.toLowerCase().includes(searchTerm))
+                    );
+                    displaySuggestions(filteredWebsites);
+                    suggestions.style.display = 'block';
+                } else {
+                    suggestions.style.display = 'none';
+                    displayWebsites();
+                }
+            } else {
+                if (searchTerm.length > 0) {
+                    const searchEngineName = searchEngines[searchEngine].name;
+                    suggestions.innerHTML = `<div class="suggestion-item" data-search="${searchTerm}"><i class="fas fa-search"></i><span>使用 ${searchEngineName} 搜索 "${searchTerm}"</span></div>`;
+                    suggestions.style.display = 'block';
+                } else {
+                    suggestions.style.display = 'none';
+                }
+            }
+        });
+    
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') performSearch(this.value.trim());
+        });
+    
+        suggestions.addEventListener('click', function(e) {
+            const suggestionItem = e.target.closest('.suggestion-item');
+            if (!suggestionItem) return;
+            const searchEngine = searchEngineSelect.value;
+            if (searchEngine === 'internal' && isLoggedIn) {
+                const websiteName = suggestionItem.querySelector('span').textContent;
+                const website = websites.find(w => w.name === websiteName);
+                if (website) window.open(website.url, '_blank');
+            } else {
+                const searchTerm = suggestionItem.getAttribute('data-search');
+                performSearch(searchTerm);
+            }
+            suggestions.style.display = 'none';
+            searchInput.value = '';
+        });
+    
+        settingsBtn.addEventListener('click', () => settingsModal.style.display = 'flex');
+        closeSettingsBtn.addEventListener('click', () => settingsModal.style.display = 'none');
+    
+        addPinnedBtn.addEventListener('click', () => {
+            if (pinnedWebsites.length >= 10) return;
+            pinnedTitleInput.value = '';
+            pinnedUrlInput.value = '';
+            addPinnedModal.style.display = 'flex';
+        });
+        closeAddPinnedBtn.addEventListener('click', () => addPinnedModal.style.display = 'none');
+        cancelAddPinnedBtn.addEventListener('click', () => addPinnedModal.style.display = 'none');
+        savePinnedBtn.addEventListener('click', () => {
+            const title = pinnedTitleInput.value.trim();
+            const url = pinnedUrlInput.value.trim();
+            if (!url) { alert('请填写网站地址'); return; }
+            if (pinnedWebsites.length >= 10) return;
+            pinnedWebsites.push({ name: title || url, url: url, icon: 'fa-link' });
+            localStorage.setItem('pinnedWebsites', JSON.stringify(pinnedWebsites));
+            displayPinnedWebsites();
+            updateAddPinnedButton();
+            addPinnedModal.style.display = 'none';
+        });
+    
+        batchOperateBtn.addEventListener('click', () => {
+            if (pinnedWebsites.length === 0) return;
+            isBatchMode = true;
+            batchActions.classList.add('active');
+            document.querySelectorAll('.pinned-card').forEach(card => card.classList.add('batch-mode'));
+            selectedCards.clear();
+            updateSelectedCount();
+        });
+        cancelBatchBtn.addEventListener('click', () => {
+            isBatchMode = false;
+            batchActions.classList.remove('active');
+            document.querySelectorAll('.pinned-card').forEach(card => {
+                card.classList.remove('batch-mode');
+                card.classList.remove('batch-selected');
+                card.querySelector('input[type="checkbox"]').checked = false;
+            });
+            selectedCards.clear();
+            updateSelectedCount();
+        });
+        batchDeleteBtn.addEventListener('click', () => {
+            if (selectedCards.size === 0) { alert('请先选择要删除的网站'); return; }
+            const indicesToDelete = Array.from(selectedCards).map(card => parseInt(card.getAttribute('data-index'))).sort((a, b) => b - a);
+            indicesToDelete.forEach(index => pinnedWebsites.splice(index, 1));
+            localStorage.setItem('pinnedWebsites', JSON.stringify(pinnedWebsites));
+            displayPinnedWebsites();
+            updateAddPinnedButton();
+            isBatchMode = false;
+            batchActions.classList.remove('active');
+            selectedCards.clear();
+            updateSelectedCount();
+            if (isLoggedIn) displayWebsites(websites);
+        });
+    
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const color = option.getAttribute('data-color');
+                currentColor = color;
+                document.documentElement.style.setProperty('--primary-color', color);
+                localStorage.setItem('primaryColor', color);
+                customColorBtn.style.backgroundColor = color;
+                customColorInput.value = color;
+                updateActiveOptions();
+            });
+        });
+        customColorBtn.addEventListener('click', () => customColorInput.click());
+        applyCustomColorBtn.addEventListener('click', () => {
+            const color = customColorInput.value;
+            currentColor = color;
+            document.documentElement.style.setProperty('--primary-color', color);
+            localStorage.setItem('primaryColor', color);
+            customColorBtn.style.backgroundColor = color;
+            updateActiveOptions();
+        });
+    
+        themeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const theme = option.getAttribute('data-theme');
+                currentTheme = theme;
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                updateActiveOptions();
+            });
+        });
+    
+        showPinnedToggle.addEventListener('change', () => {
+            showPinned = showPinnedToggle.checked;
+            localStorage.setItem('showPinned', showPinned);
+            updatePinnedSectionVisibility();
+        });
+        showNavigationToggle.addEventListener('change', () => {
+            showNavigation = showNavigationToggle.checked;
+            localStorage.setItem('showNavigation', showNavigation);
+            updateNavigationVisibility();
+        });
+		
+		showDateToggle.addEventListener('change', () => {
+		    if (window.UI) UI.setDateTimeVisibility(showDateToggle.checked, showTimeToggle.checked);
+		});
+		showTimeToggle.addEventListener('change', () => {
+		    if (window.UI) UI.setDateTimeVisibility(showDateToggle.checked, showTimeToggle.checked);
+		});
+    
+        backgroundOptions.forEach(option => {
+            option.addEventListener('click', () => applyBackground(option.getAttribute('data-bg')));
+        });
+        applyCustomBackgroundBtn.addEventListener('click', () => {
+            const file = customBackgroundInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem('customBackground', e.target.result);
+                    applyBackground('custom');
+                    alert('自定义背景应用成功！');
+                };
+                reader.readAsDataURL(file);
+            } else { alert('请选择一张图片'); }
+        });
+        clearDataBtn.addEventListener('click', () => {
+            if (confirm('确定要清除所有自定义数据吗？此操作不可撤销。')) {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+		// ========== Cookie 偏好设置功能 ==========
+		function loadCookiePreferences() {
+		    const consent = localStorage.getItem('cookie_consent_v2');
+		    
+		    if (consent) {
+		        try {
+		            const prefs = JSON.parse(consent);
+		            if (functionalCookiesToggle) functionalCookiesToggle.checked = prefs.functional !== false;
+		            if (analyticsCookiesToggle) analyticsCookiesToggle.checked = prefs.analytics !== false;
+		        } catch(e) {
+		            console.error('解析 Cookie 偏好失败:', e);
+		        }
+		    } else {
+		        if (functionalCookiesToggle) functionalCookiesToggle.checked = true;
+		        if (analyticsCookiesToggle) analyticsCookiesToggle.checked = true;
+		    }
+		}
+		
+		function showCookieWarning(disabledType) {
+		    if (!cookieWarning) return;
+		    
+		    if (disabledType === 'functional') {
+		        cookieWarningText.innerHTML = '⚠️ 禁用功能 Cookie 后，您的主题颜色、固定网站等个性化设置将丢失。页面将刷新以应用更改。';
+		        cookieWarning.style.display = 'block';
+		    } else if (disabledType === 'analytics') {
+		        cookieWarningText.innerHTML = '⚠️ 禁用分析 Cookie 后，我们将无法收集匿名访问数据来改进网站。';
+		        cookieWarning.style.display = 'block';
+		    }
+		}
+		
+		function saveCookiePreferences() {
+		    const preferences = {
+		        functional: functionalCookiesToggle ? functionalCookiesToggle.checked : true,
+		        analytics: analyticsCookiesToggle ? analyticsCookiesToggle.checked : true
+		    };
+		    
+		    localStorage.setItem('cookie_consent_v2', JSON.stringify(preferences));
+		    
+		    // 更新 GA 同意状态
+		    if (typeof gtag !== 'undefined') {
+		        gtag('consent', 'update', {
+		            'analytics_storage': preferences.analytics ? 'granted' : 'denied'
+		        });
+		    }
+		    
+		    if (!preferences.functional) {
+		        const keysToKeep = ['cookie_consent_v2', 'currentUser', 'isLoggedIn', 'theme', 'primaryColor', 'lastVisitedVersion'];
+		        for (let i = 0; i < localStorage.length; i++) {
+		            const key = localStorage.key(i);
+		            if (!keysToKeep.includes(key)) {
+		                localStorage.removeItem(key);
+		            }
+		        }
+		        alert('功能 Cookie 已禁用，页面将刷新以清除所有个性化设置。');
+		        location.reload();
+		    } else {
+		        alert('Cookie 偏好设置已保存！');
+		        if (cookieWarning) cookieWarning.style.display = 'none';
+		    }
+		}
+		
+		function resetCookiePreferences() {
+		    if (functionalCookiesToggle) functionalCookiesToggle.checked = true;
+		    if (analyticsCookiesToggle) analyticsCookiesToggle.checked = true;
+		    saveCookiePreferences();
+		}
+		
+		function initCookieEventListeners() {
+		    if (functionalCookiesToggle) {
+		        functionalCookiesToggle.addEventListener('change', function() {
+		            if (!this.checked) {
+		                showCookieWarning('functional');
+		            } else {
+		                if (cookieWarning && (!analyticsCookiesToggle || analyticsCookiesToggle.checked)) {
+		                    cookieWarning.style.display = 'none';
+		                }
+		            }
+		        });
+		    }
+		    
+		    if (analyticsCookiesToggle) {
+		        analyticsCookiesToggle.addEventListener('change', function() {
+		            if (!this.checked) {
+		                showCookieWarning('analytics');
+		            } else {
+		                if (cookieWarning && (!functionalCookiesToggle || functionalCookiesToggle.checked)) {
+		                    cookieWarning.style.display = 'none';
+		                }
+		            }
+		        });
+		    }
+		    
+		    if (saveCookiePrefsBtn) saveCookiePrefsBtn.addEventListener('click', saveCookiePreferences);
+		    if (resetCookiePrefsBtn) resetCookiePrefsBtn.addEventListener('click', resetCookiePreferences);
+		}
+    
+        closeLoginBtn.addEventListener('click', () => loginModal.style.display = 'none');
+        cancelLoginBtn.addEventListener('click', () => loginModal.style.display = 'none');
+        submitLoginBtn.addEventListener('click', () => {
+            const idNumber = idNumberInput.value.trim();
+            const password = passwordInput.value.trim();
+            if (!idNumber || !password) {
+                loginMessage.textContent = '请输入身份证号和密码';
+                loginMessage.style.color = '#d13438';
+                return;
+            }
+            fetch('https://dornhub-cz.eu.org/php/query_citizen.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_number: idNumber, password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    isLoggedIn = true;
+                    currentUser = data.data;
+                    if (!currentUser.nickname) currentUser.nickname = currentUser.name;
+                    if (!currentUser.funds) currentUser.funds = 10.00;
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateLoginState();
+                    loginModal.style.display = 'none';
+                    idNumberInput.value = '';
+                    passwordInput.value = '';
+                    loginMessage.textContent = '';
+                    loadUserSettings();
+                    loadPinnedWebsitesFromServer();
+                } else {
+                    loginMessage.textContent = data.error || '登录失败，请重试';
+                    loginMessage.style.color = '#d13438';
+                }
+            })
+            .catch(error => {
+                console.error('登录请求失败:', error);
+                loginMessage.textContent = '出错啦！请刷新页面后重试';
+                loginMessage.style.color = '#d13438';
+            });
+        });
+    
+        window.addEventListener('click', (e) => {
+            if (e.target === settingsModal) settingsModal.style.display = 'none';
+            if (e.target === addPinnedModal) addPinnedModal.style.display = 'none';
+            if (e.target === loginModal) loginModal.style.display = 'none';
+        });
+    
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !suggestions.contains(e.target) && !searchEngineSelect.contains(e.target)) {
+                suggestions.style.display = 'none';
+            }
+        });
+    
+        document.addEventListener('change', (e) => {
+            if (isLoggedIn && (
+                e.target === showPinnedToggle ||
+                e.target === showNavigationToggle ||
+                e.target === showDateToggle ||
+                e.target === showTimeToggle ||
+                e.target === searchEngineSelect
+            )) saveUserSettings();
+        });
+    
+        document.addEventListener('click', (e) => {
+            if (isLoggedIn && (
+                e.target.classList.contains('color-option') ||
+                e.target.classList.contains('theme-option') ||
+                e.target.classList.contains('background-option') ||
+                e.target === applyCustomColorBtn
+            )) setTimeout(saveUserSettings, 100);
+        });
+    
+        applySavedSettings();
+        initUserMenu();
+    
+        const style = document.createElement('style');
+        style.textContent = `@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`;
+        document.head.appendChild(style);
+		
+		// 彩蛋相关变量
+		let clickCount = 0;
+		let isEasterEggActive = false;
+		const easterEggTrigger = { searchTexts: ['I love dorn!', '刺梨汁'], clickCountNeeded: 5 };
+		
+		const searchBtn = document.getElementById('searchBtn');
+		const dornhubLogo = document.querySelector('.dornhub-logo');
+		const logoPart1 = document.querySelector('.logo-part1');
+		const logoPart2 = document.querySelector('.logo-part2');
+		let animationTimer = null;
+		const easterEggContainer = document.createElement('div');
+		easterEggContainer.id = 'easter-egg-container';
+		document.body.appendChild(easterEggContainer);
+		
+		searchBtn.addEventListener('click', function() {
+		    if (shouldTriggerEasterEgg()) triggerEasterEgg();
+		    else performSearch(searchInput.value.trim());
+		});
+		
+		function shouldTriggerEasterEgg() {
+		    const searchText = searchInput.value.trim();
+		    return !isEasterEggActive && clickCount >= easterEggTrigger.clickCountNeeded && easterEggTrigger.searchTexts.includes(searchText);
+		}
+		
+		function triggerEasterEgg() {
+		    isEasterEggActive = true;
+		    const confettiCount = 200, textCount = 30, animationDuration = 3;
+		    for (let i = 0; i < confettiCount; i++) {
+		        const confetti = document.createElement('div');
+		        confetti.classList.add('confetti');
+		        confetti.style.left = `${Math.random() * 100}vw`;
+		        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+		        confetti.style.animationDelay = `${Math.random() * animationDuration}s`;
+		        confetti.style.animationDuration = `${animationDuration}s`;
+		        easterEggContainer.appendChild(confetti);
+		    }
+		    for (let i = 0; i < textCount / 2; i++) {
+		        const fallingDorn = document.createElement('div');
+		        fallingDorn.classList.add('falling-text');
+		        fallingDorn.textContent = 'Dorn';
+		        fallingDorn.style.left = `${Math.random() * 100}vw`;
+		        fallingDorn.style.animationDelay = `${Math.random() * animationDuration}s`;
+		        fallingDorn.style.animationDuration = `${animationDuration}s`;
+		        fallingDorn.style.fontSize = `${2 + Math.random() * 2}em`;
+		        easterEggContainer.appendChild(fallingDorn);
+		    }
+		    for (let i = 0; i < textCount / 2; i++) {
+		        const fallingFu = document.createElement('div');
+		        fallingFu.classList.add('falling-text');
+		        fallingFu.textContent = '𣿅';
+		        fallingFu.style.left = `${Math.random() * 100}vw`;
+		        fallingFu.style.animationDelay = `${Math.random() * animationDuration}s`;
+		        fallingFu.style.animationDuration = `${animationDuration}s`;
+		        fallingFu.style.fontSize = `${2 + Math.random() * 2}em`;
+		        easterEggContainer.appendChild(fallingFu);
+		    }
+		    showNotification('🎉 恭喜发现彩蛋！刺梨汁万岁！ 🎉', 'success');
+		    setTimeout(() => {
+		        easterEggContainer.innerHTML = '';
+		        isEasterEggActive = false;
+		        clickCount = 0;
+		    }, animationDuration * 1800);
+		}
+		
+		dornhubLogo.addEventListener('click', function() {
+		    if (animationTimer) clearTimeout(animationTimer);
+		    logoPart1.classList.remove('bounce-animation');
+		    logoPart2.classList.remove('bounce-animation');
+		    void logoPart1.offsetWidth;
+		    void logoPart2.offsetWidth;
+		    logoPart1.classList.add('bounce-animation');
+		    logoPart2.classList.add('bounce-animation');
+		    if (!isEasterEggActive) clickCount++;
+		    animationTimer = setTimeout(() => {
+		        logoPart1.classList.remove('bounce-animation');
+		        logoPart2.classList.remove('bounce-animation');
+		        animationTimer = null;
+		    }, 1000);
+		});
+		
+		searchInput.addEventListener('keypress', function(event) {
+		    if (event.key === 'Enter') {
+		        if (shouldTriggerEasterEgg()) triggerEasterEgg();
+		        else performSearch(this.value.trim());
+		    }
+		});
+		
+		searchInput.addEventListener('input', function() {
+		    if (isEasterEggActive || clickCount > 0) {
+		        clickCount = 0;
+		        isEasterEggActive = false;
+		    }
+		});
+		
+		const originalPerformSearch = performSearch;
+		performSearch = function(searchTerm) {
+		    if (!shouldTriggerEasterEgg()) originalPerformSearch(searchTerm);
+		    suggestions.style.display = 'none';
+		};
+		
+		suggestions.addEventListener('click', function(e) {
+		    const suggestionItem = e.target.closest('.suggestion-item');
+		    if (!suggestionItem) return;
+		    const searchEngine = searchEngineSelect.value;
+		    if (searchEngine === 'internal' && isLoggedIn) {
+		        const websiteName = suggestionItem.querySelector('span').textContent;
+		        const website = websites.find(w => w.name === websiteName);
+		        if (website) window.open(website.url, '_blank');
+		    } else {
+		        const searchTerm = suggestionItem.getAttribute('data-search') || searchInput.value.trim();
+		        performSearch(searchTerm);
+		    }
+		    suggestions.style.display = 'none';
+		});
+		
+		const easterEggStyle = document.createElement('style');
+		easterEggStyle.textContent = `
+		    #easter-egg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10000; }
+		    .falling-text { position: absolute; top: -50px; font-weight: bold; color: #16DA49; opacity: 0.8; animation: falling-text 3s linear forwards; pointer-events: none; z-index: 10001; }
+		    @keyframes falling-text { 0% { transform: translateY(0) rotate(0deg); opacity: 0.8; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+		    .confetti { position: absolute; width: 10px; height: 10px; border-radius: 50%; opacity: 0; animation: confetti-fall 3s ease-out forwards, confetti-rotate 1s ease-out infinite; pointer-events: none; z-index: 10000; }
+		    @keyframes confetti-fall { 0% { top: -10px; opacity: 1; } 100% { top: 100vh; opacity: 0; } }
+		    @keyframes confetti-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+		`;
+		document.head.appendChild(easterEggStyle);
+		
+		document.addEventListener('DOMContentLoaded', function() {
+		    checkVersionAndShowModal();
+			loadCookiePreferences();
+			initCookieEventListeners();
+		});
+		
+    </script>
+<!-- 	<script src="https://dornhub-cz.eu.org/resources/welcome-animation.js"></script -->>
+</body>
+</html>

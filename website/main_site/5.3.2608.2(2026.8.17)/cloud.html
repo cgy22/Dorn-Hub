@@ -1,0 +1,601 @@
+<!doctype html>
+<html class="mdui-theme-light">
+	<html lang="zh-CN">
+
+		<head>
+			<meta charset="utf-8">
+
+			<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+			<title>Dorn 搜索与网站导航</title>
+			<meta name="description" content="Dorn 搜索与网站导航。网站采用 Material Design 设计，并集成多源搜索引擎。">
+			<meta name="Keywords" content="网页导航,搜索,Dorn,Dornhub,多恩,主页,𣿅国,donh,tonh">
+			<link rel="icon" href="https://dornhub.github.io/images/SatornhLogo.png">
+			<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+			<link rel="stylesheet" href="https://unpkg.com/mdui@2/mdui.css">
+			<!-- <link rel="stylesheet" href="css/mdui.css"> -->
+			<link rel="stylesheet" href="css/style.css">
+			<link rel="preconnect" href="https://fonts.googleapis.com">
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+			<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&display=swap" rel="stylesheet">
+			<style>
+				#loading-mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(230, 230, 230, 0.7);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.3s ease-out;
+      backdrop-filter: blur(10px) saturate(180%) contrast(80%);
+      -webkit-backdrop-filter: blur(50px) saturate(180%) contrast(80%);
+      overflow: hidden;
+      text-align: center;
+  }
+  
+  .spinner-text {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+  
+  .spinner-text span {
+      animation: slideUpDown 0.65s infinite alternate ease-in-out;
+  }
+  
+  #loading-text-1 {
+      margin-left: 10px;
+      font-weight: 900;
+      background-color: transparent;
+      color: var(--loading-text-1-color, #16DA49); /* 使用 CSS 变量，默认值为 #16DA49 */
+      font-size: 30px;
+      font-family: Microsoft Yahei;
+      animation-delay: 0s;
+  }
+  
+  #loading-text-2 {
+      margin-left: 10px;
+      font-weight: 900;
+      height: 42px;
+      color: white;
+      font-size: 30px;
+      background-color: var(--loading-text-2-bg, #16DA49); /* 使用 CSS 变量，默认值为 #16DA49 */
+      font-family: Microsoft Yahei;
+      border-radius: 10px;
+      animation-delay: 0.65s;
+  }
+  
+  @keyframes slideUpDown {
+      0% {
+          transform: translateY(0);
+      }
+      100% {
+          transform: translateY(-30px);
+      }
+  }
+  
+  #loading-mask p {
+      margin-top: 20px;
+      color: #000;
+  }
+  
+  #stop-button {
+      display: none; /* 初始时隐藏按钮 */
+  }
+  
+  #stop-text {
+      display: none; /* 初始时隐藏文字 */
+  }
+
+
+</style>
+			<script src="https://unpkg.com/mdui@2/mdui.global.js"></script>
+			<!-- <script src="js/mdui.global.js"></script> -->
+			<script>
+				let customColorItem;
+
+    function applyCurrentColor() {
+        const color = document.getElementById('colorMenu').value;
+        setColorScheme(color);
+        localStorage.setItem('colorScheme', color);
+    }
+
+    function setColorScheme(color) {
+        try {
+            mdui.setColorScheme(color);
+            document.getElementById('navname1').style.color = color;
+            document.getElementById('navname2').style.backgroundColor = color;
+            document.getElementById('navname3').style.color = color;
+            document.getElementById('navname4').style.backgroundColor = color;
+            document.getElementById('navname5').style.color = color;
+            document.getElementById('navname6').style.backgroundColor = color;
+            document.getElementById('title').style.color = color;
+            localStorage.setItem('colorScheme', color);
+        } catch (error) {
+            console.error("Error in setColorScheme:", error);
+        }
+    }
+
+    function createCustomColorItem(color) {
+        const menuItem = document.createElement('mdui-menu-item');
+        menuItem.value = color;
+        menuItem.style.color = color;
+        menuItem.textContent = color;
+        return menuItem;
+    }
+
+    function updateCustomColorItem(color) {
+        if (customColorItem) {
+            customColorItem.value = color;
+            customColorItem.style.color = color;
+            customColorItem.textContent = color;
+        } else {
+            customColorItem = createCustomColorItem(color);
+            document.getElementById('colorMenu').insertBefore(customColorItem, document.getElementById('customColorTrigger'));
+        }
+    }
+	
+	 window.setLightMode = function() {
+	        mdui.setTheme('light');
+	        document.getElementById("themeIcon").innerHTML = "light_mode";
+	        localStorage.setItem('themeMode', 'mdui-theme-light'); // 保存明暗模式到 localStorage
+	        applyCurrentColor();
+	    }
+	
+	    window.setDarkMode = function() {
+	        mdui.setTheme('dark');
+	        document.getElementById("themeIcon").innerHTML = "dark_mode";
+	        localStorage.setItem('themeMode', 'mdui-theme-dark'); // 保存明暗模式到 localStorage
+	        applyCurrentColor();
+	    }
+	
+	    window.setAutoMode = function() {
+	        mdui.setTheme('auto');
+	        document.getElementById("themeIcon").innerHTML = "brightness_auto";
+	        localStorage.setItem('themeMode', 'mdui-theme-auto'); // 保存明暗模式到 localStorage
+	        applyCurrentColor();
+	    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 立即执行用户设置加载
+        (function() {
+            // 确保 mdui 对象可用
+            if (typeof mdui !== 'undefined') {
+                mdui.setColorScheme('#6750a4');
+
+                // 加载配色方案
+                var savedColor = localStorage.getItem('colorScheme');
+                if (savedColor) {
+                    setColorScheme(savedColor);
+                    document.getElementById('colorMenu').value = savedColor;
+                } else {
+                    setColorScheme('#6750a4'); // 默认配色方案
+                    document.getElementById('colorMenu').value = '#6750a4';
+                }
+
+                // 加载明暗模式
+                var savedMode = localStorage.getItem('themeMode');
+                if (savedMode) {
+                    document.documentElement.className = savedMode;
+                    if (savedMode === 'mdui-theme-light') {
+                        document.getElementById("themeIcon").innerHTML = "light_mode";
+						document.getElementById("themeMenu").value = "light";
+                    } else if (savedMode === 'mdui-theme-dark') {
+                        document.getElementById("themeIcon").innerHTML = "dark_mode";
+						document.getElementById("themeMenu").value = "dark";
+                    } else if (savedMode === 'mdui-theme-auto') {
+                        document.getElementById("themeIcon").innerHTML = "brightness_auto";
+						document.getElementById("themeMenu").value = "auto";
+                    }
+                }
+
+                // 加载搜索引擎
+                var savedEngine = localStorage.getItem('searchEngine');
+                if (savedEngine) {
+                    document.getElementById('engine').value = savedEngine;
+                }
+
+                // 加载自定义颜色
+                var customColor = localStorage.getItem('customColor');
+                if (customColor) {
+                    updateCustomColorItem(customColor);
+                }
+            } else {
+                console.error("mdui is not defined. Make sure the Mdui library is loaded.");
+            }
+        })();
+    });
+</script>
+
+
+			<script>
+
+				document.addEventListener('DOMContentLoaded', function() {
+     const loadingMask = document.getElementById('loading-mask');
+     const content = document.getElementById('content');
+     const body = document.body;
+     const interruptButton = document.getElementById('stop-button');
+     const stopText = document.getElementById('stop-text');
+     const copyrightElement = document.getElementById('copyright');
+ 
+     // 获取 localStorage 中的 colorScheme 值
+     const storedColor = localStorage.getItem('colorScheme');
+     const loadingTextColor = storedColor || '#16DA49';
+     const loadingBgColor = storedColor || '#16DA49';
+ 
+     // 设置 CSS 变量
+     document.documentElement.style.setProperty('--loading-text-1-color', loadingTextColor);
+     document.documentElement.style.setProperty('--loading-text-2-bg', loadingBgColor);
+ 
+     // 初始时隐藏中断按钮和提示文字
+     interruptButton.style.display = 'none';
+     stopText.style.display = 'none';
+ 
+     // 在加载遮罩显示时禁用 body 滚动
+     body.style.overflow = 'hidden';
+ 
+     let timer; // 定义 timer 变量，以便在后续可以清除
+ 
+     // 设置一个定时器，在 10 秒后显示中断按钮和提示文字
+     timer = setTimeout(function() {
+         interruptButton.style.display = 'block';
+         stopText.style.display = 'block';
+     }, 10000);
+ 
+     // 监听中断加载按钮的点击事件
+     interruptButton.addEventListener('click', function() {
+         clearTimeout(timer); // 清除定时器
+         window.stop();
+         document.execCommand("Stop");
+         loadingMask.style.opacity = '0';
+         body.style.overflow = 'auto';
+         setTimeout(() => {
+             loadingMask.style.display = 'none';
+         }, 300);
+     });
+ 
+     // 检查 copyright 元素是否有内容并移除遮罩
+     function checkCopyrightAndRemoveMask() {
+         if (copyrightElement && copyrightElement.textContent.trim() !== '') {
+             loadingMask.style.opacity = '0';
+             body.style.overflow = 'auto';
+             clearInterval(copyrightCheckInterval); // 停止定时检查
+             clearTimeout(timer); // 在移除遮罩时也清除显示中断按钮的定时器
+             setTimeout(() => {
+                 loadingMask.style.display = 'none';
+             }, 300);
+         }
+     }
+ 
+     // 初始检查 copyright 元素
+     checkCopyrightAndRemoveMask();
+ 
+     // 每隔一段时间检查 copyright 元素 (例如，每 1 秒)
+     const copyrightCheckInterval = setInterval(checkCopyrightAndRemoveMask, 1000);
+ 
+     window.addEventListener('load', function() {
+         clearInterval(copyrightCheckInterval); // 页面加载完成时停止检查
+         clearTimeout(timer); // 页面正常加载完成时，清除显示中断按钮的定时器
+         // 如果在页面完全加载时 copyright 仍然没有内容，则不移除遮罩
+         if (copyrightElement && copyrightElement.textContent.trim() === '') {
+             return; // 不执行移除遮罩的操作
+         }
+         loadingMask.style.opacity = '0';
+         body.style.overflow = 'auto';
+         setTimeout(() => {
+             loadingMask.style.display = 'none';
+         }, 300);
+     });
+ });
+
+    
+</script>
+
+			<script>
+
+				const copyrightText = `Copyright © 2022-2025 Dornhub, All Rights Reserved.<br>Produced by Dornhub. | 版本号: 4.3 | 更新号: 2505.2<br>网站尚不完善，正在改进中。`;
+	
+	function updateCopyright() {
+	  const copyrightElement = document.getElementById('copyright');
+	  if (copyrightElement) {
+	    copyrightElement.innerHTML = copyrightText;
+	  }
+	}
+	
+	document.addEventListener('DOMContentLoaded', function() {
+	  updateCopyright();
+	});
+</script>
+
+		</head>
+		<header>
+			<mdui-top-app-bar style="box-shadow: 0px 1px 0px 0px #000000;">
+				<mdui-dropdown stay-open-on-click>
+					<mdui-button-icon slot="trigger">
+						<span class="material-symbols-outlined" id="searchButton">search</span>
+					</mdui-button-icon>
+					
+					<div style="display:flex;" class="noselect">
+						<mdui-text-field clearable type="search" placeholder="" spellcheck="boolean" label="标题栏内嵌Dorn搜索栏，搜索全网。" id="searchInput">
+							<mdui-button-icon slot="icon">
+								<span class="material-symbols-outlined" id="searchButton">search</span>
+							</mdui-button-icon>
+						</mdui-text-field>
+						<mdui-select style="width:200px; text-align:left;" value="bing" label="选择搜索引擎" id="engine">
+							<mdui-menu-item value="bing">Bing</mdui-menu-item>
+							<mdui-menu-item value="baidu">百度</mdui-menu-item>
+							<mdui-menu-item value="bilibili">Bilibili</mdui-menu-item>
+							<mdui-menu-item value="yandex">Yandex</mdui-menu-item>
+							<mdui-menu-item value="swisscows">Swisscows</mdui-menu-item>
+							<mdui-divider></mdui-divider>
+							<mdui-menu-item value="google">Google</mdui-menu-item>
+							<mdui-menu-item value="youtube">Youtube</mdui-menu-item>
+							<mdui-menu-item value="duckduckgo">DuckDuckGo</mdui-menu-item>
+							<mdui-menu-item value="qwant">Qwant</mdui-menu-item>
+							<mdui-menu-item value="wikipedia">维基百科</mdui-menu-item>
+						</mdui-select>
+					</div>
+					
+				</mdui-dropdown>
+				<mdui-top-app-bar-title>
+					<div id="back-to-top-logo" href="javascript:void(0);">
+						<span id="navname1">Dorn</span>
+						<span id="navname2">&nbsp;Hub&nbsp;</span>
+						
+					</div>
+					
+				</mdui-top-app-bar-title>
+				
+				<div style="flex-grow: 1"></div>
+				
+			
+
+				<mdui-dropdown stay-open-on-click>
+					
+					<mdui-button-icon slot="trigger" style="right:10px;">
+						<span class="material-symbols-outlined">
+							palette
+						</span>
+					</mdui-button-icon>
+					<mdui-menu selects="single" id="colorMenu" value="#6750a4">
+						<mdui-menu-item value="#6750a4" style="color:#6750a4">默认配色</mdui-menu-item>
+						<mdui-menu-item value="#16DA49" style="color:#16DA49">𣿅国绿</mdui-menu-item>
+						<mdui-menu-item value="#6499FF" style="color:#6499FF">大江蓝</mdui-menu-item>
+						<mdui-menu-item value="#A51515" style="color:#A51515">秋茗红</mdui-menu-item>
+						<mdui-menu-item value="#349DA5" style="color:#349DA5">铁山青</mdui-menu-item>
+						<mdui-menu-item value="#FFB500" style="color:#FFB500">凤凰金</mdui-menu-item>
+						<mdui-menu-item value="#DA70D6" style="color:#DA70D6">兰花紫</mdui-menu-item>
+						<mdui-menu-item value="#FF69B4" style="color:#FF69B4">梨花粉</mdui-menu-item>
+						<mdui-menu-item id="customColorTrigger">自定义</mdui-menu-item>
+					</mdui-menu>
+				</mdui-dropdown>
+
+
+
+				<mdui-dropdown>
+					<mdui-button-icon slot="trigger" style="right:10px;">
+						<span class="material-symbols-outlined" id="themeIcon">
+							brightness_auto
+						</span>
+					</mdui-button-icon>
+					<mdui-menu selects="single" value="auto" id="themeMenu">
+						<mdui-menu-item onclick="setLightMode()" value="light">浅色模式</mdui-menu-item>
+						<mdui-menu-item onclick="setDarkMode()" value="dark">深色模式</mdui-menu-item>
+						<mdui-divider></mdui-divider>
+						<mdui-menu-item onclick="setAutoMode()" value="auto">跟随系统</mdui-menu-item>
+					</mdui-menu>
+
+				</mdui-dropdown>
+
+
+				<mdui-dropdown>
+
+					<mdui-button-icon slot="trigger" style="right:10px;">
+						<span class="material-symbols-outlined">
+							apps
+						</span>
+					</mdui-button-icon>
+					<mdui-card style="width=800px; height=800px">
+						<mdui-list>
+							<mdui-list-item href='http://dhof.dorn.rf.gd'>
+								<span class="material-symbols-outlined">crown</span>𣿅国名人堂
+							</mdui-list-item>
+							<mdui-list-item href='http://election.dorn.rf.gd'>
+								<span class="material-symbols-outlined">how_to_vote</span>𣿅国大选
+							</mdui-list-item>
+							<mdui-list-item href='http://games.dorn.rf.gd'>
+								<span class="material-symbols-outlined">stadia_controller</span>多恩游戏
+							</mdui-list-item>
+							<mdui-list-item href='http://museum.dorn.rf.gd'>
+								<span class="material-symbols-outlined">museum</span>𣿅国国家博物馆
+							</mdui-list-item>
+							<mdui-list-item href='http://music.dorn.rf.gd'>
+								<span class="material-symbols-outlined">music_note</span>多恩音乐
+							</mdui-list-item>
+							<mdui-list-item href='http://official.dorn.rf.gd'>
+								<span class="material-symbols-outlined">groups</span>多恩团队
+							</mdui-list-item>
+							<mdui-list-item href='http://random2.dorn.rf.gd'>
+								<span class="material-symbols-outlined">terminal</span>随机抽号器
+							</mdui-list-item>
+							<mdui-list-item href='http://valencia.dorn.rf.gd'>
+								<span class="material-symbols-outlined">dictionary</span>瓦莱希雅大辞典
+							</mdui-list-item>
+						</mdui-list>
+					</mdui-card>
+
+				</mdui-dropdown>
+				<mdui-button href="https://dorn.rf.gd">
+					前往主站
+				</mdui-button>
+
+			</mdui-top-app-bar>
+		</header>
+
+		<body>
+
+			<div id="loading-mask">
+
+				<div class="spinner-text">
+					<span id="loading-text-1">Dorn</span>
+					<span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+				</div>
+				<br>
+				<p>好东西就要来了……</p>
+
+				<br>
+				<br>
+				<br>
+				<!-- <div style="display:flex;">
+
+      <mdui-fab size="large" loading variant="surface"></mdui-fab>
+      </div> -->
+				<mdui-linear-progress style="width:80%;"></mdui-linear-progress>
+				<br>
+				<br>
+				<br>
+				<mdui-button id="stop-button" variant="elevated">中断加载*</mdui-button>
+
+				<p id="stop-text" style="font-size:10px; margin-left:80px; margin-right:80px; text-align:center;">*页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+
+			</div>
+			<section id="section-search">
+				<mdui-layout>
+
+					<mdui-layout-item placement="left" class="example-layout-item" style="width: 10%"></mdui-layout-item>
+
+					<mdui-layout-item placement="right" class="example-layout-item" style="width: 10%"></mdui-layout-item>
+					<mdui-layout-main class="example-layout-main" style="min-height: 300px">
+						<div style="align-items: center; justify-content: center; text-align: center;">
+							
+							<br>
+							<br>
+							<mdui-card clickable id="title-card" class="noselect" style="height:500px;">
+								<br>
+								<span id="navname3">Dorn</span>
+								<span id="navname4"> Cloud </span>
+								<br>
+								<h1>𣿅国电子文史资料库</h1>
+								<mdui-button href="https://cgy22-my.sharepoint.com/:f:/g/personal/share_cgy22_onmicrosoft_com/EuGRAk-PG-xJiJ-R7lSyjzoBaXItavvVeZREecerfd0-RQ?e=NP89gk">
+									点击前往
+								</mdui-button>
+								<br><br><br>
+								<h2 style="color: #6750a4;" id="title">刺梨凝露蓄晶华，土星辉光护旧涯。</h2>
+								<h2 style="color: #6750a4;" id="title">环耀千年纪胜事，焰存一蕊驻春霞。</h2>
+								<h2 style="color: #6750a4;" id="title">浪翻墨卷遗珠灿，苔点石阶秘帙遮。</h2>
+								<h2 style="color: #6750a4;" id="title">莫道微丛无重器，渊渟岳峙此中奢。</h2>
+								<br>
+							</mdui-card>
+							<br>
+							<br>
+							<br>
+							
+
+
+							<div id="easter-egg-container">
+								<div id="easter-egg-message"></div>
+							</div>
+
+							<br>
+							<br>
+							
+
+							<br>
+							<br>
+							<br>
+							<br>
+							<br>
+							
+						</div>
+					</mdui-layout-main>
+				</mdui-layout>
+
+			</section>
+
+
+
+				</div>
+
+			</section>
+			<br>
+			<br>
+
+			<mdui-button id="back-to-top" href="javascript:void(0);" class="back-to-top-button">
+				<span class="material-symbols-outlined">vertical_align_top</span>回到顶端
+			</mdui-button>
+
+			<script src="js/script.js"></script>
+
+
+		</body>
+		<footer>
+			<section id="section-about">
+				<mdui-card clickable style="width: 100%;height: 400px; text-align:center; justify-content:center; align-items:center;" id="footer-card">
+					<br>
+					<br>
+					<div style="display:flex; align-items:center; justify-content:center;">
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">function</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">computer</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">terminal</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">ramen_dining</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">icecream</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">lunch_dining</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">local_bar</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">experiment</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">globe_asia</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">flight</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">co2</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">biotech</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">rocket</span>
+						</mdui-button>
+						<mdui-button slot="icon">
+							<span class="material-symbols-outlined">headphones</span>
+						</mdui-button>
+					</div>
+					<br>
+					<div id="copyright">
+		
+					</div>
+		
+					<br>
+					<br>
+					<span id="navname5">Dorn</span>
+					<span id="navname6">&nbsp;Hub&nbsp;</span>
+					<br>
+					<br>
+					<br>
+				</mdui-card>
+			</section>
+		</footer>
+
+	</html>

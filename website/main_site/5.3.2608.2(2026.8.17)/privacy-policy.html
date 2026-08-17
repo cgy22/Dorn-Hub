@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T6QTPSWXPV"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-T6QTPSWXPV');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="SatornhLogo.png">
+    <title>隐私政策 - Dorn Hub</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    
+    <style>
+        body {
+            font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 120px 20px 60px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .back-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .back-btn:hover {
+            background: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .page-title i {
+            color: var(--primary-color);
+            font-size: 28px;
+        }
+        
+        .page-title h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .update-date {
+            text-align: right;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* ===== 更新预览样式 ===== */
+        .change-preview-banner {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .change-preview-banner i {
+            color: #856404;
+            font-size: 18px;
+        }
+
+        .change-preview-banner span {
+            color: #856404;
+            font-size: 14px;
+        }
+
+        .change-preview-banner .tag {
+            background: #dc3545;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .change-preview-banner .tag-old {
+            background: #6c757d;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        /* 新内容 — 红色 */
+        .new-text {
+            color: #dc3545;
+        }
+
+        /* 旧内容 — 灰色 + 删除线 */
+        .old-text {
+            color: #6c757d;
+            text-decoration: line-through;
+        }
+
+        /* 对比区块：灰色背景，显示旧版本 */
+        .version-compare {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 12px 0 18px 0;
+            border: 1px solid #e9ecef;
+        }
+
+        .version-compare .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .version-compare .label i {
+            margin-right: 6px;
+        }
+
+        .version-compare .old-content {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        hr.divider {
+            border: none;
+            border-top: 2px dashed #dee2e6;
+            margin: 30px 0;
+        }
+
+        .update-note {
+            background: #e7f5ff;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 30px;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .update-note p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #0b5ed7;
+        }
+        
+        .privacy-card {
+            margin-bottom: 30px;
+        }
+        
+        .table-of-contents {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .table-of-contents h3 {
+            margin: 0 0 15px 0;
+            color: var(--primary-color);
+        }
+        
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+        }
+        
+        .toc-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 13px;
+            display: block;
+            padding: 5px 0;
+            transition: all 0.2s;
+        }
+        
+        .toc-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .privacy-section {
+            margin-bottom: 35px;
+            scroll-margin-top: 100px;
+        }
+        
+        .privacy-section h2 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .privacy-section p {
+            margin: 10px 0;
+            line-height: 1.7;
+        }
+        
+        .privacy-section ul, .privacy-section ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        .privacy-section li {
+            margin: 8px 0;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+        
+        .data-table th {
+            background: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-color);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+        }
+        
+        .back-to-top:hover {
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+            }
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+            .privacy-section h2 {
+                font-size: 20px;
+            }
+            .change-preview-banner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                返回主页
+            </a>
+            <div class="page-title">
+                <i class="fas fa-shield-alt"></i>
+                <h1>隐私政策</h1>
+            </div>
+        </div>
+
+        <div class="update-date">
+            <i class="fas fa-calendar-alt"></i>Last updated July 4, 2026
+            <!-- <span style="color: #6c757d; font-size: 13px; margin-left: 10px;">
+                <span class="tag-old">旧版本</span> April 8, 2026
+            </span> -->
+        </div>
+
+        <!-- ===== 更新预览提示横幅 ===== -->
+        <!-- <div class="change-preview-banner">
+            <i class="fas fa-edit"></i>
+            <span class="tag">新</span>
+            <span style="color: #dc3545; font-size: 13px;">红色文字为本次修订新增/修改内容</span>
+            <span class="tag-old">旧</span>
+            <span style="color: #6c757d; font-size: 13px;">灰色文字为上一版本内容</span>
+        </div> -->
+
+        <div class="privacy-card section-container">
+
+            <!-- ===== 第 1 行：标题和日期 ===== -->
+            <p>
+                <strong>PRIVACY POLICY</strong>
+                Last updated July 4, 2026
+                
+                <br><br>
+                This Privacy Notice for Dorn Hub ("we," "us," or "our"), describes how and why we might access, collect, store, use, and/or share ("process") your personal information when you use our services ("Services"), including when you:
+            </p>
+
+            <ul>
+                <li>Visit our website at <a href="https://dornhub.eu.org" style="color: var(--primary-color);">https://dornhub.eu.org</a> or any website of ours that links to this Privacy Policy</li>
+                <li>Use Dorn Hub. Dorn Hub is a fun website centered around the Donh IP, featuring a variety of Donh services and DonDon-themed games.</li>
+                <li>Engage with us in other related ways, including any marketing or events</li>
+            </ul>
+
+            <p>Questions or concerns? Reading this Privacy Notice will help you understand your privacy rights and choices. We are responsible for making decisions about how your personal information is processed. If you do not agree with our policies and practices, please do not use our Services. If you still have any questions or concerns, please contact us at <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a>.</p>
+
+            <!-- ===== 目录 ===== -->
+            <div class="table-of-contents">
+                <h3><i class="fas fa-list"></i> SUMMARY OF KEY POINTS</h3>
+                <p>This summary provides key points from our Privacy Policy, but you can find out more details about any of these topics by clicking the link following each key point or by using our table of contents below to find the section you are looking for.</p>
+                <p><strong>What personal information do we process?</strong> When you visit, use, or navigate our Services, we may process personal information depending on how you interact with us and the Services, the choices you make, and the products and features you use. <a href="#section1" class="toc-link" style="display: inline;">Learn more about personal information you disclose to us.</a></p>
+                <p><strong>Do we process any sensitive personal information?</strong> Some of the information may be considered "special" or "sensitive" in certain jurisdictions, for example your racial or ethnic origins, sexual orientation, and religious beliefs. We may process sensitive personal information when necessary with your consent or as otherwise permitted by applicable law. <a href="#section1" class="toc-link" style="display: inline;">Learn more about sensitive information we process.</a></p>
+                <p><strong>Do we collect any information from third parties?</strong> We do not collect any information from third parties.</p>
+                <p><strong>How do we process your information?</strong> We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We may also process your information for other purposes with your consent. We process your information only when we have a valid legal reason to do so. <a href="#section2" class="toc-link" style="display: inline;">Learn more about how we process your information.</a></p>
+                <p><strong>In what situations and with which parties do we share personal information?</strong> We may share information in specific situations and with specific third parties. <a href="#section4" class="toc-link" style="display: inline;">Learn more about when and with whom we share your personal information.</a></p>
+                <p><strong>How do we keep your information safe?</strong> We have adequate organizational and technical processes and procedures in place to protect your personal information. However, no electronic transmission over the internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. <a href="#section8" class="toc-link" style="display: inline;">Learn more about how we keep your information safe.</a></p>
+                <p><strong>What are your rights?</strong> Depending on where you are located geographically, the applicable privacy law may mean you have certain rights regarding your personal information. <a href="#section10" class="toc-link" style="display: inline;">Learn more about your privacy rights.</a></p>
+                <p><strong>How do you exercise your rights?</strong> The easiest way to exercise your rights is by visiting <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a>, or by contacting us. We will consider and act upon any request in accordance with applicable data protection laws.</p>
+                <p><strong>Want to learn more about what we do with any information we collect?</strong> Review the Privacy Notice in full.</p>
+            </div>
+
+            <div class="table-of-contents">
+                <h3><i class="fas fa-list"></i> TABLE OF CONTENTS</h3>
+                <div class="toc-grid">
+                    <a href="#section1" class="toc-link">1. WHAT INFORMATION DO WE COLLECT?</a>
+                    <a href="#section2" class="toc-link">2. HOW DO WE PROCESS YOUR INFORMATION?</a>
+                    <a href="#section3" class="toc-link">3. WHAT LEGAL BASES DO WE RELY ON TO PROCESS YOUR PERSONAL INFORMATION?</a>
+                    <a href="#section4" class="toc-link">4. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?</a>
+                    <a href="#section5" class="toc-link">5. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?</a>
+                    <a href="#section6" class="toc-link">6. IS YOUR INFORMATION TRANSFERRED INTERNATIONALLY?</a>
+                    <a href="#section7" class="toc-link">7. HOW LONG DO WE KEEP YOUR INFORMATION?</a>
+                    <a href="#section8" class="toc-link">8. HOW DO WE KEEP YOUR INFORMATION SAFE?</a>
+                    <a href="#section9" class="toc-link">9. DO WE COLLECT INFORMATION FROM MINORS?</a>
+                    <a href="#section10" class="toc-link">10. WHAT ARE YOUR PRIVACY RIGHTS?</a>
+                    <a href="#section11" class="toc-link">11. CONTROLS FOR DO-NOT-TRACK FEATURES</a>
+                    <a href="#section12" class="toc-link">12. DO UNITED STATES RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?</a>
+                    <a href="#section13" class="toc-link">13. DO WE MAKE UPDATES TO THIS NOTICE?</a>
+                    <a href="#section14" class="toc-link">14. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</a>
+                    <a href="#section15" class="toc-link">15. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</a>
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 1. WHAT INFORMATION DO WE COLLECT?                           -->
+            <!-- ============================================================ -->
+            <div id="section1" class="privacy-section">
+                <h2>1. WHAT INFORMATION DO WE COLLECT?</h2>
+                <p><strong>Personal information you disclose to us</strong><br>
+                In Short: We collect personal information that you provide to us.</p>
+                <p>We collect personal information that you voluntarily provide to us when you register on the Services, express an interest in obtaining information about us or our products and Services, when you participate in activities on the Services, or otherwise when you contact us.</p>
+                <p><strong>Personal Information Provided by You.</strong> The personal information that we collect depends on the context of your interactions with us and the Services, the choices you make, and the products and features you use. The personal information we collect may include the following: · Usernames and passwords (required for account creation)  · Real name (you are not required to provide your real name; you may use a nickname or fictional name) · Email address (optional — you may provide a real or fictional email address; we do not use it for marketing) · Gender (you may provide any response) · Date of birth (optional — you are not required to provide your real birth date; you may enter any date)</p>
+                <p><strong>Sensitive Information.</strong> Our registration and profile forms may include an optional field for gender. You are not required to provide true or accurate information in this field. We do not verify the accuracy of any optional information. Your real name and email address are also optional and are not verified. You may provide fictional information in these fields as well. We do not collect other sensitive information such as sexual orientation, racial or ethnic origin, or religious beliefs.</p>
+                <p><strong>Information automatically collected</strong><br>
+                In Short: Some information - such as your Internet Protocol (IP) address and/or browser and device characteristics - is collected automatically when you visit our Services.</p>
+                <p>We automatically collect certain information when you visit, use, or navigate the Services. This information does not reveal your specific identity (like your name or contact information) but may include device and usage information, such as your IP address, browser and device characteristics, operating system, language preferences, referring URLs, device name, country, location, information about how and when you use our Services, and other technical information. This information is primarily needed to maintain the security and operation of our Services, and for our internal analytics and reporting purposes. Like many businesses, we also collect information through cookies and similar technologies. The information we collect includes:</p>
+                <p>· Log and Usage Data. Log and usage data is service-related, diagnostic, usage, and performance information our servers automatically collect when you access or use our Services and which we record in log files. Depending on how you interact with us, this log data may include your IP address, device information, browser type, and settings and information about your activity in the Services (such as the date/time stamps associated with your usage, pages and files viewed, searches, and other actions you take such as which features you use), device event information (such as system activity, error reports (sometimes called "crash dumps"), and hardware settings).</p>
+                <p>· Device Data. We collect device data such as information about your computer, phone, tablet, or other device you use to access the Services. Depending on the device used, this device data may include information such as your IP address (or proxy server), device and application identification numbers, location, browser type, hardware model, Internet service provider and/or mobile carrier, operating system, and system configuration information.</p>
+                <p>· Location Data. We collect approximate location data based on your IP address (e.g., country and city level) through Google Analytics.</p>
+                <p>Our Services include a feature that allows you to voluntarily share your precise GPS location. If you choose to enable this feature, your browser will prompt you to grant location access. However, please note that this feature is currently not fully functional — your location will be obtained but not used for any purpose. No location data is stored or shared with third parties.</p>
+                <p>We do not collect precise geolocation unless you actively choose to enable this feature.</p>
+
+                <!-- ===== 更新：Cloudflare Turnstile 详细说明 ===== -->
+                <p>
+                    <strong>Cloudflare Turnstile.</strong>
+                    
+                        We use Cloudflare Turnstile for bot detection and to protect our website from abusive traffic. When you complete a verification challenge, technical data (including your IP address, browser type, device characteristics, and timestamp) is sent to Cloudflare, Inc. This processing is necessary for our legitimate interest in securing our Services and preventing fraud. The data is not used for profiling or tracking beyond the verification session.
+                    
+                    See <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare's Privacy Policy</a>.
+                </p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 2. HOW DO WE PROCESS YOUR INFORMATION?                       -->
+            <!-- ============================================================ -->
+            <div id="section2" class="privacy-section">
+                <h2>2. HOW DO WE PROCESS YOUR INFORMATION?</h2>
+                <p>In Short: We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We process the personal information for the following purposes listed below. We may also process your information for other purposes only with your prior explicit consent.</p>
+                <p>We process your personal information for a variety of reasons, depending on how you interact with our Services, including:</p>
+                <p>· To facilitate account creation and authentication and otherwise manage user accounts. We may process your information so you can create and log in to your account, as well as keep your account in working order.</p>
+                <p>· To request feedback. We may process your information when necessary to request feedback and to contact you about your use of our Services.</p>
+                <p>· To protect our Services. We may process your information as part of our efforts to keep our Services safe and secure, including fraud monitoring and prevention.</p>
+                <p>· To identify usage trends. We may process information about how you use our Services to better understand how they are being used so we can improve them.</p>
+                <p>· To save or protect an individual's vital interest. We may process your information when necessary to save or protect an individual's vital interest, such as to prevent harm.</p>
+                <p>· To facilitate password recovery. If you provide an email address, we may use it to send you password reset links when you request them.</p>
+                <p>· To provide account recovery (optional). If you choose to provide an email address, you may use it to recover a forgotten password. We do not send marketing emails or newsletters.</p>
+                <p>· To display your profile name. If you provide a real name, it will be displayed on your profile as your chosen name.</p>
+                <p>· To display your date of birth on your profile. If you choose to provide your birth date, it may be displayed on your profile. We do not use it for identity verification or legal compliance.</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 3. LEGAL BASES                                              -->
+            <!-- ============================================================ -->
+            <div id="section3" class="privacy-section">
+                <h2>3. WHAT LEGAL BASES DO WE RELY ON TO PROCESS YOUR PERSONAL INFORMATION?</h2>
+                <p>In Short: We only process your personal information when we believe it is necessary and we have a valid legal reason (i.e., legal basis) to do so under applicable law, like with your consent, to comply with laws, to provide you with services to enter into or fulfill our contractual obligations, to protect your rights, or to fulfill our legitimate business interests.</p>
+                <p>If you are located in the EU or UK, this section applies to you. The General Data Protection Regulation (GDPR) and UK GDPR require us to explain the valid legal bases we rely on in order to process your personal information. As such, we may rely on the following legal bases to process your personal information:</p>
+                <p>· Consent. We may process your information if you have given us permission (i.e., consent) to use your personal information for a specific purpose. You can withdraw your consent at any time. Learn more about withdrawing your consent.</p>
+                <p>· Legitimate Interests. We may process your information when we believe it is reasonably necessary to achieve our legitimate business interests and those interests do not outweigh your interests and fundamental rights and freedoms. For example, we may process your personal information for some of the purposes described in order to: · Analyze how our Services are used so we can improve them to engage and retain users · Diagnose problems and/or prevent fraudulent activities · Understand how our users use our products and services so we can improve user experience</p>
+				<p>· Security and Fraud Prevention. We process your information (including through Cloudflare Turnstile) to protect our Services from bots, attacks, and other security threats. This processing is based on our legitimate interest in ensuring the integrity and security of our platform.</p>
+                <p>· Legal Obligations. We may process your information where we believe it is necessary for compliance with our legal obligations, such as to cooperate with a law enforcement body or regulatory agency, exercise or defend our legal rights, or disclose your information as evidence in litigation in which we are involved.</p>
+                <p>· Vital Interests. We may process your information where we believe it is necessary to protect your vital interests or the vital interests of a third party, such as situations involving potential threats to the safety of any person.</p>
+                <p>If you are located in Canada, this section applies to you. We may process your information if you have given us specific permission (i.e., express consent) to use your personal information for a specific purpose, or in situations where your permission can be inferred (i.e., implied consent). You can withdraw your consent at any time. In some exceptional cases, we may be legally permitted under applicable law to process your information without your consent, including, for example: . If collection is clearly in the interests of an individual and consent cannot be obtained in a timely way . For investigations and fraud detection and prevention . For business transactions provided certain conditions are met . If it is contained in a witness statement and the collection is necessary to assess, process, or settle an insurance claim . For identifying injured, ill, or deceased persons and communicating with next of kin · If we have reasonable grounds to believe an individual has been, is, or may be victim of financial abuse . If it is reasonable to expect collection and use with consent would compromise the availability or the accuracy of the information and the collection is reasonable for purposes related to investigating a breach of an agreement or a contravention of the laws of Canada or a province · If disclosure is required to comply with a subpoena, warrant, court order, or rules of the court relating to the production of records . If it was produced by an individual in the course of their employment, business, or profession and the collection is consistent with the purposes for which the information was produced . If the collection is solely for journalistic, artistic, or literary purposes . If the information is publicly available and is specified by the regulations · We may disclose de-identified information for approved research or statistics projects, subject to ethics oversight and confidentiality commitments</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 4. SHARING                                                  -->
+            <!-- ============================================================ -->
+            <div id="section4" class="privacy-section">
+                <h2>4. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?</h2>
+                <p>In Short: We may share information in specific situations described in this section and/or with the following third parties. Vendors, Consultants, and Other Third-Party Service Providers. We may share your data with third-party vendors, service providers, contractors, or agents ("third parties") who perform services for us or on our behalf and require access to such information to do that work. We have contracts in place with our third parties, which are designed to help safeguard your personal information. This means that they cannot do anything with your personal information unless we have instructed them to do it. They will also not share your personal information with any organization apart from us. They also commit to protect the data they hold on our behalf and to retain it for the period we instruct.</p>
+                <p>The third parties we may share personal information with are as follows:</p>
+                <p>. Web and Mobile Analytics</p>
+                <p>Google Analytics · Website Hosting iFastNet</p>
+                <p>. Security and Bot Prevention</p>
+                <p>Cloudflare, Inc. (Turnstile) — acts as our data processor for bot detection and security verification.</p>
+                <p>We also may need to share your personal information in the following situations: · Business Transfers. We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 5. COOKIES                                                  -->
+            <!-- ============================================================ -->
+            <div id="section5" class="privacy-section">
+                <h2>5. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?</h2>
+                <p>In Short: We may use cookies and other tracking technologies to collect and store your information. We may use cookies and similar tracking technologies (like web beacons and pixels) to gather information when you interact with our Services. Some online tracking technologies help us maintain the security of our Services and your account, prevent crashes, fix bugs, save your preferences, and assist with basic site functions. We also permit third parties and service providers to use online tracking technologies on our Services for analytics and advertising, including to help manage and display advertisements, to tailor advertisements to your interests, or to send abandoned shopping cart reminders (depending on your communication preferences). The third parties and service providers use their technology to provide advertising about products and services tailored to your interests which may appear either on our Services or on other websites.</p>
+                <p>To the extent these online tracking technologies are deemed to be a "sale"/"sharing" (which includes targeted advertising, as defined under the applicable laws) under applicable US state laws, you can opt out of these online tracking technologies by submitting a request as described below under section "DO UNITED STATES RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?"</p>
+                <p>Specific information about how we use such technologies and how you can refuse certain cookies is set out in our Cookie Notice.</p>
+                <p><strong>Google Analytics</strong></p>
+                <p>We may share your information with Google Analytics to track and analyze the use of the Services. To opt out of being tracked by Google Analytics across the Services, visit <a href="https://tools.google.com/dlpage/gaoptout" style="color: var(--primary-color);">https://tools.google.com/dlpage/gaoptout</a>. For more information on the privacy practices of Google, please visit the <a href="https://policies.google.com/privacy" style="color: var(--primary-color);">Google Privacy & Terms page</a>.</p>
+                <p><strong>Cloudflare Turnstile</strong></p>
+                <p>Turnstile may set a strictly necessary cookie (<code>cf.turnstile.u</code>) from <code>challenges.cloudflare.com</code> for security verification. No consent is required as it is essential for service functionality.</p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 6. INTERNATIONAL TRANSFER                                   -->
+            <!-- ============================================================ -->
+            <div id="section6" class="privacy-section">
+                <h2>6. IS YOUR INFORMATION TRANSFERRED INTERNATIONALLY?</h2>
+
+                <!-- ===== 更新：提及 Cloudflare 全球网络 ===== -->
+                <p>
+                    In Short: We may transfer, store, and process your information in countries other than your own.
+                    Our servers are located in the United Kingdom and United States. Additionally, our use of Cloudflare's global edge network means that data may pass through Cloudflare's data centers in various countries around the world.
+                    Regardless of your location, please be aware that your information may be transferred to, stored by, and processed by us in our facilities and in the facilities of the third parties with whom we may share your personal information (see "WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?" above), including facilities in the United States and United Kingdom (where our servers are located) and Cloudflare's global network.
+                </p>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- 7–15 节不变（无更新）                                         -->
+            <!-- ============================================================ -->
+            <div id="section7" class="privacy-section">
+                <h2>7. HOW LONG DO WE KEEP YOUR INFORMATION?</h2>
+                <p>In Short: We keep your information for as long as necessary to fulfill the purposes outlined in this Privacy Policy unless otherwise required by law. We will only keep your personal information for as long as it is necessary for the purposes set out in this Privacy Notice, unless a longer retention period is required or permitted by law (such as tax, accounting, or other legal requirements). No purpose in this notice will require us keeping your personal information for longer than the period of time in which users have an account with us.</p>
+                <p>When we have no ongoing legitimate business need to process your personal information, we will either delete or anonymize such information, or, if this is not possible (for example, because your personal information has been stored in backup archives), then we will securely store your personal information and isolate it from any further processing until deletion is possible.</p>
+            </div>
+
+            <div id="section8" class="privacy-section">
+                <h2>8. HOW DO WE KEEP YOUR INFORMATION SAFE?</h2>
+                <p>In Short: We aim to protect your personal information through a system of organizational and technical security measures. We have implemented appropriate and reasonable technical and organizational security measures designed to protect the security of any personal information we process. However, despite our safeguards and efforts to secure your information, no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. Although we will do our best to protect your personal information, transmission of personal information to and from our Services is at your own risk. You should only access the Services within a secure environment.</p>
+            </div>
+
+            <div id="section9" class="privacy-section">
+                <h2>9. DO WE COLLECT INFORMATION FROM MINORS?</h2>
+                <p>In Short: We do not knowingly collect data from or market to children under 13 years of age or the equivalent age as specified by law in your jurisdiction.</p>
+                <p>We do not knowingly collect data from children under 13 years of age (or the equivalent age in your jurisdiction). Our Services are not directed to children under 13. If you are between 13 and 18, you should have permission from a parent or guardian. Note: Our birth date field is optional and unverified. We rely on users to provide accurate information regarding their age and to comply with applicable laws. If we learn that we have collected personal information from a child under 13, we will delete that information. If you become aware of any data we may have collected, please contact us at <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a>.</p>
+            </div>
+
+            <div id="section10" class="privacy-section">
+                <h2>10. WHAT ARE YOUR PRIVACY RIGHTS?</h2>
+                <p>In Short: Depending on your state of residence in the US or in some regions, such as the European Economic Area (EEA), United Kingdom (UK), Switzerland, and Canada, you have rights that allow you greater access to and control over your personal information. You may review, change, or terminate your account at any time, depending on your country, province, or state of residence.</p>
+                <p>In some regions (like the EEA, UK, Switzerland, and Canada), you have certain rights under applicable data protection laws. These may include the right (i) to request access and obtain a copy of your personal information, (ii) to request rectification or erasure; (iii) to restrict the processing of your personal information; (iv) if applicable, to data portability; and (v) not to be subject to automated decision-making. In certain circumstances, you may also have the right to object to the processing of your personal information. You can make such a request by contacting us by using the contact details provided in the section "HOW CAN YOU CONTACT US ABOUT THIS NOTICE?" below.</p>
+                <p>We will consider and act upon any request in accordance with applicable data protection laws.</p>
+                <p>If you are located in the EEA or UK and you believe we are unlawfully processing your personal information, you also have the right to complain to your Member State data protection authority or UK data protection authority. If you are located in Switzerland, you may contact the Federal Data Protection and Information Commissioner.</p>
+                <p>Withdrawing your consent: If we are relying on your consent to process your personal information, which may be express and/or implied consent depending on the applicable law, you have the right to withdraw your consent at any time. You can withdraw your consent at any time by contacting us by using the contact details provided in the section "HOW CAN YOU CONTACT US ABOUT THIS NOTICE?" below or updating your preferences.</p>
+                <p>However, please note that this will not affect the lawfulness of the processing before its withdrawal nor, when applicable law allows, will it affect the processing of your personal information conducted in reliance on lawful processing grounds other than consent.</p>
+                <p><strong>Account Information</strong></p>
+                <p>If you would at any time like to review or change the information in your account or terminate your account, you can: . Log in to your account settings and update your user account. . Contact us using the contact information provided. Upon your request to terminate your account, we will deactivate or delete your account and information from our active databases. However, we may retain some information in our files to prevent fraud, troubleshoot problems, assist with any investigations, enforce our legal terms and/or comply with applicable legal requirements. Cookies and similar technologies: Most Web browsers are set to accept cookies by default. If you prefer, you can usually choose to set your browser to remove cookies and to reject cookies. If you choose to remove cookies or reject cookies, this could affect certain features or services of our Services. If you have questions or comments about your privacy rights, you may email us at <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a>.</p>
+            </div>
+
+            <div id="section11" class="privacy-section">
+                <h2>11. CONTROLS FOR DO-NOT-TRACK FEATURES</h2>
+                <p>Most web browsers and some mobile operating systems and mobile applications include a Do-Not-Track ("DNT") feature or setting you can activate to signal your privacy preference not to have data about your online browsing activities monitored and collected. At this stage, no uniform technology standard for recognizing and implementing DNT signals has been finalized. As such, we do not currently respond to DNT browser signals or any other mechanism that automatically communicates your choice not to be tracked online. If a standard for online tracking is adopted that we must follow in the future, we will inform you about that practice in a revised version of this Privacy Notice.</p>
+                <p>California law requires us to let you know how we respond to web browser DNT signals. Because there currently is not an industry or legal standard for recognizing or honoring DNT signals, we do not respond to them at this time.</p>
+            </div>
+
+            <div id="section12" class="privacy-section">
+                <h2>12. DO UNITED STATES RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?</h2>
+                <p>In Short: If you are a resident of California, Colorado, Connecticut, Delaware, Florida, Indiana, lowa, Kentucky, Maryland, Minnesota, Montana, Nebraska, New Hampshire, New Jersey, Oregon, Rhode Island, Tennessee, Texas, Utah, or Virginia, you may have the right to request access to and receive details about the personal information we maintain about you and how we have processed it, correct inaccuracies, get a copy of, or delete your personal information. You may also have the right to withdraw your consent to our processing of your personal information. These rights may be limited in some circumstances by applicable law. More information is provided below.</p>
+                <p><strong>Categories of Personal Information We Collect</strong> The table below shows the categories of personal information we have collected in the past twelve (12) months. The table includes illustrative examples of each category and does not reflect the personal information we collect from you. For a comprehensive inventory of all personal information we process, please refer to the section "WHAT INFORMATION DO WE COLLECT?"</p>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Category</th><th>Examples</th><th>Collected</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>A. Identifiers</td><td>Contact details, such as real name, alias, postal address, telephone or mobile contact number, unique personal identifier, online identifier, Internet Protocol address, email address, and account name</td><td>YES (name and email optional, not verified)</td></tr>
+                        <tr><td>B. Personal information as defined in the California Customer Records statute</td><td>Name, contact information, education, employment, employment history, and financial information</td><td>YES</td></tr>
+                        <tr><td>C. Protected classification characteristics under state or federal law</td><td>Gender, age, date of birth, race and ethnicity, national origin, marital status, and other demographic data</td><td>YES (gender and date of birth only, not verifired)</td></tr>
+                        <tr><td>D. Commercial information</td><td>Transaction information, purchase history, financial details, and payment information</td><td>NO</td></tr>
+                        <tr><td>E. Biometric information</td><td>Fingerprints and voiceprints</td><td>NO</td></tr>
+                        <tr><td>F. Internet or other similar network activity</td><td>Browsing history, search history, online behavior, interest data, and interactions with our and other websites, applications, systems, and advertisements</td><td>YES</td></tr>
+                        <tr><td>G. Geolocation data</td><td>Device location</td><td>YES</td></tr>
+                        <tr><td>H. Audio, electronic, sensory, or similar information</td><td>Images and audio, video or call recordings created in connection with our business</td><td>NO</td></tr>
+                        <tr><td>I. Professional or employment-related information</td><td>Business contact details in order to provide you our Services at a business level or job title, work history, and professional qualifications if you apply for a job with us</td><td>NO</td></tr>
+                        <tr><td>J. Education Information</td><td>Student records and directory information</td><td>NO</td></tr>
+                        <tr><td>K. Inferences drawn</td><td>Inferences drawn from any of the collected personal information listed from collected personal above to create a profile or summary about, for example, an individual's preferences and characteristics</td><td>NO</td></tr>
+                        <tr><td>L. Sensitive personal Information</td><td></td><td>NO</td></tr>
+                    </tbody>
+                </table>
+                <p>We may also collect other personal information outside of these categories through instances where you interact with us in person, online, or by phone or mail in the context of: . Receiving help through our customer support channels; . Participation in customer surveys or contests; and . Facilitation in the delivery of our Services and to respond to your inquiries.</p>
+                <p>We will use and retain the collected personal information as needed to provide the Services or for: . Category A - As long as the user has an account with us . Category B - As long as the user has an account with us . Category C - As long as the user has an account with us . Category F - As long as the user has an account with us . Category G - As long as the user has an account with us</p>
+                <p>Sources of Personal Information Learn more about the sources of personal information we collect in "WHAT INFORMATION DO WE COLLECT?"</p>
+                <p>How We Use and Share Personal Information Learn more about how we use your personal information in the section, "HOW DO WE PROCESS YOUR INFORMATION?" Will your information be shared with anyone else? We may disclose your personal information with our service providers pursuant to a written contract between us and each service provider. Learn more about how we disclose personal information to in the section, "WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?" We may use your personal information for our own business purposes, such as for undertaking internal research for technological development and demonstration. This is not considered to be "selling" of your personal information.</p>
+                <p>We have not sold or shared any personal information to third parties for a business or commercial purpose in the preceding twelve (12) months. We have disclosed the following categories of personal information to third parties for a business or commercial purpose in the preceding twelve (12) months:</p>
+                <p>The categories of third parties to whom we disclosed personal information for a business or commercial purpose can be found under "WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?"</p>
+                <p><strong>Your Rights</strong> You have rights under certain US state data protection laws. However, these rights are not absolute, and in certain cases, we may decline your request as permitted by law. These rights include: . Right to know whether or not we are processing your personal data . Right to access your personal data . Right to correct inaccuracies in your personal data . Right to request the deletion of your personal data . Right to obtain a copy of the personal data you previously shared with us · Right to non-discrimination for exercising your rights . Right to opt out of the processing of your personal data if it is used for targeted advertising (or sharing as defined under California's privacy law), the sale of personal data, or profiling in furtherance of decisions that produce legal or similarly significant effects ("profiling")</p>
+                <p>Depending upon the state where you live, you may also have the following rights: . Right to access the categories of personal data being processed (as permitted by applicable law, including the privacy law in Minnesota) . . Right to obtain a list of the categories of third parties to which we have disclosed personal data (as permitted by applicable law, including the privacy law in California, Delaware, and Maryland) . Right to obtain a list of specific third parties to which we have disclosed personal data (as permitted by applicable law, including the privacy law in Minnesota and Oregon) . Right to obtain a list of third parties to which we have sold personal data (as permitted by applicable law, including the privacy law in Connecticut) . Right to review, understand, question, and depending on where you live, correct how personal data has been profiled (as permitted by applicable law, including the privacy law in Connecticut and Minnesota) · Right to limit use and disclosure of sensitive personal data (as permitted by applicable law, including the privacy law in California) . Right to opt out of the collection of sensitive data and personal data collected through the operation of a voice or facial recognition feature (as permitted by applicable law, including the privacy law in Florida)</p>
+                <p><strong>How to Exercise Your Rights</strong> To exercise these rights, you can contact us by visiting <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a>, or by emailing us at <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a>.</p>
+                <p>Under certain US state data protection laws, you can designate an authorized agent to make a request on your behalf. We may deny a request from an authorized agent that does not submit proof that they have been validly authorized to act on your behalf in accordance with applicable laws.</p>
+                <p><strong>Request Verification</strong> Upon receiving your request, we will need to verify your identity to determine you are the same person about whom we have the information in our system. We will only use personal information provided in your request to verify your identity or authority to make the request. However, if we cannot verify your identity from the information already maintained by us, we may request that you provide additional information for the purposes of verifying your identity and for security or fraud-prevention purposes.</p>
+                <p>If you submit the request through an authorized agent, we may need to collect additional information to verify your identity before processing your request and the agent will need to provide a written and signed permission from you to submit such request on your behalf.</p>
+                <p><strong>Appeals</strong> Under certain US state data protection laws, if we decline to take action regarding your request, you may appeal our decision by emailing us at <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a>. We will inform you in writing of any action taken or not taken in response to the appeal, including a written explanation of the reasons for the decisions. If your appeal is denied, you may submit a complaint to your state attorney general.</p>
+                <p><strong>California "Shine The Light" Law</strong></p>
+                <p>California Civil Code Section 1798.83, also known as the "Shine The Light" law, permits our users who are California residents to request and obtain from us, once a year and free of charge, information about categories of personal information (if any) we disclosed to third parties for direct marketing purposes and the names and addresses of all third parties with which we shared personal information in the immediately preceding calendar year. If you are a California resident and would like to make such a request, please submit your request in writing to us by using the contact details provided in the section "HOW CAN YOU CONTACT US ABOUT THIS NOTICE?"</p>
+            </div>
+
+            <div id="section13" class="privacy-section">
+                <h2>13. DO WE MAKE UPDATES TO THIS NOTICE?</h2>
+                <p>In Short: Yes, we will update this notice as necessary to stay compliant with relevant laws. We may update this Privacy Notice from time to time. The updated version will be indicated by an updated "Revised" date at the top of this Privacy Notice. If we make material changes to this Privacy Notice, we may notify you either by prominently posting a notice of such changes or by directly sending you a notification. We encourage you to review this Privacy Notice frequently to be informed of how we are protecting your information.</p>
+            </div>
+
+            <div id="section14" class="privacy-section">
+                <h2>14. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</h2>
+                <p>If you have questions or comments about this notice, you may email us at <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> or contact us by visiting <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a></p>
+            </div>
+
+            <div id="section15" class="privacy-section">
+                <h2>15. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</h2>
+                <p>Based on the applicable laws of your country or state of residence in the US, you may have the right to request access to the personal information we collect from you, details about how we have processed it, correct inaccuracies, or delete your personal information. You may also have the right to withdraw your consent to our processing of your personal information. These rights may be limited in some circumstances by applicable law. To request to review, update, or delete your personal information, please visit: <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a>.</p>
+            </div>            
+
+        </div>
+		
+		<!-- ============================================================ -->
+		<!-- 中文版隐私政策                                                -->
+		<!-- ============================================================ -->
+			
+		<hr class="divider" style="margin: 50px 0; border-top: 3px double var(--primary-color);">
+			
+		<div style="text-align: center; margin: 30px 0 20px 0;">
+		    <span style="background: var(--primary-color); color: white; padding: 8px 24px; border-radius: 20px; font-size: 14px; font-weight: 600; letter-spacing: 1px;">
+		        <i class="fas fa-language"></i> 中文版本
+		    </span>
+		    <p style="color: var(--text-secondary); font-size: 13px; margin-top: 10px;">
+		        本译文仅供参考，如与英文版本存在歧义，以英文版本为准。
+		    </p>
+		</div>
+			
+		<div class="privacy-card section-container">
+			
+		    <p>
+		        <strong>隐私政策</strong>
+				最后更新日期：2026年7月4日
+		        <br><br>
+		        本隐私政策（"我们"、"我们的"）描述了当您使用我们的服务（"服务"）时，我们如何以及为何访问、收集、存储、使用和/或共享（"处理"）您的个人信息，包括当您：
+		    </p>
+			
+		    <ul>
+		        <li>访问我们的网站 <a href="https://dornhub.eu.org" style="color: var(--primary-color);">https://dornhub.eu.org</a> 或任何链接到本隐私政策的我们旗下的网站</li>
+		        <li>使用 Dorn Hub。Dorn Hub 是一个以 Donh IP 为核心的趣味网站，提供多种 Donh 服务和 DonDon 主题游戏。</li>
+		        <li>以其他相关方式与我们互动，包括任何营销活动或活动</li>
+		    </ul>
+			
+		    <p>有问题或疑虑？阅读本隐私政策将帮助您了解您的隐私权利和选择。我们负责决定如何处理您的个人信息。如果您不同意我们的政策和做法，请勿使用我们的服务。如果您仍有任何问题或疑虑，请通过 <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> 联系我们。</p>
+			
+		    <!-- 中文版目录 -->
+		    <div class="table-of-contents">
+		        <h3><i class="fas fa-list"></i> 要点摘要</h3>
+		        <p>本摘要提供了我们隐私政策的关键要点，但您可以通过点击每个要点后面的链接或使用下面的目录跳转到您正在寻找的章节，了解更多详细信息。</p>
+		        <p><strong>我们处理哪些个人信息？</strong> 当您访问、使用或浏览我们的服务时，我们可能会根据您与我们和服务的互动方式、您所做的选择以及您使用的产品和功能来处理个人信息。<a href="#zh-section1" class="toc-link" style="display: inline;">了解有关您向我们披露的个人信息的更多信息。</a></p>
+		        <p><strong>我们是否处理敏感个人信息？</strong> 某些信息在特定司法管辖区可能被视为"特殊"或"敏感"信息，例如您的种族或民族起源、性取向和宗教信仰。我们可能在获得您同意或在适用法律允许的情况下处理敏感个人信息。<a href="#zh-section1" class="toc-link" style="display: inline;">了解有关我们处理的敏感信息的更多信息。</a></p>
+		        <p><strong>我们是否从第三方收集信息？</strong> 我们不从第三方收集任何信息。</p>
+		        <p><strong>我们如何处理您的信息？</strong> 我们处理您的信息是为了提供、改进和管理我们的服务，与您沟通，进行安全和防欺诈，以及遵守法律。我们也可能在获得您同意的情况下为其他目的处理您的信息。我们仅在具有有效法律理由时处理您的信息。<a href="#zh-section2" class="toc-link" style="display: inline;">了解有关我们如何处理您的信息的更多信息。</a></p>
+		        <p><strong>在什么情况下以及与哪些方共享个人信息？</strong> 我们可能在特定情况下与特定第三方共享信息。<a href="#zh-section4" class="toc-link" style="display: inline;">了解有关何时以及与谁共享您的个人信息的更多信息。</a></p>
+		        <p><strong>我们如何保护您的信息安全？</strong> 我们有足够的组织和技术流程与程序来保护您的个人信息。然而，没有任何互联网电子传输或信息存储技术能保证100%安全，因此我们无法承诺或保证黑客、网络罪犯或其他未经授权的第三方不会攻破我们的安全措施并不当收集、访问、窃取或修改您的信息。<a href="#zh-section8" class="toc-link" style="display: inline;">了解有关我们如何保护您的信息安全的更多信息。</a></p>
+		        <p><strong>您有哪些权利？</strong> 根据您所在地理位置，适用的隐私法律可能意味着您对您的个人信息拥有某些权利。<a href="#zh-section10" class="toc-link" style="display: inline;">了解有关您的隐私权利的更多信息。</a></p>
+		        <p><strong>如何行使您的权利？</strong> 行使权利的最简单方式是访问 <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a>，或联系我们。我们将根据适用的数据保护法律审议并处理任何请求。</p>
+		        <p><strong>想了解更多关于我们如何处理收集到的信息？</strong> 请完整阅读本隐私政策。</p>
+		    </div>
+			
+		    <div class="table-of-contents">
+		        <h3><i class="fas fa-list"></i> 目录</h3>
+		        <div class="toc-grid">
+		            <a href="#zh-section1" class="toc-link">1. 我们收集哪些信息？</a>
+		            <a href="#zh-section2" class="toc-link">2. 我们如何处理您的信息？</a>
+		            <a href="#zh-section3" class="toc-link">3. 我们依据哪些法律依据处理您的个人信息？</a>
+		            <a href="#zh-section4" class="toc-link">4. 何时以及与谁共享您的个人信息？</a>
+		            <a href="#zh-section5" class="toc-link">5. 我们是否使用 Cookie 和其他跟踪技术？</a>
+		            <a href="#zh-section6" class="toc-link">6. 您的信息是否被跨境传输？</a>
+		            <a href="#zh-section7" class="toc-link">7. 我们保留您的信息多长时间？</a>
+		            <a href="#zh-section8" class="toc-link">8. 我们如何保护您的信息安全？</a>
+		            <a href="#zh-section9" class="toc-link">9. 我们是否收集未成年人的信息？</a>
+		            <a href="#zh-section10" class="toc-link">10. 您的隐私权利有哪些？</a>
+		            <a href="#zh-section11" class="toc-link">11. 请勿追踪（DNT）功能的控制</a>
+		            <a href="#zh-section12" class="toc-link">12. 美国居民是否有特定的隐私权利？</a>
+		            <a href="#zh-section13" class="toc-link">13. 我们是否更新本政策？</a>
+		            <a href="#zh-section14" class="toc-link">14. 您如何就本政策联系我们？</a>
+		            <a href="#zh-section15" class="toc-link">15. 您如何查阅、更新或删除我们收集的数据？</a>
+		        </div>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 1. 我们收集哪些信息？                                         -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section1" class="privacy-section">
+		        <h2>1. 我们收集哪些信息？</h2>
+		        <p><strong>您向我们披露的个人信息</strong><br>
+		        简而言之：我们收集您提供给我们的个人信息。</p>
+		        <p>当您在我们的服务上注册、表示有兴趣获取有关我们或我们产品和服务的信息、参与服务上的活动或以其他方式联系我们时，我们会收集您自愿提供给我们的个人信息。</p>
+		        <p><strong>您提供的个人信息。</strong> 我们收集的个人信息取决于您与我们和服务的互动背景、您所做的选择以及您使用的产品和功能。我们收集的个人信息可能包括：· 用户名和密码（账户创建必需）· 真实姓名（您无需提供真实姓名；您可以使用昵称或虚构姓名）· 电子邮箱地址（可选 — 您可以提供真实或虚构的电子邮箱地址；我们不会将其用于营销）· 性别（您可以提供任何回答）· 出生日期（可选 — 您无需提供真实出生日期；您可以输入任何日期）</p>
+		        <p><strong>敏感信息。</strong> 我们的注册和资料表单可能包含可选的性别字段。您无需在此字段中提供真实或准确的信息。我们不验证任何可选信息的准确性。您的真实姓名和电子邮箱地址同样是可选的且未经验证。您也可以在这些字段中提供虚构信息。我们不收集其他敏感信息，如性取向、种族或民族起源或宗教信仰。</p>
+		        <p><strong>自动收集的信息</strong><br>
+		        简而言之：当您访问我们的服务时，某些信息（如您的互联网协议（IP）地址和/或浏览器及设备特征）会被自动收集。</p>
+		        <p>当您访问、使用或浏览服务时，我们会自动收集某些信息。这些信息不会透露您的具体身份（如您的姓名或联系方式），但可能包括设备和使用信息，例如您的IP地址、浏览器和设备特征、操作系统、语言偏好、引用URL、设备名称、国家、位置、关于您如何使用服务的信息以及其他技术信息。这些信息主要用于维护我们服务的安全和运营，以及用于我们的内部分析和报告目的。与许多企业一样，我们也通过Cookie和类似技术收集信息。我们收集的信息包括：</p>
+		        <p>· 日志和使用数据。日志和使用数据是我们的服务器在您访问或使用我们的服务时自动收集并记录在日志文件中的与服务相关的诊断、使用和性能信息。根据您与我们互动的方式，此日志数据可能包括您的IP地址、设备信息、浏览器类型以及您在服务中的活动设置和信息（例如与您的使用相关的时间戳、查看的页面和文件、搜索以及您采取的其他操作如您使用的功能）、设备事件信息（如系统活动、错误报告（有时称为"崩溃转储"）和硬件设置）。</p>
+		        <p>· 设备数据。我们收集设备数据，例如有关您用于访问服务的计算机、手机、平板电脑或其他设备的信息。根据所使用的设备，此设备数据可能包括您的IP地址（或代理服务器）、设备和应用程序识别号、位置、浏览器类型、硬件型号、互联网服务提供商和/或移动运营商、操作系统和系统配置信息。</p>
+		        <p>· 位置数据。我们通过Google Analytics根据您的IP地址收集近似位置数据（例如国家和城市级别）。</p>
+		        <p>我们的服务包含一项功能，允许您自愿分享您的精确GPS位置。如果您选择启用此功能，您的浏览器将提示您授予位置访问权限。但请注意，此功能目前尚未完全实现——您的位置将被获取但不会用于任何目的。不会存储或与第三方共享任何位置数据。</p>
+		        <p>除非您主动选择启用此功能，否则我们不收集精确地理位置。</p>
+			
+		        <p>
+		            <strong>Cloudflare Turnstile。</strong>
+		            
+		                我们使用 Cloudflare Turnstile 进行机器人检测并保护我们的网站免受滥用流量侵害。当您完成验证挑战时，技术数据（包括您的IP地址、浏览器类型、设备特征和时间戳）会被发送至 Cloudflare, Inc.。此处理对于我们保护服务和防止欺诈的合法利益是必要的。该数据不会用于验证会话之外的画像分析或跟踪。
+		            
+		            请参阅 <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare 的隐私政策</a>。
+		        </p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 2. 我们如何处理您的信息？                                     -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section2" class="privacy-section">
+		        <h2>2. 我们如何处理您的信息？</h2>
+		        <p>简而言之：我们处理您的信息是为了提供、改进和管理我们的服务，与您沟通，进行安全和防欺诈，以及遵守法律。我们为下列目的处理个人信息。我们也可能在获得您事先明确同意的情况下为其他目的处理您的信息。</p>
+		        <p>我们根据您与我们的服务互动的方式，为多种原因处理您的个人信息，包括：</p>
+		        <p>· 促进账户创建和认证，并以其他方式管理用户账户。我们可能会处理您的信息，以便您可以创建和登录您的账户，以及保持您的账户正常运行。</p>
+		        <p>· 请求反馈。我们可能在必要时处理您的信息，以请求反馈并就您对我们服务的使用与您联系。</p>
+		        <p>· 保护我们的服务。我们可能会处理您的信息，作为我们维护服务安全和保障工作的一部分，包括欺诈监控和预防。</p>
+		        <p>· 识别使用趋势。我们可能会处理有关您如何使用我们服务的信息，以更好地了解它们的使用方式，从而进行改进。</p>
+		        <p>· 保护个人的切身利益。我们可能在必要时处理您的信息，以保护个人的切身利益，例如防止伤害。</p>
+		        <p>· 促进密码恢复。如果您提供了电子邮箱地址，我们可能会在您请求时使用它向您发送密码重置链接。</p>
+		        <p>· 提供账户恢复（可选）。如果您选择提供电子邮箱地址，您可以使用它来恢复忘记的密码。我们不会发送营销邮件或新闻通讯。</p>
+		        <p>· 显示您的个人资料名称。如果您提供真实姓名，它将作为您选择的名称显示在您的个人资料上。</p>
+		        <p>· 在您的个人资料上显示您的出生日期。如果您选择提供您的出生日期，它可能会显示在您的个人资料上。我们不会将其用于身份验证或法律合规。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 3. 法律依据                                                  -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section3" class="privacy-section">
+		        <h2>3. 我们依据哪些法律依据处理您的个人信息？</h2>
+		        <p>简而言之：我们仅在认为必要且根据适用法律具有有效法律理由（即法律依据）时处理您的个人信息，例如征得您的同意、遵守法律、为您提供服务以订立或履行我们的合同义务、保护您的权利或实现我们的合法商业利益。</p>
+		        <p>如果您位于欧盟或英国，本节适用于您。通用数据保护条例（GDPR）和英国GDPR要求我们解释我们处理您的个人信息所依赖的有效法律依据。因此，我们可能依赖以下法律依据来处理您的个人信息：</p>
+		        <p>· 同意。如果您已授予我们权限（即同意）将您的个人信息用于特定目的，我们可能会处理您的信息。您可以随时撤回您的同意。</p>
+		        <p>· 合法利益。当我们认为合理必要以实现我们的合法商业利益且这些利益不超出您的利益和基本权利与自由时，我们可能会处理您的信息。例如，我们可能为以下目的处理您的个人信息：· 分析我们服务的使用情况以便改进，从而吸引和留住用户 · 诊断问题和/或防止欺诈活动 · 了解用户如何使用我们的产品和服务，以便改善用户体验</p>
+		        <p>· 安全和防欺诈。我们处理您的信息（包括通过 Cloudflare Turnstile）以保护我们的服务免受机器人、攻击和其他安全威胁。此处理基于我们确保平台完整性和安全性的合法利益。</p>
+		        <p>· 法律义务。当我们认为为遵守法律义务有必要时，我们可能会处理您的信息，例如与执法机构或监管机构合作、行使或捍卫我们的法律权利，或在我们参与的诉讼中作为证据披露您的信息。</p>
+		        <p>· 切身利益。当我们认为有必要保护您的切身利益或第三方的切身利益时，我们可能会处理您的信息，例如涉及对任何人安全构成潜在威胁的情况。</p>
+		        <p>如果您位于加拿大，本节适用于您。如果您已授予我们特定权限（即明示同意）将您的个人信息用于特定目的，或在某些可以推断您许可的情况下，我们可能会处理您的信息。您可以随时撤回您的同意。在某些特殊情况下，适用法律可能允许我们在未经您同意的情况下处理您的信息，包括例如：· 如果收集明显符合个人利益且无法及时获得同意 · 用于调查和欺诈检测与预防 · 用于商业交易，前提是满足特定条件 · 如果包含在证人陈述中，且收集对于评估、处理或解决保险索赔是必要的 · 用于识别受伤、患病或死亡人员并与近亲属沟通 · 如果我们有合理理由相信个人已经、正在或可能成为财务虐待的受害者 · 如果可以合理预期在获得同意的情况下收集和使用会损害信息的可用性或准确性，且收集对于与调查违反协议或违反加拿大或省法律相关的目的是合理的 · 如果披露是为了遵守传票、搜查令、法院命令或与出示记录相关的法院规则所必需的 · 如果信息是由个人在其就业、商业或专业过程中产生的，且收集与信息产生目的相一致 · 如果收集仅用于新闻、艺术或文学目的 · 如果信息是公开可用的且法规有规定 · 经伦理监督和保密承诺，我们可出于批准的研究或统计项目披露去标识化信息</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 4. 共享                                                      -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section4" class="privacy-section">
+		        <h2>4. 何时以及与谁共享您的个人信息？</h2>
+		        <p>简而言之：我们可能在特定情况下与特定第三方共享信息。供应商、顾问和其他第三方服务提供商。我们可能会与为我们或代表我们执行服务并需要访问此类信息以完成工作的第三方供应商、服务提供商、承包商或代理商（"第三方"）共享您的数据。我们与第三方签订了合同，旨在帮助保护您的个人信息。这意味着除非我们指示，否则他们不能对您的个人信息做任何处理。他们也不会与我们以外的任何组织共享您的个人信息。他们还承诺保护他们代表我们持有的数据，并按照我们指示的期限保留数据。</p>
+			
+		        <p>我们可能与之共享个人信息的第三方如下：</p>
+		        <p>. 网站和移动分析</p>
+		        <p>Google Analytics · 网站托管 iFastNet</p>
+		        <p>. 安全和机器人防护</p>
+		        <p>Cloudflare, Inc. (Turnstile) — 作为我们的数据处理者，负责机器人检测和安全验证。</p>
+		        <p>我们可能还需要在以下情况下共享您的个人信息：· 业务转让。我们可能会在与任何合并、公司资产出售、融资或收购我们全部或部分业务相关或在谈判期间与另一家公司共享或转让您的信息。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 5. Cookie                                                    -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section5" class="privacy-section">
+		        <h2>5. 我们是否使用 Cookie 和其他跟踪技术？</h2>
+		        <p>简而言之：我们可能使用 Cookie 和其他跟踪技术来收集和存储您的信息。当您与我们的服务互动时，我们可能使用 Cookie 和类似的跟踪技术（如网络信标和像素）来收集信息。一些在线跟踪技术帮助我们维护服务及您账户的安全、防止崩溃、修复错误、保存您的偏好以及协助基本网站功能。我们也允许第三方和服务提供商在我们的服务上使用在线跟踪技术进行分析和广告，包括帮助管理和展示广告、根据您的兴趣定制广告或发送弃购购物车提醒（取决于您的沟通偏好）。第三方和服务提供商使用他们的技术提供根据您的兴趣定制的产品和服务广告，这些广告可能出现在我们的服务或其他网站上。</p>
+		        <p>如果这些在线跟踪技术根据适用的美国州法律被视为"销售"/"共享"（包括定向广告），您可以通过按照下文"美国居民是否有特定的隐私权利？"部分所述提交请求来选择退出这些在线跟踪技术。</p>
+		        <p>关于我们如何使用此类技术以及您如何拒绝某些 Cookie 的详细信息，请参见我们的 Cookie 政策。</p>
+		        <p><strong>Google Analytics</strong></p>
+		        <p>我们可能与 Google Analytics 共享您的信息，以跟踪和分析服务的使用情况。要选择退出 Google Analytics 在服务上的跟踪，请访问 <a href="https://tools.google.com/dlpage/gaoptout" style="color: var(--primary-color);">https://tools.google.com/dlpage/gaoptout</a>。有关 Google 隐私实践的更多信息，请访问 <a href="https://policies.google.com/privacy" style="color: var(--primary-color);">Google 隐私与条款页面</a>。</p>
+		        <p><strong>Cloudflare Turnstile</strong></p>
+		        <p>Turnstile 可能会从 <code>challenges.cloudflare.com</code> 设置一个严格必要的 Cookie（<code>cf.turnstile.u</code>）用于安全验证。无需同意，因为它对服务功能至关重要。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 6. 跨境传输                                                  -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section6" class="privacy-section">
+		        <h2>6. 您的信息是否被跨境传输？</h2>
+		        <p>
+		            简而言之：我们可能将您的信息传输、存储和处理到您所在国家以外的国家。
+					我们的服务器位于英国和美国。此外，我们使用 Cloudflare 的全球边缘网络意味着数据可能通过 Cloudflare 在世界各地多个国家的数据中心传输。
+		            无论您位于何处，请注意您的信息可能被传输到、存储在我们以及与我们共享您个人信息的第三方（见上文"何时以及与谁共享您的个人信息？"）的设施中，包括美国、英国（我们的服务器所在）以及 Cloudflare 的全球网络的设施。
+		        </p>
+		        <p>如果您是欧洲经济区（EEA）、英国（UK）或瑞士的居民，这些国家可能不一定拥有与您所在国家一样全面的数据保护法或其他类似法律。但是，我们将采取一切必要措施，按照本隐私政策和适用法律保护您的个人信息。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 7. 保留期限                                                  -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section7" class="privacy-section">
+		        <h2>7. 我们保留您的信息多长时间？</h2>
+		        <p>简而言之：除非法律另有要求，否则我们会在实现本隐私政策所述目的所需的时间内保留您的信息。我们只会在本隐私政策所述目的所需的时间内保留您的个人信息，除非法律（如税务、会计或其他法律要求）要求或允许更长的保留期限。本政策中的任何目的均不需要我们将您的个人信息保留超过用户在我们这里拥有账户的时间。</p>
+		        <p>当我们不再有合法的业务需要处理您的个人信息时，我们将删除或匿名化此类信息，或者如果无法做到（例如因为您的个人信息已存储在备份存档中），则我们将安全存储您的个人信息并将其隔离，直到删除成为可能。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 8. 安全                                                      -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section8" class="privacy-section">
+		        <h2>8. 我们如何保护您的信息安全？</h2>
+		        <p>简而言之：我们旨在通过组织和技术安全措施系统保护您的个人信息。我们已实施适当且合理的技术和组织安全措施，旨在保护我们处理的任何个人信息的安全。然而，尽管我们采取了保障措施并努力保护您的信息安全，但没有任何互联网电子传输或信息存储技术能保证100%安全，因此我们无法承诺或保证黑客、网络罪犯或其他未经授权的第三方不会攻破我们的安全并不当收集、访问、窃取或修改您的信息。尽管我们将尽最大努力保护您的个人信息，但向我们的服务传输个人信息和从我们的服务传输个人信息均由您自行承担风险。您应仅在安全环境中访问我们的服务。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 9. 未成年人                                                  -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section9" class="privacy-section">
+		        <h2>9. 我们是否收集未成年人的信息？</h2>
+		        <p>简而言之：我们不会故意收集13岁以下儿童或您所在司法管辖区法律规定的等效年龄以下儿童的数据或向其进行营销。</p>
+		        <p>我们不会故意收集13岁以下儿童（或您所在司法管辖区的等效年龄）的数据。我们的服务不面向13岁以下儿童。如果您介于13岁至18岁之间，您应获得父母或监护人的许可。注意：我们的出生日期字段是可选的且未经验证。我们依赖用户提供有关其年龄的准确信息并遵守适用法律。如果我们得知我们收集了13岁以下儿童的个人信息，我们将删除该信息。如果您发现我们可能收集了任何此类数据，请通过 <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> 联系我们。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 10. 隐私权利                                                -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section10" class="privacy-section">
+		        <h2>10. 您的隐私权利有哪些？</h2>
+		        <p>简而言之：根据您在美国的居住州或某些地区，如欧洲经济区（EEA）、英国（UK）、瑞士和加拿大，您拥有让您能够更大程度访问和控制您个人信息的权利。您可以根据您所在的国家、省或州随时查阅、更改或终止您的账户。</p>
+		        <p>在某些地区（如EEA、英国、瑞士和加拿大），您根据适用的数据保护法律享有某些权利。这些权利可能包括（i）请求访问并获得您个人信息的副本，（ii）请求更正或删除，（iii）限制对您个人信息的处理，（iv）如适用，数据可携带权，以及（v）不受自动化决策约束的权利。在某些情况下，您还可能有权反对处理您的个人信息。您可以通过下文"您如何就本政策联系我们？"部分提供的联系方式联系我们提出此类请求。</p>
+		        <p>我们将根据适用的数据保护法律审议并处理任何请求。</p>
+		        <p>如果您位于EEA或英国，并且您认为我们非法处理您的个人信息，您还有权向您的成员国数据保护机构或英国数据保护机构投诉。如果您位于瑞士，您可以联系联邦数据保护和信息专员。</p>
+		        <p>撤回您的同意：如果我们依赖您的同意来处理您的个人信息（根据适用法律可能是明示和/或默示同意），您有权随时撤回您的同意。您可以通过下文"您如何就本政策联系我们？"部分提供的联系方式联系我们或更新您的偏好来随时撤回您的同意。</p>
+		        <p>但请注意，这不会影响撤回前处理的合法性，也不影响（在适用法律允许的情况下）依据同意以外的合法处理依据对您个人信息的处理。</p>
+		        <p><strong>账户信息</strong></p>
+		        <p>如果您想随时查看或更改您账户中的信息或终止您的账户，您可以：· 登录您的账户设置并更新您的用户账户。· 使用提供的联系信息联系我们。在您请求终止账户后，我们将停用或删除您的账户以及我们活动数据库中的信息。但是，我们可能在我们文件中保留一些信息以防止欺诈、排查问题、协助任何调查、执行我们的法律条款和/或遵守适用的法律要求。Cookie和类似技术：大多数Web浏览器默认设置为接受Cookie。如果您愿意，通常可以选择将浏览器设置为删除Cookie和拒绝Cookie。如果您选择删除或拒绝Cookie，这可能会影响我们服务的某些功能或服务。如果您对您的隐私权利有疑问或意见，您可以发送邮件至 <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> 联系我们。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 11. DNT                                                     -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section11" class="privacy-section">
+		        <h2>11. 请勿追踪（DNT）功能的控制</h2>
+		        <p>大多数Web浏览器和一些移动操作系统及移动应用程序包含您可激活的"请勿追踪"（DNT）功能或设置，以表明您的隐私偏好，即不希望有关您在线浏览活动的数据被监控和收集。目前，尚无统一的识别和实施DNT信号的技术标准。因此，我们目前不响应DNT浏览器信号或任何其他自动传达您选择不被在线跟踪的机制。如果将来我们须遵循在线跟踪标准，我们将在本隐私政策的修订版本中告知您相关做法。</p>
+		        <p>加利福尼亚州法律要求我们告知您我们如何响应Web浏览器DNT信号。由于目前尚无识别或响应DNT信号的行业或法律标准，我们目前不响应它们。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 12. 美国居民                                               -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section12" class="privacy-section">
+		        <h2>12. 美国居民是否有特定的隐私权利？</h2>
+		        <p>简而言之：如果您是加利福尼亚州、科罗拉多州、康涅狄格州、特拉华州、佛罗里达州、印第安纳州、爱荷华州、肯塔基州、马里兰州、明尼苏达州、蒙大拿州、内布拉斯加州、新罕布什尔州、新泽西州、俄勒冈州、罗德岛州、田纳西州、德克萨斯州、犹他州或弗吉尼亚州的居民，您可能有权请求访问并获取我们持有的关于您的个人信息的详细信息以及我们如何处理它，更正不准确之处，获取副本，或删除您的个人信息。您也可能有权撤回您对我们处理您个人信息的同意。这些权利在某些情况下可能受适用法律限制。更多信息如下。</p>
+		        <p><strong>我们收集的个人信息类别</strong> 下表显示了我们在过去十二（12）个月内收集的个人信息类别。该表包含每个类别的示例性说明，并非反映我们从您处收集的所有个人信息。有关我们处理的所有个人信息的完整清单，请参阅"我们收集哪些信息？"部分。</p>
+		        <table class="data-table">
+		            <thead>
+		                <tr><th>类别</th><th>示例</th><th>是否收集</th></tr>
+		            </thead>
+		            <tbody>
+		                <tr><td>A. 标识符</td><td>联系方式，如真实姓名、别名、邮寄地址、电话或移动联系方式、唯一个人标识符、在线标识符、互联网协议地址、电子邮箱地址和账户名称</td><td>是（姓名和邮箱可选，未经验证）</td></tr>
+		                <tr><td>B. 加利福尼亚客户记录法规定义的个人信息</td><td>姓名、联系方式、教育、就业、雇佣历史和财务信息</td><td>是</td></tr>
+		                <tr><td>C. 州或联邦法律保护的分类特征</td><td>性别、年龄、出生日期、种族和民族、国籍、婚姻状况和其他人口统计数据</td><td>是（仅性别和出生日期，未经验证）</td></tr>
+		                <tr><td>D. 商业信息</td><td>交易信息、购买历史、财务详细信息和支付信息</td><td>否</td></tr>
+		                <tr><td>E. 生物特征信息</td><td>指纹和声纹</td><td>否</td></tr>
+		                <tr><td>F. 互联网或其他类似网络活动</td><td>浏览历史、搜索历史、在线行为、兴趣数据以及与我们和其他网站、应用程序、系统和广告的互动</td><td>是</td></tr>
+		                <tr><td>G. 地理位置数据</td><td>设备位置</td><td>是</td></tr>
+		                <tr><td>H. 音频、电子、感官或类似信息</td><td>与我们业务相关的图像和音频、视频或通话录音</td><td>否</td></tr>
+		                <tr><td>I. 专业或就业相关信息</td><td>为在业务层面向您提供服务所需的业务联系方式或职位、工作经历以及您向我们申请职位时的专业资格</td><td>否</td></tr>
+		                <tr><td>J. 教育信息</td><td>学生记录和目录信息</td><td>否</td></tr>
+		                <tr><td>K. 推断得出的信息</td><td>从上述收集的个人信息中推断得出的关于个人偏好和特征的画像或摘要</td><td>否</td></tr>
+		                <tr><td>L. 敏感个人信息</td><td></td><td>否</td></tr>
+		            </tbody>
+		        </table>
+		        <p>我们还可能通过您亲自、在线、通过电话或邮件与我们互动的以下情况收集这些类别之外的其它个人信息：· 通过我们的客户支持渠道获得帮助；· 参与客户调查或竞赛；以及· 帮助我们提供服务并回复您的咨询。</p>
+		        <p>我们将在提供服务所需的时间内使用和保留所收集的个人信息，或用于：· 类别A — 用户拥有我们账户期间 · 类别B — 用户拥有我们账户期间 · 类别C — 用户拥有我们账户期间 · 类别F — 用户拥有我们账户期间 · 类别G — 用户拥有我们账户期间</p>
+		        <p>个人信息来源 更多关于我们收集的个人信息来源的信息，请参阅"我们收集哪些信息？"</p>
+		        <p>我们如何使用和共享个人信息 更多关于我们如何使用您个人信息的信息，请参阅"我们如何处理您的信息？"您的信息是否会与其他人共享？我们可能会根据我们与每个服务提供商之间的书面合同，与服务提供商共享您的个人信息。更多关于我们如何向第三方披露个人信息的信息，请参阅"何时以及与谁共享您的个人信息？"我们可能将您的个人信息用于我们自身的商业目的，例如进行内部研究以进行技术开发和演示。这不被视为"出售"您的个人信息。</p>
+		        <p>在过去十二（12）个月内，我们未出于商业或商业目的向第三方出售或共享任何个人信息。在过去十二（12）个月内，我们出于商业或商业目的向第三方披露了以下类别的个人信息：</p>
+		        <p>我们出于商业或商业目的向其披露个人信息的第三方类别可在"何时以及与谁共享您的个人信息？"中找到。</p>
+		        <p><strong>您的权利</strong> 您根据某些美国州数据保护法享有权利。但这些权利并非绝对，在某些情况下，我们可能依法拒绝您的请求。这些权利包括：· 了解我们是否正在处理您的个人数据的权利 · 访问您的个人数据的权利 · 更正您个人数据中不准确之处 · 请求删除您的个人数据的权利 · 获取您先前与我们共享的个人数据副本的权利 · 因行使您的权利而免受歧视的权利 · 如果您的个人数据被用于定向广告（或加利福尼亚州隐私法定义的共享）、个人数据出售或为做出具有法律或类似重大影响的决策（"画像分析"）而进行的画像分析，则有权选择退出处理您的个人数据</p>
+		        <p>根据您居住的州，您还可能享有以下权利：· 访问正在处理的个人数据类别的权利（根据适用法律，包括明尼苏达州隐私法）· 获取我们向其披露个人数据的第三方类别列表的权利（根据适用法律，包括加利福尼亚州、特拉华州和马里兰州隐私法）· 获取我们向其披露个人数据的特定第三方列表的权利（根据适用法律，包括明尼苏达州和俄勒冈州隐私法）· 获取我们向其出售个人数据的第三方列表的权利（根据适用法律，包括康涅狄格州隐私法）· 审查、理解、质疑以及（取决于您居住地）更正个人数据被画像分析的方式的权利（根据适用法律，包括康涅狄格州和明尼苏达州隐私法）· 限制使用和披露敏感个人数据的权利（根据适用法律，包括加利福尼亚州隐私法）· 选择退出通过语音或面部识别功能收集敏感数据和个人数据的权利（根据适用法律，包括佛罗里达州隐私法）</p>
+		        <p><strong>如何行使您的权利</strong> 要行使这些权利，您可以通过访问 <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a> 或发送邮件至 <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> 联系我们。</p>
+		        <p>根据某些美国州数据保护法，您可以指定授权代理人代表您提出请求。如果授权代理人未提交证明其已根据适用法律获得有效授权代表您行事的证明，我们可能会拒绝其请求。</p>
+		        <p><strong>请求验证</strong> 收到您的请求后，我们需要验证您的身份，以确定您是我们在系统中持有其信息的同一人。我们仅会使用您请求中提供的个人信息来验证您的身份或您提出请求的权限。但是，如果我们无法根据我们已有的信息验证您的身份，我们可能要求您提供额外信息用于验证您的身份以及安全或防欺诈目的。</p>
+		        <p>如果您通过授权代理人提交请求，我们可能需要收集额外信息以在处理请求前验证您的身份，并且代理人需要提供您签署的书面许可，以代表您提交此类请求。</p>
+		        <p><strong>上诉</strong> 根据某些美国州数据保护法，如果我们拒绝就您的请求采取行动，您可以通过发送邮件至 <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> 对我们的决定提出上诉。我们将书面通知您对上诉采取或未采取的任何行动，包括对决定理由的书面解释。如果您的上诉被驳回，您可以向您所在州的检察长提交投诉。</p>
+		        <p><strong>加利福尼亚州"Shine The Light"法</strong></p>
+		        <p>加利福尼亚州民法典第1798.83条，也称为"Shine The Light"法，允许我们作为加利福尼亚州居民的用户每年一次免费请求并获得我们为直接营销目的向第三方披露的个人信息类别（如有）以及我们在上一日历年度共享个人信息的第三方名称和地址。如果您是加利福尼亚州居民并希望提出此类请求，请使用下文"您如何就本政策联系我们？"部分提供的联系方式书面提交您的请求。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 13. 更新                                                    -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section13" class="privacy-section">
+		        <h2>13. 我们是否更新本政策？</h2>
+		        <p>简而言之：是的，我们将根据需要更新本政策以保持符合相关法律。我们可能不时更新本隐私政策。更新版本将显示本隐私政策顶部的更新"修订"日期。如果我们对本隐私政策进行重大更改，我们可能通过显著发布此类更改通知或直接向您发送通知来通知您。我们鼓励您经常查看本隐私政策，以了解我们如何保护您的信息。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 14. 联系我们                                                -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section14" class="privacy-section">
+		        <h2>14. 您如何就本政策联系我们？</h2>
+		        <p>如果您对本政策有疑问或意见，您可以通过 <a href="mailto:contact@dornhub.eu.org" style="color: var(--primary-color);">contact@dornhub.eu.org</a> 发送邮件或访问 <a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a> 联系我们。</p>
+		    </div>
+			
+		    <!-- ============================================================ -->
+		    <!-- 15. 查阅/更新/删除                                          -->
+		    <!-- ============================================================ -->
+		    <div id="zh-section15" class="privacy-section">
+		        <h2>15. 您如何查阅、更新或删除我们收集的数据？</h2>
+		        <p>根据您所在国家或美国居住州的适用法律，您可能有权请求访问我们从您处收集的个人信息、我们如何处理它的详细信息、更正不准确之处或删除您的个人信息。您也可能有权撤回您对我们处理您个人信息的同意。这些权利在某些情况下可能受适用法律限制。要请求查阅、更新或删除您的个人信息，请访问：<a href="https://dornhub.eu.org/contact.html" style="color: var(--primary-color);">https://dornhub.eu.org/contact.html</a>。</p>
+		    </div>
+			
+		</div>
+		<!-- ===== 中文版隐私卡片结束 ===== -->
+    </div>
+	
+	            
+
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('visible', window.scrollY > 300);
+        });
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        document.querySelectorAll('.toc-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                if (targetId && targetId.startsWith('#')) {
+                    document.querySelector(targetId)?.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        setTimeout(() => {
+            const bgType = localStorage.getItem('backgroundType') || 'default';
+            const customBg = localStorage.getItem('customBackground');
+            if (bgType !== 'none' && !document.querySelector('.background-layer')) {
+                const bgLayer = document.createElement('div');
+                bgLayer.className = 'background-layer';
+                bgLayer.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;z-index:-1;pointer-events:none`;
+                if (bgType === 'default') bgLayer.style.backgroundImage = "url('flag.jpg')";
+                else if (bgType === 'random') bgLayer.style.backgroundImage = "url('https://picsum.photos/1920/1080')";
+                else if (bgType === 'custom' && customBg) bgLayer.style.backgroundImage = `url('${customBg}')`;
+                if (bgLayer.style.backgroundImage) document.body.appendChild(bgLayer);
+            }
+        }, 100);
+    </script>
+</body>
+</html>
