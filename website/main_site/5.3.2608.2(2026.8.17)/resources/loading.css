@@ -1,0 +1,227 @@
+/* loading.css - 页面加载遮罩样式 */
+/* 文件位置: http://resources.dorn.rf.gd/loading.css */
+/* 导入主 UI 的动画变量 */
+@import url('ui.css');
+
+/* 加载遮罩容器 */
+#loading-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(230, 230, 230, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity var(--transition-speed) var(--animation-curve);  /* ← 改 */
+    backdrop-filter: blur(10px) saturate(180%) contrast(80%);
+    -webkit-backdrop-filter: blur(50px) saturate(180%) contrast(80%);
+    overflow: hidden;
+    text-align: center;
+}
+
+/* 加载文字容器 */
+.spinner-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 单个文字动画 */
+.spinner-text span {
+    animation: slideUpDown 0.65s infinite alternate ease-in-out;
+}
+
+/* Dorn 文字 */
+#loading-text-1 {
+    margin-left: 10px;
+    font-weight: 700;
+    background-color: transparent;
+    color: var(--loading-text-1-color, #16DA49);
+    font-size: 30px;
+    animation-delay: 0s;
+}
+
+/* Hub 文字 */
+#loading-text-2 {
+    margin-left: 5px;
+    font-weight: 700;
+    height: 42px;
+    color: white;
+    font-size: 30px;
+    background-color: var(--loading-text-2-bg, #16DA49);
+    border-radius: 10px;
+    padding: 0 10px;
+    animation-delay: 0.65s;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* 上下滑动动画 */
+@keyframes slideUpDown {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-30px);
+    }
+}
+
+/* 提示文字 */
+#loading-mask p {
+    margin-top: 20px;
+    color: #000;
+    font-size: 16px;
+}
+
+/* 加载转圈圈动画 */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid var(--primary-color, #16DA49);
+    animation: spin 1s linear infinite;
+    margin: 20px 0;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 中断加载按钮 */
+#stop-button {
+    display: none;
+    background: var(--primary-color, #16DA49);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all var(--transition-speed) var(--animation-curve);
+    box-shadow: 0 1.6px 3.6px 0 var(--shadow-color, rgba(0,0,0,0.1)), 0 0.3px 0.9px 0 var(--shadow-color, rgba(0,0,0,0.1));
+    position: relative;
+    overflow: hidden;
+}
+
+#stop-button:hover {
+    background: #106ebe;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 3.2px 7.2px 0 var(--shadow-color, rgba(0,0,0,0.1)), 0 0.6px 1.8px 0 var(--shadow-color, rgba(0,0,0,0.1));
+}
+
+#stop-button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* 按钮闪光效果（可选） */
+#stop-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s var(--animation-curve);
+}
+
+#stop-button:hover::before {
+    left: 100%;
+}
+
+#stop-button i {
+    margin-right: 8px;
+    font-size: 12px;
+}
+
+/* 中断提示文字 */
+#stop-text {
+    display: none;
+    font-size: 12px;
+    margin: 15px 80px 0;
+    text-align: center;
+    color: var(--text-color, #333);
+    opacity: 0.8;
+    line-height: 1.4;
+    max-width: 300px;
+}
+
+/* 深色主题适配 */
+[data-theme="dark"] #loading-mask {
+    background-color: rgba(30, 30, 30, 0.8);
+}
+
+[data-theme="dark"] #loading-mask p {
+    color: #fff;
+}
+
+[data-theme="dark"] #stop-text {
+    color: #fff;
+}
+
+[data-theme="dark"] .loading-spinner {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    #loading-text-1,
+    #loading-text-2 {
+        font-size: 24px;
+    }
+    
+    #loading-text-2 {
+        height: 34px;
+    }
+    
+    #stop-button {
+        padding: 10px 20px;
+        font-size: 13px;
+    }
+    
+    #stop-text {
+        margin: 15px 40px 0;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    #loading-text-1,
+    #loading-text-2 {
+        font-size: 20px;
+    }
+    
+    #loading-text-2 {
+        height: 28px;
+    }
+    
+    .spinner-text {
+        flex-direction: column;
+    }
+    
+    #loading-text-1 {
+        margin-left: 0;
+        margin-bottom: 10px;
+    }
+    
+    #loading-text-2 {
+        margin-left: 0;
+    }
+    
+    @keyframes slideUpDown {
+        0% {
+            transform: translateY(0);
+        }
+        100% {
+            transform: translateY(-20px);
+        }
+    }
+}
