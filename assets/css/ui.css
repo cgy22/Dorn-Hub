@@ -1,5 +1,4 @@
 /* ui.css - 统一UI样式与动画效果 */
-/* 文件位置: http://resources.dorn.rf.gd/ui.css */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap');
 
 /* ==================== 全局变量 ==================== */
@@ -761,6 +760,171 @@ button {
     background: var(--border-color);
     cursor: not-allowed;
     transform: none;
+}
+
+/* ==================== 文件夹卡片样式 ==================== */
+
+/* 文件夹卡片 - 与普通卡片基本一致，但点击行为不同 */
+.card.folder-card {
+    cursor: pointer;
+    position: relative;
+}
+
+.card.folder-card .folder-toggle-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--secondary-color);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 1;
+    transition: all 0.4s var(--animation-curve);
+    color: var(--text-color);
+    z-index: 2;
+}
+
+.card.folder-card .folder-toggle-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.card.folder-card .folder-toggle-btn .folder-arrow {
+    transition: transform 0.4s var(--animation-curve);
+    font-size: 14px;
+}
+
+.card.folder-card .folder-toggle-btn .folder-arrow.rotated {
+    transform: rotate(180deg);
+}
+
+/* 文件夹子项容器 - 使用 grid-template-rows 实现平滑展开动画（复用 departments.html 机制） */
+.folder-children-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--transition-speed) var(--animation-curve);
+    overflow: hidden;
+}
+
+.folder-children-wrapper.expanded {
+    grid-template-rows: 1fr;
+}
+
+.folder-children-inner {
+    overflow: hidden;
+    padding-top: 16px;
+    padding-bottom: 4px;
+}
+
+/* 子项网格 - 使用较小的卡片，视觉上缩进 */
+.folder-children-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    padding-left: 16px;
+    border-left: 2px solid var(--border-color);
+    position: relative;
+}
+
+.folder-children-grid .card {
+    background: var(--card-bg);
+    border-radius: 6px;
+    box-shadow: 0 1.2px 2.8px 0 var(--shadow-color), 0 0.2px 0.6px 0 var(--shadow-color);
+    padding: 14px 16px;
+    transition: all var(--transition-speed) var(--animation-curve);
+    cursor: pointer;
+    position: relative;
+    border: 1px solid var(--border-color);
+    animation: cardAppear 0.5s var(--animation-curve);
+}
+
+.folder-children-grid .card:hover {
+    box-shadow: 0 3.2px 7.2px 0 var(--shadow-color), 0 0.6px 1.8px 0 var(--shadow-color);
+    background-color: var(--card-hover-color);
+    transform: translateY(-3px) scale(1.01);
+    border-color: var(--primary-color);
+}
+
+.folder-children-grid .card h3 {
+    margin: 0 0 6px 0;
+    color: var(--primary-color);
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color var(--transition-speed) var(--animation-curve);
+}
+
+.folder-children-grid .card p {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 12px;
+    word-break: break-all;
+    opacity: 0.7;
+    transition: color var(--transition-speed) var(--animation-curve);
+}
+
+.folder-children-grid .card .pin-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.4s var(--animation-curve);
+    color: white;
+    font-size: 12px;
+}
+
+.folder-children-grid .card:hover .pin-btn {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.folder-children-grid .card .pin-btn:disabled {
+    background: var(--border-color);
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.5;
+}
+
+.folder-children-grid .card .pin-btn:disabled:hover {
+    transform: none;
+}
+
+/* 子项左侧装饰线 - 参考 departments.html 的树状线 */
+.folder-children-grid::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 16px;
+    bottom: 16px;
+    width: 2px;
+    background: var(--border-color);
+}
+
+/* 每个子项前的小横线 */
+.folder-children-grid .card::before {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: 20px;
+    width: 14px;
+    height: 2px;
+    background: var(--border-color);
 }
 
 /* ==================== 固定卡片网格 ==================== */
@@ -1778,6 +1942,17 @@ input:checked + .toggle-slider:before {
     .modal-content {
         width: 95%;
     }
+    
+    /* 移动端文件夹子项样式 */
+    .folder-children-grid {
+        grid-template-columns: 1fr;
+        padding-left: 12px;
+    }
+    
+    .folder-children-grid .card::before {
+        left: -14px;
+        width: 10px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1825,6 +2000,19 @@ input:checked + .toggle-slider:before {
 
     .btn {
         padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    /* 小屏幕子项样式 */
+    .folder-children-grid {
+        padding-left: 8px;
+    }
+    
+    .folder-children-grid .card {
+        padding: 12px 14px;
+    }
+    
+    .folder-children-grid .card h3 {
         font-size: 14px;
     }
 	
