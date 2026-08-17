@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="来自Dorn Hub的𣿅国诸子性格测试。想知道你是哪位𣿅𣿅吗？快来测测你的性格匹配哪位独特的𣿅国人物！Dorn Hub是大𣿅子IP的核心数字平台。">
+    <link rel="icon" href="https://dornhub.eu.org/SatornhLogo.png">
+    
+    <title>你是哪位𣿅𣿅？ - DornTI 性格测试</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <!-- Cookie 同意组件 -->
+    <script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <!-- Turnstile 统一管理模块 -->
+    <script src="/resources/turnstile.js"></script>
+    
+    <!-- 性格测试题库数据 (包含题目、诸子信息、计分矩阵) -->
+    <script src="https://dornhub.eu.org/resources/which-dondon.js"></script>
+    
+    <style>
+        /* 页面特定样式 - 保留原contest.html的功能性样式，并添加性格测试特有样式 */
+        :root {
+            --main-color: #16DA49;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 20px 20px;
+            position: relative;
+            min-height: calc(100vh - 120px);
+        }
+        
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0;
+            margin-bottom: 0;
+            box-shadow: 0 2px 20px var(--shadow-color);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .header-left h1 {
+            color: white;
+        }
+        
+        .quiz-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+            margin: 5px;
+        }
+        
+        .quiz-button:hover {
+            background-color: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .quiz-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .quiz-button:hover::before {
+            left: 100%;
+        }
+        
+        .quiz-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .start-button {
+            padding: 15px 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .start-button:hover {
+            background-color: #0f8f30;
+            transform: scale(1.05);
+        }
+        
+        .section-container {
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .question-container {
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .option {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            transition: all 0.2s var(--animation-curve);
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+        }
+        
+        .option:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .progress-bar {
+            background-color: var(--border-color);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            background-color: var(--primary-color);
+            height: 100%;
+            transition: width 0.3s;
+        }
+        
+        /* 信封揭晓页面样式 */
+        .envelope-container {
+            text-align: center;
+            padding: 60px 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .envelope-container:hover {
+            transform: scale(1.02);
+        }
+        
+        .envelope {
+            font-size: 120px;
+            color: var(--primary-color);
+            filter: drop-shadow(0 10px 20px var(--shadow-color));
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .envelope-text {
+            font-size: 24px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        
+        /* 等待动画页面样式 */
+        .loading-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .loading-spinner-custom {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 20px;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+        
+        .loading-dots {
+            display: inline-block;
+            width: 60px;
+            text-align: left;
+        }
+        
+        .loading-dots::after {
+            content: '';
+            display: inline-block;
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+        
+        .loading-sub {
+            font-size: 14px;
+            color: #888;
+            margin-top: 20px;
+        }
+        
+        /* 结果页面入场动画 */
+        .result-card {
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-image {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .result-image img {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 10px 25px var(--shadow-color);
+            background: var(--card-bg);
+            aspect-ratio: 16 / 9;
+        }
+        
+        /* 多重匹配时的网格布局 */
+        .multi-result-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .multi-result-item {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+        
+        .multi-result-item:hover {
+            transform: translateY(-4px);
+        }
+        
+        .result-name {
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+        
+        .result-match {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .result-desc {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 12px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .tie-badge {
+            text-align: center;
+            background: rgba(var(--primary-color-rgb), 0.15);
+            padding: 12px;
+            border-radius: 40px;
+            margin-bottom: 30px;
+            font-size: 16px;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .restart-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .fixed-buttons {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 760px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 -2px 10px var(--shadow-color);
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px) saturate(180%);
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding-top: 100px; }
+            .quiz-navigation { flex-direction: column; gap: 10px; }
+            .quiz-button { width: 100%; }
+            .fixed-buttons { width: 90%; }
+            .result-image img { max-width: 100%; }
+            .result-name { font-size: 24px; }
+            .multi-result-item { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- 加载遮罩 -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+    
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1 class="ms-fontSize-32 ms-fontWeight-semibold">
+                    <span id="navname1">Dorn</span>
+                    <span id="navname2">测试</span>
+                </h1>
+            </div>
+            <div class="header-right">
+                <!-- LoginModule 会自动注入下拉菜单到这里 -->
+                <a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none; margin-left: 10px;">
+                    <i class="fas fa-home"></i> 主页
+                </a>
+            </div>
+        </div>
+    </header>
+        
+    <div class="container">
+        <!-- 开始界面 -->
+        <div id="start-container" class="start-container" style="text-align: center; padding: 40px 20px;">
+            <div class="start-title" style="font-size: 28px; color: var(--primary-color); margin-bottom: 20px;">
+                <i class="fas fa-user-tag" style="color: var(--primary-color);"></i> 你是哪位𣿅𣿅？
+            </div>
+            <div class="start-info section-container">
+                <h3><i class="fas fa-clipboard-list"></i> 测试说明：</h3>
+                <ul class="rules-list" style="text-align: left; margin: 20px 0;">
+                    <li>本次测试共<strong>45道题目</strong>，请根据第一感觉选择</li>
+                    <li>没有时间限制，无需紧张，放松作答即可</li>
+                    <li>每道题请选择<strong>最符合你日常习惯和想法</strong>的选项</li>
+                    <li>测试结束后，你将匹配一位<strong>𣿅𣿅（𣿅国诸子）</strong></li>
+                    <li>点击信封揭晓你的专属结果！</li>
+                    <li>注意：这些𣿅𣿅们是基于现实抽象出来的角色，其特点可能和你所想有所差别。测试结果仅供娱乐，请勿认真对待。</li>
+                </ul>
+                <p style="color: #666; font-style: italic;">
+                    提示：想深入了解每一位𣿅𣿅？请前往
+                    <a href="https://dornhub.eu.org/cloud" style="color: var(--primary-color);">𣿅国电子文史资料库</a>
+                    阅读《𣿅子集校注》。
+                </p>
+            </div>
+            <button class="start-button" id="start-quiz-btn"><i class="fas fa-play"></i> 开始测试</button>
+            <div style="margin-top: 20px;">
+                <a href="https://dornhub.eu.org/gov-services/id/index.html"><button class="quiz-button"><i class="fas fa-id-card"></i> 前往申领𣿅国绿卡</button></a>
+            </div>
+        </div>
+
+        <!-- 答题界面 -->
+        <div id="quiz-container" style="display: none;">
+            <div class="quiz-header" style="text-align: center; margin-bottom: 30px;">
+                <h2><i class="fas fa-pencil-alt"></i> 性格测试 · 你是哪位𣿅𣿅？</h2>
+                <p>请根据你的真实想法选择最符合的选项</p>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="quiz-progress"></div>
+                </div>
+                <div class="progress-text" id="progress-text">第 1 题 / 共 30 题</div>
+            </div>
+            
+            <div id="question-area"></div>
+            
+            <div class="quiz-navigation" style="display: flex; justify-content: space-between; margin-top: 30px;">
+                <button class="quiz-button" id="prev-btn" disabled><i class="fas fa-arrow-left"></i> 上一题</button>
+                <button class="quiz-button" id="next-btn">下一题 <i class="fas fa-arrow-right"></i></button>
+                <button class="quiz-button" id="submit-quiz-btn" style="display: none;">查看结果</button>
+            </div>
+        </div>
+
+        <!-- 信封揭晓界面 -->
+        <div id="envelope-container" class="section-container" style="display: none; text-align: center;">
+            <div class="envelope-container" id="envelope-click">
+                <div class="envelope">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="envelope-text">
+                    点击查收测试结果
+                </div>
+                <p style="margin-top: 20px; color: #888; font-size: 14px;">✨ 你的𣿅𣿅身份即将揭晓 ✨</p>
+            </div>
+        </div>
+
+        <!-- 等待计算结果界面 -->
+        <div id="loading-result-container" class="section-container" style="display: none; text-align: center;">
+            <div class="loading-container">
+                <div class="loading-spinner-custom"></div>
+                <div class="loading-text">
+                    正在计算结果<span class="loading-dots"></span>
+                </div>
+                <div class="loading-sub">
+                    解析你的性格特征，匹配最佳𣿅𣿅...
+                </div>
+                <div class="loading-sub" id="image-loading-status" style="font-size: 12px; margin-top: 15px;">
+                    准备图片资源中
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果界面 -->
+        <div id="result-container" class="result-container section-container" style="display: none;">
+            <div id="result-content" class="result-card"></div>
+            <br><br><br><br><br>
+            <div class="fixed-buttons">
+                <button class="restart-button" id="restart-btn"><i class="fas fa-redo-alt"></i> 重新测试</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    <script src="https://dornhub.eu.org/resources/login.js"></script>
+    
+    <script>
+        // 性格测试核心逻辑
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let quizQuestions = [];
+        let totalQuestions = 30;
+        let characterScores = {};
+        let characterList = [];
+        let testStarted = false;
+        let cachedResult = null; // 缓存计算结果，避免重复计算
+        
+        // 从全局加载题库
+        function loadTestData() {
+            if (typeof window.characterTestData !== 'undefined') {
+                quizQuestions = window.characterTestData.questions || [];
+                characterList = window.characterTestData.characters || [];
+                totalQuestions = quizQuestions.length;
+                if (totalQuestions === 0) {
+                    console.error('题库加载失败，使用默认占位');
+                    createFallbackData();
+                }
+            } else {
+                console.error('未找到 characterTestData，创建默认数据');
+                createFallbackData();
+            }
+        }
+        
+        function createFallbackData() {
+            quizQuestions = [
+                { text: "周末你更愿意做什么？", options: ["外出运动", "看书追剧", "打游戏", "睡觉"] },
+                { text: "面对 deadline，你通常会？", options: ["提前完成", "按时完成", "拖到最后", "不存在的"] }
+            ];
+            characterList = [
+                { id: "𣿅子", name: "𣿅子", desc: "帝王之才，天赋异禀。", imgUrl: "https://picsum.photos/id/1/640/360" }
+            ];
+            totalQuestions = quizQuestions.length;
+            for (let i = quizQuestions.length; i < 30; i++) {
+                quizQuestions.push({ text: "样例题目" + (i+1), options: ["选项A", "选项B", "选项C", "选项D"] });
+            }
+        }
+        
+        function initScores() {
+            characterScores = {};
+            characterList.forEach(c => { characterScores[c.id] = 0; });
+        }
+        
+        function updateQuizProgress() {
+            const progress = document.getElementById('quiz-progress');
+            const progressText = document.getElementById('progress-text');
+            const percent = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            progress.style.width = `${percent}%`;
+            progressText.textContent = `第 ${currentQuestionIndex + 1} 题 / 共 ${totalQuestions} 题`;
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            const isLast = currentQuestionIndex === totalQuestions - 1;
+            document.getElementById('next-btn').style.display = isLast ? 'none' : 'block';
+            document.getElementById('submit-quiz-btn').style.display = isLast ? 'block' : 'none';
+        }
+        
+        function displayQuestion() {
+            const q = quizQuestions[currentQuestionIndex];
+            if (!q) return;
+            const optionsHTML = q.options.map((opt, idx) => {
+                const isSelected = userAnswers[currentQuestionIndex] === idx;
+                return `<div class="option ${isSelected ? 'selected' : ''}" data-index="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+            }).join('');
+            document.getElementById('question-area').innerHTML = `
+                <div class="question-container section-container">
+                    <div class="question-text" style="font-size: 18px; margin-bottom: 15px;">${q.text}</div>
+                    <div class="options-container" style="display: flex; flex-direction: column; gap: 10px;">${optionsHTML}</div>
+                </div>
+            `;
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.addEventListener('click', function() {
+                    const selected = parseInt(this.getAttribute('data-index'));
+                    userAnswers[currentQuestionIndex] = selected;
+                    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            updateQuizProgress();
+        }
+        
+        // 计算匹配结果
+        function calculateResult() {
+            initScores();
+            for (let i = 0; i < totalQuestions; i++) {
+                const answerIdx = userAnswers[i];
+                if (answerIdx === undefined || answerIdx === null) continue;
+                const qData = quizQuestions[i];
+                if (qData && qData.scores && qData.scores[answerIdx]) {
+                    const scoreMap = qData.scores[answerIdx];
+                    for (let [charId, points] of Object.entries(scoreMap)) {
+                        if (characterScores[charId] !== undefined) {
+                            characterScores[charId] += points;
+                        }
+                    }
+                }
+            }
+            
+            let maxScore = -1;
+            for (let [id, score] of Object.entries(characterScores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                }
+            }
+            
+            let tiedCharacters = [];
+            for (let [id, score] of Object.entries(characterScores)) {
+                if (score === maxScore) {
+                    let char = characterList.find(c => c.id === id);
+                    if (char) tiedCharacters.push(char);
+                }
+            }
+            
+            const maxPossible = 90;
+            let matchPercent = Math.round((maxScore / maxPossible) * 100);
+            matchPercent = Math.min(99, Math.max(65, matchPercent));
+            
+            return { 
+                characters: tiedCharacters,
+                matchRate: matchPercent, 
+                isTie: tiedCharacters.length > 1,
+                score: maxScore 
+            };
+        }
+        
+        // 预加载所有匹配角色的图片
+        function preloadCharacterImages(characters, onComplete) {
+            let loadedCount = 0;
+            const total = characters.length;
+            const statusEl = document.getElementById('image-loading-status');
+            
+            if (total === 0) {
+                if (onComplete) onComplete();
+                return;
+            }
+            
+            characters.forEach((char, idx) => {
+                const imgUrl = char.imgUrl || `https://picsum.photos/id/1/640/360`;
+                const img = new Image();
+                img.onload = () => {
+                    loadedCount++;
+                    if (statusEl) {
+                        statusEl.textContent = `加载图片资源 ${loadedCount}/${total}`;
+                    }
+                    if (loadedCount === total && onComplete) {
+                        onComplete();
+                    }
+                };
+                img.onerror = () => {
+                    // 即使加载失败也继续
+                    loadedCount++;
+                    if (statusEl) {
+                        statusEl.textContent = `加载图片资源 ${loadedCount}/${total}`;
+                    }
+                    if (loadedCount === total && onComplete) {
+                        onComplete();
+                    }
+                };
+                img.src = imgUrl;
+            });
+        }
+        
+        // 生成结果HTML（不包含图片预加载）
+        function generateResultHTML(result) {
+            const matchedChars = result.characters;
+            const matchRate = result.matchRate;
+            const isTie = result.isTie;
+            
+            if (isTie) {
+                let html = `
+                    <div class="tie-badge">
+                        ✨ 多重匹配 · 你的性格同时对应 ${matchedChars.length} 位𣿅𣿅 ✨
+                    </div>
+                    <div class="multi-result-grid">
+                `;
+                matchedChars.forEach(char => {
+                    const imgUrl = char.imgUrl || `https://picsum.photos/id/1/640/360`;
+                    html += `
+                        <div class="multi-result-item">
+                            <div class="result-image">
+                                <img src="${imgUrl}" alt="${char.name}" onerror="this.src='https://picsum.photos/id/1/640/360'">
+                            </div>
+                            <div class="result-name">${char.name}</div>
+                            
+                            <div class="result-desc">
+                                <strong>✨ 关于${char.name} ✨</strong><br><br>
+                                ${char.desc}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                return html;
+            } else {
+                const char = matchedChars[0];
+                const imgUrl = char.imgUrl || `https://picsum.photos/id/1/640/360`;
+                return `
+                    <div class="result-image">
+                        <img src="${imgUrl}" alt="${char.name}" onerror="this.src='https://picsum.photos/id/1/640/360'">
+                    </div>
+                    <div class="result-name">${char.name}</div>
+                    
+                    <div class="result-desc">
+                        <strong>✨ 关于你 ✨</strong><br><br>
+                        ${char.desc}
+                    </div>
+                `;
+            }
+        }
+        
+        function showEnvelope() {
+            document.getElementById('start-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('envelope-container').style.display = 'block';
+            document.getElementById('loading-result-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'none';
+        }
+        
+        // 点击信封后的处理：显示加载动画，计算结果，预加载图片，然后显示结果
+        function onEnvelopeClick() {
+            // 隐藏信封界面，显示加载界面
+            document.getElementById('envelope-container').style.display = 'none';
+            document.getElementById('loading-result-container').style.display = 'block';
+            
+            // 计算结果（可以加一点延迟让动画看起来更自然）
+            setTimeout(() => {
+                const result = calculateResult();
+                cachedResult = result;
+                
+                // 获取需要加载图片的角色列表
+                const charactersToLoad = result.characters;
+                
+                // 预加载所有匹配角色的图片
+                preloadCharacterImages(charactersToLoad, () => {
+                    // 图片加载完成，显示结果页面
+                    const resultHTML = generateResultHTML(cachedResult);
+                    document.getElementById('result-content').innerHTML = resultHTML;
+                    document.getElementById('loading-result-container').style.display = 'none';
+                    document.getElementById('result-container').style.display = 'block';
+                    
+                    const resultCard = document.querySelector('.result-card');
+                    if (resultCard) {
+                        resultCard.style.animation = 'none';
+                        resultCard.offsetHeight;
+                        resultCard.style.animation = 'fadeInUp 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards';
+                    }
+                });
+            }, 200);
+        }
+        
+        function startQuiz() {
+            if (!quizQuestions.length) loadTestData();
+            userAnswers = new Array(totalQuestions).fill(null);
+            currentQuestionIndex = 0;
+            initScores();
+            cachedResult = null;
+            displayQuestion();
+            document.getElementById('start-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('envelope-container').style.display = 'none';
+            document.getElementById('loading-result-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'none';
+            testStarted = true;
+        }
+        
+        function nextQuestion() {
+            if (userAnswers[currentQuestionIndex] === undefined || userAnswers[currentQuestionIndex] === null) {
+                alert('请先选择答案');
+                return;
+            }
+            if (currentQuestionIndex < totalQuestions - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+        
+        function submitQuiz() {
+            if (userAnswers[currentQuestionIndex] === undefined || userAnswers[currentQuestionIndex] === null) {
+                alert('请先完成当前题目');
+                return;
+            }
+            for (let i = 0; i < totalQuestions; i++) {
+                if (userAnswers[i] === undefined || userAnswers[i] === null) {
+                    alert(`请先完成第 ${i+1} 题后再提交`);
+                    currentQuestionIndex = i;
+                    displayQuestion();
+                    return;
+                }
+            }
+            showEnvelope();
+        }
+        
+        function restartTest() {
+            startQuiz();
+        }
+        
+        // 页面加载完成
+        window.onload = function() {
+            // 初始化 LoginModule
+            LoginModule.init('.header-right');
+            
+            // 监听登录事件
+            document.addEventListener('userLoggedIn', function(e) {
+                if (window.UI && UI.success) {
+                    UI.success('登录成功！');
+                }
+            });
+            
+            document.addEventListener('userLoggedOut', function() {
+                if (window.UI && UI.info) {
+                    UI.info('已退出登录');
+                }
+            });
+            
+            // 加载测试数据
+            loadTestData();
+            initScores();
+            
+            // 初始化界面
+            document.getElementById('start-container').style.display = 'block';
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('envelope-container').style.display = 'none';
+            document.getElementById('loading-result-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'none';
+            
+            // 事件绑定
+            document.getElementById('start-quiz-btn').addEventListener('click', startQuiz);
+            document.getElementById('prev-btn').addEventListener('click', prevQuestion);
+            document.getElementById('next-btn').addEventListener('click', nextQuestion);
+            document.getElementById('submit-quiz-btn').addEventListener('click', submitQuiz);
+            document.getElementById('restart-btn').addEventListener('click', restartTest);
+            document.getElementById('envelope-click').addEventListener('click', onEnvelopeClick);
+            
+            setTimeout(() => {
+                let mask = document.getElementById('loading-mask');
+                if (mask) mask.style.display = 'none';
+            }, 800);
+        };
+    </script>
+</body>
+</html>

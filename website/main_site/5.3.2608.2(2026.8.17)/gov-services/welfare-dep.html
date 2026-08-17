@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="若您的账户资金已耗尽或不足，当公民资金归零或负债时，可向福利部提交困难救助申请，经审核后将获得+50𣿅元的基础救助金。Dorn Hub是大𣿅子IP的核心数字平台，也是用户进入𣿅国世界的第一道大门。">
+    <link rel="icon" href="https://dornhub.eu.org/SatornhLogo.png">
+    <title>𣿅国福利部 - Dorn Hub</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <!-- Cookie 同意组件 -->
+    <script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <!-- Turnstile 统一管理模块 -->
+    <script src="https://dornhub.eu.org/resources/turnstile.js"></script>
+    
+    <style>
+        /* 页面特定样式 */
+        body {
+            font-family: 'Noto Sans SC', var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 20px 20px;
+        }
+        
+        /* 申请书内容区域 - 禁止复制 */
+        .application-text {
+            background: rgba(var(--primary-color-rgb), 0.05);
+            border-left: 4px solid var(--primary-color);
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            line-height: 1.9;
+            color: var(--text-color);
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .application-text p {
+            margin-bottom: 15px;
+        }
+        
+        .warning-box {
+            background: rgba(209, 52, 56, 0.1);
+            border: 1px solid rgba(209, 52, 56, 0.3);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #d13438;
+        }
+        
+        .warning-box i {
+            font-size: 24px;
+        }
+        
+        .funds-display {
+            text-align: center;
+            padding: 15px;
+            background: var(--secondary-color);
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 20px;
+        }
+        
+        .funds-display .funds-amount {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 28px;
+        }
+        
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
+        /* 成功弹窗内容 */
+        .success-content {
+            text-align: center;
+            padding: 10px 0;
+        }
+        
+        .success-content i {
+            font-size: 64px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .success-content h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .success-content p {
+            margin-bottom: 10px;
+        }
+        
+        .new-funds {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 15px 0;
+        }
+        
+        /* 提示框样式 */
+        .notice-box {
+            background: rgba(var(--primary-color-rgb), 0.08);
+            border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notice-box i {
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        /* Insider徽章 */
+        .insider-badge {
+            display: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: rgba(var(--primary-color-rgb), 0.1);
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+            vertical-align: middle;
+            animation: fadeIn 0.7s var(--animation-curve);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+            }
+            
+            .application-text {
+                padding: 18px 20px;
+                font-size: 14px;
+            }
+            
+            .warning-box {
+                font-size: 13px;
+            }
+            
+            .header-right {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 加载遮罩 -->
+<div id="loading-mask">
+    <div class="spinner-text">
+        <span id="loading-text-1">Dorn</span>
+        <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+    </div>
+    <br>
+    <p>好东西就要来了……</p>
+    <br>
+    <div class="loading-spinner"></div>
+    <br>
+    <br>
+    <button class="btn" id="stop-button">
+        <i class="fas fa-stop-circle"></i> 中断加载
+    </button>
+    <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+</div>
+
+<header>
+    <div class="header-content">
+        <div class="header-left">
+            <h1 class="ms-fontSize-32 ms-fontWeight-semibold">
+                <span id="navname1">𣿅国</span>
+                <span id="navname2">福利部</span>
+                <span class="insider-badge" id="insiderBadge">Insider</span>
+            </h1>
+        </div>
+        <div class="header-right">
+            <!-- LoginModule 会自动注入下拉菜单到这里 -->
+            <a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none;">
+                <i class="fas fa-home"></i> 主页
+            </a>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <!-- 资金显示卡片 -->
+    <div class="section-container">
+        <div class="funds-display">
+            <i class="fas fa-coins" style="color: var(--primary-color); font-size: 24px; margin-right: 10px;"></i>
+            当前𣿅元余额：
+            <span class="funds-amount" id="currentFunds">--</span>
+            <span> 𣿅元</span>
+        </div>
+        
+        <div class="warning-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>若您的账户资金已耗尽或不足，当公民资金归零或负债时，可向福利部提交困难救助申请，经审核后将获得+50𣿅元的基础救助金。</div>
+        </div>
+    </div>
+
+    <!-- 申请书填写区域 -->
+    <div class="section-container">
+        <h2 style="text-align: center; margin-bottom: 20px; color: var(--primary-color);">
+            <i class="fas fa-pen-alt"></i> 困难救助申请书
+        </h2>
+        
+        <form id="welfareForm" data-turnstile="#turnstileContainer">
+            <div class="form-group">
+                <label for="idNumber"><i class="fas fa-id-card"></i> 𣿅国身份证号</label>
+                <input type="text" id="idNumber" placeholder="请输入您的身份证件号" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> 账户密码</label>
+                <input type="password" id="password" placeholder="请输入密码以确认身份" required>
+            </div>
+            
+            <!-- 忏悔与感恩文本（约200字，合并为一段，无表情包，禁止复制） -->
+            <div class="application-text" 
+                 oncontextmenu="return false" 
+                 oncopy="return false" 
+                 ondragstart="return false" 
+                 onselectstart="return false">
+                <p>我在此深刻反省自己在收支管理上的失职与懈怠。由于缺乏对𣿅元的合理规划，未能做到量入为出、节俭持家，致使个人账户资金归零，不得不向国家福利系统求助。我为自己的不当消费行为感到无比羞愧，辜负了𣿅国对每一位公民自食其力、勤俭节约的殷切期望。我的资金亏空不仅给国家财政带来了额外负担，也占用了本该用于其他困难同胞的公共资源。我郑重承诺，今后必将厉行节约，重建健康的财务习惯，绝不让此类情况再次发生。𣿅国福利部雪中送炭，在我最困难的时候伸出援手。感谢伟大的𣿅国总统创建了如此完善的福利体系，让每一位陷入困境的公民都能感受到国家的温暖与关怀。福利救助金不仅缓解了我眼前的经济危机，更让我重新燃起对生活的希望。我将铭记这份恩情，在未来有能力之时积极回馈社会，为国家建设贡献自己的力量。𣿅国万岁！</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="confession"><i class="fas fa-heart"></i> 请认真阅读上方文字后，在下方抄写确认</label>
+                <textarea id="confession" rows="8" placeholder="请在此处完整抄写上方的忏悔与感恩文字，以表明您的诚意……" required></textarea>
+                <div class="char-counter">
+                    已输入 <span id="charCount">0</span> 字符
+                </div>
+            </div>
+            
+            <!-- Cloudflare Turnstile 人机验证组件 -->
+            <div class="form-group">
+                <div id="turnstileContainer"></div>
+                <small style="color: var(--text-secondary);">请完成人机验证</small>
+            </div>
+            
+            <div class="form-actions" style="display: flex; gap: 15px; justify-content: center; margin-top: 25px;">
+                <button type="button" class="btn btn-secondary" id="cancelBtn" onclick="history.back()">
+                    <i class="fas fa-times"></i> 放弃救助
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-hand-holding-heart"></i> 提交救助申请
+                </button>
+            </div>
+        </form>
+    </div>
+    
+
+</div>
+
+<!-- 成功模态框 -->
+<div class="modal" id="successModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2><i class="fas fa-check-circle" style="color: var(--primary-color);"></i> 申请已通过</h2>
+            <button class="close-btn" id="closeSuccessModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="success-content">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h3>𣿅国福利部审核通过</h3>
+                <p>您的困难救助申请已经批准。</p>
+                <p>救助金已发放至您的账户：</p>
+                <div class="new-funds" id="newFundsDisplay">50.00 𣿅元</div>
+                <p>请您珍惜这份来自国家的温暖，合理规划开支，早日实现财务自足。</p>
+                <p style="margin-top: 15px; font-size: 13px; opacity: 0.7;">页面即将跳转回主页……</p>
+            </div>
+        </div>
+        <div class="form-actions" style="margin: 0; padding: 16px 20px; border-top: 1px solid var(--border-color);">
+            <button class="btn btn-primary" id="redirectBtn">立即返回主页</button>
+        </div>
+    </div>
+</div>
+
+<!-- 错误模态框 -->
+<div class="modal" id="errorModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 style="color: #d13438;"><i class="fas fa-exclamation-triangle"></i> 申请失败</h2>
+            <button class="close-btn" id="closeErrorModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="errorMessage">请稍后重试。</p>
+        </div>
+        <div class="form-actions" style="margin: 0; padding: 16px 20px; border-top: 1px solid var(--border-color);">
+            <button class="btn btn-primary" id="confirmErrorBtn">确定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 统一UI脚本 -->
+<script src="https://dornhub.eu.org/resources/ui.js"></script>
+<script src="https://dornhub.eu.org/resources/login.js"></script>
+
+<script>
+    // API端点
+    const API_BASE = 'https://dornhub.eu.org/php';
+    const QUERY_CITIZEN_API = API_BASE + '/query_citizen.php';
+    const RESET_FUNDS_API = 'reset_funds.php';
+    
+    // 用户状态（由 LoginModule 管理）
+    let currentUser = null;
+    let isLoggedIn = false;
+    
+    // 页面加载时检查登录状态
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化 LoginModule
+        LoginModule.init('.header-right');
+        
+        // 监听登录事件
+        document.addEventListener('userLoggedIn', function(e) {
+            currentUser = e.detail.user;
+            isLoggedIn = true;
+            updateUserDisplay();
+            loadUserFunds();
+            if (window.UI && UI.success) {
+                UI.success('登录成功！');
+            }
+        });
+        
+        document.addEventListener('userLoggedOut', function() {
+            currentUser = null;
+            isLoggedIn = false;
+            updateUserDisplay();
+            if (window.UI && UI.info) {
+                UI.info('已退出登录');
+            }
+        });
+        
+        // 检查已有登录状态
+        if (LoginModule.isLoggedIn()) {
+            currentUser = LoginModule.getCurrentUser();
+            isLoggedIn = true;
+        }
+        
+        // 更新显示
+        updateUserDisplay();
+        loadUserFunds();
+        
+        // 初始化事件
+        initEventListeners();
+        
+        // 字符计数
+        const confessionTextarea = document.getElementById('confession');
+        const charCountSpan = document.getElementById('charCount');
+        
+        if (confessionTextarea) {
+            confessionTextarea.addEventListener('input', function() {
+                charCountSpan.textContent = this.value.length;
+            });
+        }
+    });
+    
+    // ==================== 用户相关函数 ====================
+    function updateUserDisplay() {
+        // LoginModule 自动处理下拉菜单显示，这里只更新页面特定元素
+        const insiderBadges = document.querySelectorAll('.insider-badge');
+        
+        if (isLoggedIn && currentUser) {
+            insiderBadges.forEach(b => b.style.display = 'inline-block');
+            
+            // 自动填充身份证号
+            if (currentUser.id_number) {
+                const idInput = document.getElementById('idNumber');
+                if (idInput) idInput.value = currentUser.id_number;
+            }
+        } else {
+            insiderBadges.forEach(b => b.style.display = 'none');
+        }
+    }
+    
+    function loadUserFunds() {
+        const fundsSpan = document.getElementById('currentFunds');
+        if (!fundsSpan) return;
+        
+        if (isLoggedIn && currentUser && currentUser.funds !== undefined) {
+            const funds = parseFloat(currentUser.funds) || 0;
+            fundsSpan.textContent = funds.toFixed(2);
+        } else {
+            fundsSpan.textContent = '--';
+        }
+    }
+    
+    // ==================== 救助申请处理 ====================
+    async function handleSubmit(e) {
+        e.preventDefault();
+        
+        // 检查是否已登录
+        if (!isLoggedIn || !currentUser) {
+            showError('请先登录后再提交救助申请');
+            LoginModule.showLoginModal();
+            return;
+        }
+        
+        const idNumber = document.getElementById('idNumber').value.trim();
+        const password = document.getElementById('password').value;
+        const confession = document.getElementById('confession').value.trim();
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // 基础验证
+        if (!idNumber || !password) {
+            showError('请填写完整的身份证号和密码');
+            return;
+        }
+        
+        // 验证是否填写了正确的忏悔文字（与上方展示的文字对比）
+        if (confession.length < 50) {
+            showError('请认真抄写上方的忏悔与感恩文字，以表明您的诚意。');
+            return;
+        }
+        
+        // 获取 Turnstile token
+        const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+        if (!turnstileToken) {
+            showError('请完成人机验证（点击"我不是机器人"复选框）。');
+            return;
+        }
+        
+        // 禁用按钮防止重复提交
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> 提交审核中...';
+        
+        try {
+            // 第一步：验证用户身份并获取当前资金
+            const queryResponse = await fetch(QUERY_CITIZEN_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_number: idNumber, password: password })
+            });
+            
+            const queryResult = await queryResponse.json();
+            
+            if (!queryResult.success || !queryResult.data) {
+                showError('身份验证失败：' + (queryResult.error || '身份证号或密码错误'));
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> 提交救助申请';
+                return;
+            }
+            
+            const citizen = queryResult.data;
+            const currentFunds = parseFloat(citizen.funds || 0);
+            
+            // 检查是否符合救助条件（资金≤0）
+            if (currentFunds > 0.01) {
+                showError(`您的当前余额为 ${currentFunds.toFixed(2)} 𣿅元，尚未耗尽。根据规定，仅当资金归零时方可申请救助。请合理使用现有资金。`);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> 提交救助申请';
+                return;
+            }
+            
+            // 第二步：提交救助申请（重置资金）
+            const resetResponse = await fetch(RESET_FUNDS_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_number: idNumber,
+                    password: password,
+                    confession: confession,
+                    turnstile_token: turnstileToken
+                })
+            });
+            
+            const resetResult = await resetResponse.json();
+            
+            if (resetResult.success) {
+                // 更新本地存储的用户资金
+                if (currentUser && currentUser.id_number === idNumber) {
+                    currentUser.funds = resetResult.new_funds || 50.00;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    // 刷新 LoginModule
+                    LoginModule.refresh();
+                    loadUserFunds();
+                }
+                
+                // 显示成功模态框
+                const newFundsSpan = document.getElementById('newFundsDisplay');
+                if (newFundsSpan) {
+                    newFundsSpan.textContent = (resetResult.new_funds || 50.00).toFixed(2) + ' 𣿅元';
+                }
+                document.getElementById('successModal').style.display = 'flex';
+                
+                if (typeof UI !== 'undefined') {
+                    UI.success('救助申请已通过！您的账户已收到50𣿅元救助金。');
+                }
+                
+                // 5秒后自动跳转
+                setTimeout(function() {
+                    if (document.getElementById('successModal').style.display === 'flex') {
+                        redirectToHome();
+                    }
+                }, 5000);
+            } else {
+                showError(resetResult.error || '救助申请失败，请稍后重试');
+            }
+            
+        } catch (error) {
+            console.error('提交申请失败:', error);
+            showError('网络错误，请稍后重试');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> 提交救助申请';
+            
+            // 重置 Turnstile
+            if (typeof turnstile !== 'undefined') {
+                turnstile.reset();
+            }
+        }
+    }
+    
+    function showError(message) {
+        const errorMsgSpan = document.getElementById('errorMessage');
+        if (errorMsgSpan) {
+            errorMsgSpan.textContent = message;
+        }
+        document.getElementById('errorModal').style.display = 'flex';
+        
+        if (typeof UI !== 'undefined') {
+            UI.error(message);
+        }
+    }
+    
+    function redirectToHome() {
+        window.location.href = 'https://dornhub.eu.org';
+    }
+    
+    // ==================== 事件绑定 ====================
+    function initEventListeners() {
+        // 表单提交
+        const welfareForm = document.getElementById('welfareForm');
+        if (welfareForm) {
+            welfareForm.addEventListener('submit', handleSubmit);
+        }
+        
+        // 模态框关闭事件
+        const closeSuccessModal = document.getElementById('closeSuccessModal');
+        const closeErrorModal = document.getElementById('closeErrorModal');
+        const confirmErrorBtn = document.getElementById('confirmErrorBtn');
+        const redirectBtn = document.getElementById('redirectBtn');
+        
+        if (closeSuccessModal) {
+            closeSuccessModal.addEventListener('click', function() {
+                document.getElementById('successModal').style.display = 'none';
+                redirectToHome();
+            });
+        }
+        
+        if (redirectBtn) {
+            redirectBtn.addEventListener('click', function() {
+                document.getElementById('successModal').style.display = 'none';
+                redirectToHome();
+            });
+        }
+        
+        if (closeErrorModal) {
+            closeErrorModal.addEventListener('click', function() {
+                document.getElementById('errorModal').style.display = 'none';
+            });
+        }
+        
+        if (confirmErrorBtn) {
+            confirmErrorBtn.addEventListener('click', function() {
+                document.getElementById('errorModal').style.display = 'none';
+            });
+        }
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            const successModal = document.getElementById('successModal');
+            const errorModal = document.getElementById('errorModal');
+            
+            if (e.target === successModal) {
+                successModal.style.display = 'none';
+                redirectToHome();
+            }
+            if (e.target === errorModal) errorModal.style.display = 'none';
+        });
+    }
+</script>
+</body>
+</html>

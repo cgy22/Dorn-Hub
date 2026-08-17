@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="description" content="来自Dorn Hub的反应测试小游戏。让武宗子尽可能高地抛出水壶，并在水壶落下时准确接住。抛得越高，接住越难，奖励越多！“高投资，高风险，高收益！”Dorn Hub是大𣿅子IP的核心数字平台，也是用户进入𣿅国世界的第一道大门。">
+    <title>武宗子抛水壶</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫖</text></svg>">
+    
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <script src="https://dornhub.eu.org/resources/achievements.js"></script>
+	<!-- Cookie 同意组件 -->
+	<script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+	<!-- Cloudflare Turnstile -->
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+	<!-- Turnstile 统一管理模块 -->
+	<script src="/resources/turnstile.js"></script>
+    
+    <style>
+        .game-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            background: #000;
+        }
+        
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+        
+        .game-ui {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .game-panel {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .height-display .value {
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .charge-bar-container {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 15;
+        }
+        
+        .charge-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #16DA49, #ffd700, #ff6b35);
+            width: 0%;
+            transition: width 0.01s linear;
+        }
+        
+        .control-buttons-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .control-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-btn:active {
+            transform: scale(0.92);
+        }
+        
+        .control-btn.special {
+            background: #ff6b35;
+        }
+        
+        .player-arrow {
+            position: absolute;
+            bottom: 110px;
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 24px solid #ff6b35;
+            transform: translateX(-50%);
+            transition: left 0.05s linear;
+            pointer-events: none;
+            z-index: 20;
+        }
+        
+        /* 底部固定箭头 */
+        .bottom-arrow-container {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        
+        .bottom-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid #ff6b35;
+            transform: translateX(-50%);
+            transition: left 0.05s linear;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        
+        .bottom-arrow-label {
+            position: absolute;
+            bottom: 35px;
+            color: white;
+            font-size: 10px;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 6px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+        
+        .shop-panel {
+            position: absolute;
+            top: 80px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            min-width: 140px;
+            pointer-events: auto;
+            z-index: 10;
+        }
+        
+        .shop-title {
+            color: white;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            font-size: 11px;
+            color: white;
+        }
+        
+        .shop-item-price {
+            color: #ffd700;
+        }
+        
+        .shop-buy-btn {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        
+        .achievement-toggle {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 6px 12px;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+            z-index: 10;
+        }
+        
+        @keyframes intenseShake {
+            0% { transform: translate(0, 0); }
+            5% { transform: translate(-15px, -10px); }
+            10% { transform: translate(15px, 10px); }
+            15% { transform: translate(-12px, -8px); }
+            20% { transform: translate(12px, 8px); }
+            25% { transform: translate(-9px, -5px); }
+            30% { transform: translate(9px, 5px); }
+            35% { transform: translate(-6px, -3px); }
+            40% { transform: translate(6px, 3px); }
+            50% { transform: translate(-3px, -1px); }
+            60% { transform: translate(3px, 1px); }
+            70% { transform: translate(-2px, 0px); }
+            80% { transform: translate(2px, 0px); }
+            100% { transform: translate(0, 0); }
+        }
+        
+        .shake-intense {
+            animation: intenseShake 0.6s ease-in-out;
+        }
+        
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .achievement-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .achievement-card.unlocked {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .achievement-card.locked {
+            opacity: 0.3;
+        }
+        
+        .achievement-emoji {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .achievement-name {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .achievement-desc {
+            font-size: 10px;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+		.datetime {
+		    display: none !important;
+		}
+		
+        
+        @media (max-width: 768px) {
+            .control-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载遮罩 -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <!-- 转圈圈加载动画 -->
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="header-left">
+                    <h1><span id="navname1">武宗子</span><span id="navname2">抛水壶</span><span class="insider-badge">Insider</span></h1>
+                </div>
+                <div class="header-right">
+                    <div class="datetime" id="datetime"></div>
+                    <!-- LoginModule 会自动注入下拉菜单到这里 -->
+                    <a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none;">
+                        <i class="fas fa-home"></i> 主页
+                    </a>
+                </div>
+            </div>
+        </header>
+        
+        <br>
+        <p style="text-align: center; color: var(--text-color); opacity: 0.7; font-size: 13px;">
+            💡 按住【💪按钮/空格】蓄力（无限蓄力！），松开抛出水壶！下落时按【←/A】和【→/D】移动，按【💪/空格】接住！
+        </p>
+        <div class="game-wrapper" id="gameWrapper">
+            <canvas id="gameCanvas" width="1000" height="600"></canvas>
+            
+            <div class="game-ui">
+                <div class="game-panel">
+                    📍 高度: <span class="value" id="currentHeight">15</span> m
+                </div>
+            </div>
+            
+            <div class="charge-bar-container" id="chargeBarContainer" style="display: none;">
+                <div class="charge-bar" id="chargeBar"></div>
+            </div>
+            
+            <div class="player-arrow" id="playerArrow" style="display: none;"></div>
+            
+            <div class="shop-panel">
+                <div class="shop-title">🛒 道具商店（购买后效果立即激活5s）</div>
+                <div class="shop-item">
+                    <span>⏱️ 减速水壶</span>
+                    <span class="shop-item-price">10</span>
+                    <button class="shop-buy-btn" data-item="slow">购买</button>
+                </div>
+                <div class="shop-item">
+                    <span>⚡ 加速移动</span>
+                    <span class="shop-item-price">10</span>
+                    <button class="shop-buy-btn" data-item="speed">购买</button>
+                </div>
+                <div class="shop-item">
+                    <span>🦾 加长手臂</span>
+                    <span class="shop-item-price">10</span>
+                    <button class="shop-buy-btn" data-item="arm">购买</button>
+                </div>
+            </div>
+            
+            <div class="achievement-toggle" id="achievementToggle">
+                <i class="fas fa-trophy"></i> 成就
+            </div>
+        </div>
+        
+        <div class="control-buttons-wrapper">
+            <button class="control-btn" id="leftBtn"><i class="fas fa-arrow-left"></i></button>
+            <button class="control-btn special" id="dynamicActionBtn"><i class="fas fa-hand-rock"></i></button>
+            <button class="control-btn" id="rightBtn"><i class="fas fa-arrow-right"></i></button>
+        </div>
+        
+        <br>
+        
+    </div>
+    
+    <!-- 底部固定箭头 -->
+    <div class="bottom-arrow-container">
+        <div class="bottom-arrow" id="bottomArrow"></div>
+        <div class="bottom-arrow-label" id="bottomArrowLabel">武宗子位置</div>
+    </div>
+    
+    <div class="modal" id="achievementModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-trophy"></i> 成就殿堂</h2>
+                <button class="close-btn" id="closeAchievementBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="achievement-grid" id="achievementGrid"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="resultModalTitle">🎉 接住成功！</h2>
+                <button class="close-btn" id="closeResultBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="resultMessage" style="text-align: center; padding: 20px;"></div>
+                <div class="form-actions" style="justify-content: center;">
+                    <button class="btn btn-primary" id="restartGameBtn">✨ 再来一壶 ✨</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    <script src="https://dornhub.eu.org/resources/login.js"></script>
+    <script>
+            // ==================== 游戏参数配置（可在此调整测试） ====================
+            const GAME_CONFIG = {
+                // ----- 水壶运动参数 -----
+                swingStrength: 10000,          // 水壶左右摆动幅度（越大摆动越剧烈）
+                maxSwingSpeed: 200,            // 水壶最大摆动速度（限制最大偏移速度）
+                
+                // ----- 视觉移动参数 -----
+                worldSpeed: 20,                // 背景移动速度（天空/楼房/参考物移动速度）
+                
+                // ----- 武宗子参数 -----
+                playerSpeed: 10,               // 武宗子左右移动速度
+                armLength: 100,                 // 手臂长度（接住判定范围）
+                
+                // ----- 物理参数 -----
+                gravity: 12,                   // 重力加速度（越大下落越快）
+                chargeCoeff: 60,               // 蓄力系数（初速度 = 10 + 蓄力时间 × 系数）
+                
+                // ----- 初始位置参数（可分别调整X和Y）-----
+                playerStartX: 0,               // 武宗子初始X位置（范围：-550 ~ 550，0为画面中央）
+                playerStartY: 0,               // 武宗子初始Y偏移（米），0=正常5楼高度，正值向上，负值向下
+                kettleStartX: 0,               // 水壶初始X位置（范围：-550 ~ 550，0为画面中央）
+                kettleStartY: 0,               // 水壶初始Y偏移（米），相对于startHeight的偏移量
+                startHeight: 15,               // 初始高度（米），15 = 5楼，0 = 地面
+                
+                // ----- 调试参数 -----
+                showHitbox: false,              // 改为布尔值，确保正确判断
+                hitboxAlpha: 0.5,              // 降低透明度，让判定圈更明显但不过分遮挡
+                // ----- 参考物数量 -----
+                bgElementCount: 800,           // 背景参考物数量（云、鸟、飞机等）
+                
+                // ----- 画布尺寸 -----
+                canvasWidth: 1000,
+                canvasHeight: 600
+            };
+            // ================================================================
+            
+            // 计算实际初始高度（startHeight + kettleStartY）
+            let actualStartHeight = GAME_CONFIG.startHeight + GAME_CONFIG.kettleStartY;
+            
+            // ==================== 游戏变量 ====================
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            let gameState = 'idle';
+            let chargePercent = 0;
+            let chargeStartTime = 0;
+            let chargeInterval = null;
+            
+            let velocityY = 0;
+            let height = actualStartHeight;
+            let groundYPos = 0;
+            let gravity = GAME_CONFIG.gravity;
+            let maxHeight = actualStartHeight;
+            
+            let playerX = GAME_CONFIG.playerStartX;
+            let playerSpeed = GAME_CONFIG.playerSpeed;
+            let playerArmLength = GAME_CONFIG.armLength;
+            
+            // 初始时让水壶与玩家的视觉位置完全一致（X和Y都对齐）
+            let kettleX = GAME_CONFIG.playerStartX;
+            let kettleVX = 0;
+            // 确保水壶的起始高度与玩家所在的基准高度一致
+            let kettleStartHeight = GAME_CONFIG.startHeight + GAME_CONFIG.playerStartY;
+            
+            let totalGold = 0;
+            let currentStreak = 0;
+            
+            let isLoggedIn = false;
+            let currentUser = null;
+            let unlockedAchievements = [];
+            
+            let canvasWidth = GAME_CONFIG.canvasWidth;
+            let canvasHeight = GAME_CONFIG.canvasHeight;
+            let animationId = null;
+            let lastTimestamp = 0;
+            
+            let cameraOffsetY = 0;
+            
+            let modalOpen = false;
+            
+            const SPECIAL_HEIGHT = {114:"height_114",514:"height_514",1017:"height_1017",1221:"height_1221",1513:"height_1513",2006:"height_2006",2021:"height_2021",6649:"height_6649"};
+            let achievementsMeta = typeof ACHIEVEMENTS !== 'undefined' ? ACHIEVEMENTS : [];
+            
+            const achievementEmoji = {
+                first_throw: "🎯", first_catch: "🤲", height_100: "🚀", height_1000: "✈️", height_5000: "🛸", height_10000: "🌌",
+                height_114: "❄️", height_514: "💕", height_1017: "🏛️", height_1221: "🎆", height_1513: "🌊", 
+                height_2006: "🔥", height_2021: "🏭", height_6649: "🗺️", streak_5: "5️⃣", streak_15: "🔟", 
+                streak_22: "2️⃣2️⃣", streak_45: "4️⃣5️⃣", streak_114: "💯", big_explosion: "💥", first_item: "🎁"
+            };
+            
+            // 背景元素
+            let bgElements = [];
+            
+            function initBackgroundElements() {
+                bgElements = [];
+                
+                // 定义云层区间（高度范围，云朵密度系数）
+                const cloudLayers = [
+                    { min: 200, max: 500, density: 1.2, emoji: "☁️" },      // 低空云层
+                    { min: 800, max: 1200, density: 1.5, emoji: "☁️" },     // 中层云
+                    { min: 1800, max: 2300, density: 1.3, emoji: "☁️" },    // 高层云
+                    { min: 3000, max: 3500, density: 1.0, emoji: "☁️" },    // 稀薄云层
+                    { min: 4500, max: 5000, density: 0.8, emoji: "☁️" },    // 高空云
+                    { min: 6000, max: 6800, density: 0.6, emoji: "☁️" },    // 极高空卷云
+                    { min: 8000, max: 9000, density: 0.4, emoji: "☁️" }     // 最高云层
+                ];
+                
+                // 特殊物品配置
+                const specialItems = [
+                    { height: 500, emoji: "🕊️", chance: 0.25, range: 100 },      // 鸽子
+                    { height: 1000, emoji: "✈️", chance: 0.2, range: 150 },      // 飞机
+                    { height: 2000, emoji: "🎈", chance: 0.15, range: 150 },     // 热气球
+                    { height: 3000, emoji: "🪁", chance: 0.12, range: 150 },     // 风筝
+                    { height: 4000, emoji: "🚁", chance: 0.1, range: 180 },      // 直升机
+                    { height: 5000, emoji: "🛩️", chance: 0.08, range: 200 },     // 小飞机
+                    { height: 6500, emoji: "🛸", chance: 0.05, range: 250 },     // UFO
+                    { height: 8000, emoji: "☄️", chance: 0.04, range: 300 },     // 流星
+                    { height: 10000, emoji: "🌠", chance: 0.03, range: 400 },    // 流星雨
+                    { height: 15000, emoji: "✨", chance: 0.02, range: 500 },    // 星星
+                    { height: 20000, emoji: "⭐", chance: 0.01, range: 600 }     // 亮星
+                ];
+                
+                // 计算总生成数量（根据云层密度动态分配）
+                let totalElements = 0;
+                let cloudWeights = [];
+                
+                // 为每个云层计算权重
+                for (let layer of cloudLayers) {
+                    let range = layer.max - layer.min;
+                    let weight = range * layer.density;
+                    cloudWeights.push(weight);
+                    totalElements += weight;
+                }
+                
+                // 为特殊物品预留一些位置（约10%）
+                let specialCount = Math.floor(800 * 0.1);
+                let cloudCount = 800 - specialCount;
+                
+                // 生成云朵
+                for (let i = 0; i < cloudCount; i++) {
+                    // 根据权重选择云层
+                    let randomWeight = Math.random() * totalElements;
+                    let accumulatedWeight = 0;
+                    let selectedLayer = null;
+                    
+                    for (let idx = 0; idx < cloudLayers.length; idx++) {
+                        let range = cloudLayers[idx].max - cloudLayers[idx].min;
+                        let weight = range * cloudLayers[idx].density;
+                        accumulatedWeight += weight;
+                        if (randomWeight <= accumulatedWeight) {
+                            selectedLayer = cloudLayers[idx];
+                            break;
+                        }
+                    }
+                    
+                    if (selectedLayer) {
+                        // 在云层范围内随机生成高度
+                        let baseY = selectedLayer.min + Math.random() * (selectedLayer.max - selectedLayer.min);
+                        // 添加微小扰动，让云层边缘更自然
+                        baseY += (Math.random() - 0.5) * 50;
+                        
+                        bgElements.push({
+                            emoji: selectedLayer.emoji,
+                            x: Math.random() * canvasWidth,
+                            baseY: baseY,
+                            speedFactor: 0.45 + Math.random() * 0.1,
+                            isCloud: true
+                        });
+                    }
+                }
+                
+                // 生成特殊物品
+                for (let i = 0; i < specialCount; i++) {
+                    let emoji = "☁️";
+                    let baseY = Math.random() * 22000;  // 覆盖0-22000米
+                    
+                    // 检查是否在特殊物品区域
+                    for (let item of specialItems) {
+                        if (Math.abs(baseY - item.height) < item.range) {
+                            if (Math.random() < item.chance) {
+                                emoji = item.emoji;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // 如果没变成特殊物品，就变成普通云朵
+                    if (emoji === "☁️") {
+                        // 随机分配到某个云层
+                        let layer = cloudLayers[Math.floor(Math.random() * cloudLayers.length)];
+                        baseY = layer.min + Math.random() * (layer.max - layer.min);
+                    }
+                    
+                    bgElements.push({
+                        emoji: emoji,
+                        x: Math.random() * canvasWidth,
+                        baseY: baseY,
+                        speedFactor: 0.45 + Math.random() * 0.1,
+                        isCloud: emoji === "☁️"
+                    });
+                }
+                
+                // 打乱顺序，让云朵和特殊物品混合
+                for (let i = bgElements.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [bgElements[i], bgElements[j]] = [bgElements[j], bgElements[i]];
+                }
+            }
+            // 楼房配置
+            const buildings = [];
+            const buildingColors = ['#F0F0F0', '#E8E8E8', '#DCDCDC', '#F5F5F5', '#E0E0E0', '#FAFAFA', '#F8F8F8'];
+            for (let i = 0; i < 14; i++) {
+                buildings.push({
+                    x: i * 75,
+                    width: 70,
+                    height: 160,
+                    color: buildingColors[i % buildingColors.length],
+                    roofColor: '#CCCCCC'
+                });
+            }
+            
+            let extraBuildings = [
+                { x: 120, color: '#CDB38C', height: 200 },
+                { x: 450, color: '#B8A78F', height: 180 },
+                { x: 780, color: '#D2B48C', height: 220 },
+                { x: 920, color: '#C4A27A', height: 190 }
+            ];
+            
+            // ==================== 辅助函数 ====================
+            function intenseShake() {
+                document.getElementById('gameWrapper').classList.add('shake-intense');
+                setTimeout(() => {
+                    document.getElementById('gameWrapper').classList.remove('shake-intense');
+                }, 600);
+            }
+            
+            function showResultModal(success, heightVal, goldReward = 0) {
+                modalOpen = true;
+                const modal = document.getElementById('resultModal');
+                const title = document.getElementById('resultModalTitle');
+                const messageDiv = document.getElementById('resultMessage');
+                
+                if (success) {
+                    title.innerHTML = '🎉 武宗子接住了水壶！挑战成功！';
+                    messageDiv.innerHTML = `
+                        <p style="font-size: 18px; margin: 10px 0;">🏆 抛射高度: <strong style="color: #ffd700;">${Math.floor(heightVal)}</strong> 米</p>
+                        <p style="font-size: 18px; margin: 10px 0;">💰 获得金币: <strong style="color: #ffd700;">${goldReward.toFixed(2)}</strong> 𣿅元</p>
+                        <p style="font-size: 16px; margin: 10px 0;">🔥 连续接住: <strong>${currentStreak}</strong> 次</p>
+                    `;
+                } else {
+                    title.innerHTML = '💥 水壶砸到了地上！挑战失败！';
+                    messageDiv.innerHTML = `
+                        <p style="font-size: 18px; margin: 10px 0;">📏 抛射高度: <strong style="color: #ff6b35;">${Math.floor(heightVal)}</strong> 米</p>
+                        <p style="font-size: 16px; margin: 10px 0;">💔 水壶摔得粉碎！</p>
+                        <p style="font-size: 16px; margin: 10px 0;">🌿 地上的小草砸得起了火！🔥</p>
+                    `;
+                }
+                modal.style.display = 'flex';
+            }
+            
+            function closeResultModal() {
+                document.getElementById('resultModal').style.display = 'none';
+                modalOpen = false;
+            }
+            
+            function showNotification(msg, type) {
+                if (window.UI && UI.notify) UI.notify(msg, type);
+            }
+            
+            function showAchievementToast(name) {
+                if (window.UI && UI.success) {
+                    UI.success(`🏆 成就解锁: ${name}`, 3000);
+                }
+            }
+            
+            async function checkAndUnlockAchievement(achId) {
+                if (!LoginModule.isLoggedIn()) return false;
+                const user = LoginModule.getCurrentUser();
+                if (!user) return false;
+                if (unlockedAchievements.includes(achId)) return false;
+                try {
+                    let res = await fetch('https://dornhub.eu.org/php/record_achievements.php', {
+                        method: 'POST', headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({id_number: user.id_number, achievement_id: achId})
+                    });
+                    let data = await res.json();
+                    if (data.success || data.already_unlocked) {
+                        unlockedAchievements.push(achId);
+                        let ach = achievementsMeta.find(a=>a.id===achId);
+                        if (ach) showAchievementToast(ach.name);
+                        updateAchievementPanel();
+                        return true;
+                    }
+                } catch(e) { console.error(e); }
+                return false;
+            }
+            
+            async function loadUnlockedAchievements() {
+                if (!LoginModule.isLoggedIn()) return;
+                const user = LoginModule.getCurrentUser();
+                if (!user) return;
+                try {
+                    let res = await fetch(`https://dornhub.eu.org/php/query_achievements.php?id_number=${encodeURIComponent(user.id_number)}`);
+                    let data = await res.json();
+                    if (data.success) {
+                        unlockedAchievements = data.data.achievements.map(a=>a.achievement_id);
+                        updateAchievementPanel();
+                    }
+                } catch(e) { console.error(e); }
+            }
+            
+            function updateAchievementPanel() {
+                const grid = document.getElementById('achievementGrid');
+                if (!grid) return;
+                grid.innerHTML = '';
+                achievementsMeta.forEach(ach => {
+                    const unlocked = unlockedAchievements.includes(ach.id);
+                    const card = document.createElement('div');
+                    card.className = `achievement-card ${unlocked ? 'unlocked' : 'locked'}`;
+                    card.innerHTML = `
+                        <div class="achievement-emoji">${achievementEmoji[ach.id] || '🏆'}</div>
+                        <div class="achievement-name">${ach.name}</div>
+                        <div class="achievement-desc">${ach.description}</div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+            
+            function loadUserGold() {
+                const user = LoginModule.getCurrentUser();
+                if (user) {
+                    totalGold = parseFloat(user.funds) || 0;
+                    let goldAmount = typeof totalGold === 'number' ? totalGold : parseFloat(totalGold) || 0;
+                    // 更新下拉菜单中的资金显示（由 LoginModule 管理）
+                    LoginModule.updateUserInfo();
+                }
+            }
+            
+            function updateUserFundsDisplay() {
+                const user = LoginModule.getCurrentUser();
+                if (user) {
+                    let goldAmount = typeof totalGold === 'number' ? totalGold : parseFloat(totalGold) || 0;
+                    // 由 LoginModule 管理显示
+                    LoginModule.updateUserInfo();
+                }
+            }
+            
+            async function saveGoldToServer(netChange, desc) {
+                const user = LoginModule.getCurrentUser();
+                if (!user) return netChange;
+                try {
+                    let res = await fetch('https://dornhub.eu.org/php/lottery_reward.php', {
+                        method: 'POST', headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({id_number: user.id_number, net_change: netChange, segment_label: desc})
+                    });
+                    let data = await res.json();
+                    if (data.success && data.updated_user) {
+                        const updatedUser = data.updated_user;
+                        totalGold = parseFloat(updatedUser.funds) || 0;
+                        // 更新 localStorage 和 LoginModule 状态
+                        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                        LoginModule.refresh();
+                        updateUserFundsDisplay();
+                    }
+                    return netChange;
+                } catch(e) { console.error(e); return netChange; }
+            }
+            
+            // ==================== 游戏逻辑 ====================
+            function startCharge() {
+                if (gameState !== 'idle') return;
+                gameState = 'charging';
+                chargeStartTime = performance.now();
+                document.getElementById('chargeBarContainer').style.display = 'block';
+                
+                if (chargeInterval) clearInterval(chargeInterval);
+                chargeInterval = setInterval(() => {
+                    if (gameState === 'charging') {
+                        let elapsed = (performance.now() - chargeStartTime) / 1000;
+                        chargePercent = elapsed;
+                        let barWidth = Math.min(chargePercent * 50, 100);
+                        document.getElementById('chargeBar').style.width = barWidth + '%';
+                    }
+                }, 16);
+                
+                // 更新动态按钮
+                updateActionButton();
+            }
+            
+            function releaseCharge() {
+                if (gameState !== 'charging') return;
+                if (chargeInterval) clearInterval(chargeInterval);
+                
+                gameState = 'rising';
+                document.getElementById('chargeBarContainer').style.display = 'none';
+                
+                let chargeTime = chargePercent;
+                let initialVelocity = 10 + chargeTime * GAME_CONFIG.chargeCoeff;
+                velocityY = initialVelocity;
+                height = actualStartHeight;
+                // 抛出瞬间水壶与玩家位置完全一致                kettleX = playerX;
+                kettleVX = 0;
+                
+                checkAndUnlockAchievement('first_throw');
+                
+                lastTimestamp = performance.now();
+                if (animationId) cancelAnimationFrame(animationId);
+                animationId = requestAnimationFrame(gameLoop);
+                
+                // 更新动态按钮
+                updateActionButton();
+            }
+            
+            function updatePhysics(deltaSec) {
+                if (deltaSec > 0.033) deltaSec = 0.033;
+                if (deltaSec <= 0) return;
+                
+                if (gameState === 'rising') {
+                    velocityY -= gravity * deltaSec;
+                    height += velocityY * deltaSec;
+                    if (height < groundYPos) height = groundYPos;
+                    // 记录本次抛射的最高高度
+                    if (height > maxHeight) maxHeight = height;
+                    if (velocityY <= 0) {
+                        gameState = 'falling';
+                        // 进入下落状态时更新按钮
+                        updateActionButton();
+                    }
+                } else if (gameState === 'falling') {
+                    velocityY -= gravity * deltaSec;
+                    height += velocityY * deltaSec;
+                    
+                    kettleVX += (Math.random() - 0.5) * GAME_CONFIG.swingStrength * deltaSec;
+                    kettleVX *= (1 - deltaSec * 0.4);
+                    kettleVX = Math.min(Math.max(kettleVX, -GAME_CONFIG.maxSwingSpeed), GAME_CONFIG.maxSwingSpeed);
+                    kettleX += kettleVX * deltaSec;
+                    kettleX = Math.min(Math.max(kettleX, -550), 550);
+                    
+                    if (height <= groundYPos) {
+                        height = groundYPos;
+                        gameState = 'idle';
+                        handleMiss();
+                        // 游戏结束恢复按钮
+                        updateActionButton();
+                    }
+                }
+                
+                cameraOffsetY = height * GAME_CONFIG.worldSpeed;
+            }
+            
+            function handleCatch() {
+                if (gameState !== 'falling') return false;
+                
+                // 实时计算当前的 cameraOffsetY（不依赖全局变量）
+                let currentCameraOffsetY = height * GAME_CONFIG.worldSpeed;
+                
+                // 实时计算玩家屏幕坐标
+                function getCurrentPlayerScreenPos() {
+                    let buildingBaseY = canvasHeight - 80 + currentCameraOffsetY * 0.5;
+                    let buildingTopY = buildingBaseY - 160;
+                    let playerScreenY = buildingTopY - 18 + GAME_CONFIG.playerStartY * 2;
+                    let playerScreenX = canvasWidth / 2 + (playerX / 6);
+                    playerScreenX = Math.min(Math.max(playerScreenX, 70), canvasWidth - 70);
+                    return { x: playerScreenX, y: playerScreenY };
+                }
+                
+                // 实时计算水壶屏幕坐标
+                function getCurrentKettleScreenPos() {
+                    let buildingBaseY = canvasHeight - 80 + currentCameraOffsetY * 0.5;
+                    let groundY = buildingBaseY + 15;
+                    
+                    let kettleScreenY;
+                    if (height <= 0) {
+                        kettleScreenY = groundY - 25;
+                    } else {
+                        kettleScreenY = canvasHeight - 140 - (height * 1.2);
+                    }
+                    kettleScreenY = Math.min(Math.max(kettleScreenY, 30), canvasHeight - 70);
+                    let kettleScreenX = canvasWidth / 2 + (kettleX / 6);
+                    kettleScreenX = Math.min(Math.max(kettleScreenX, 55), canvasWidth - 55);
+                    return { x: kettleScreenX, y: kettleScreenY };
+                }
+                
+                let playerPos = getCurrentPlayerScreenPos();
+                let kettlePos = getCurrentKettleScreenPos();
+                
+                // 计算实际距离（像素）
+                let dx = Math.abs(kettlePos.x - playerPos.x);
+                let dy = Math.abs(kettlePos.y - playerPos.y);
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                let effectiveRange = playerArmLength / 2.2;
+                
+                // 添加调试日志
+                if (GAME_CONFIG.showHitbox) {
+                    console.log(`[判定] 距离=${distance.toFixed(2)}px, 半径=${effectiveRange.toFixed(2)}px, 玩家X=${playerPos.x.toFixed(2)}, 玩家Y=${playerPos.y.toFixed(2)}, 水壶X=${kettlePos.x.toFixed(2)}, 水壶Y=${kettlePos.y.toFixed(2)}`);
+                }
+                
+                if (distance <= effectiveRange) {
+                    totalGold = typeof totalGold === 'number' ? totalGold : parseFloat(totalGold) || 0;
+                    let reward = maxHeight / 100;
+                    totalGold += reward;
+                    updateUserFundsDisplay();
+                    saveGoldToServer(reward, `抛水壶接住高度${Math.floor(maxHeight)}米`);
+                    currentStreak++;
+                    
+                    // 成就检测
+                    checkAndUnlockAchievement('first_catch');
+                    if (maxHeight >= 100) checkAndUnlockAchievement('height_100');
+                    if (maxHeight >= 1000) checkAndUnlockAchievement('height_1000');
+                    if (maxHeight >= 5000) checkAndUnlockAchievement('height_5000');
+                    if (maxHeight >= 10000) checkAndUnlockAchievement('height_10000');
+                    let exact = Math.round(maxHeight);
+                    if (SPECIAL_HEIGHT[exact]) checkAndUnlockAchievement(SPECIAL_HEIGHT[exact]);
+                    if (currentStreak >= 5) checkAndUnlockAchievement('streak_5');
+                    if (currentStreak >= 15) checkAndUnlockAchievement('streak_15');
+                    if (currentStreak >= 22) checkAndUnlockAchievement('streak_22');
+                    if (currentStreak >= 45) checkAndUnlockAchievement('streak_45');
+                    if (currentStreak >= 114) checkAndUnlockAchievement('streak_114');
+                    
+                    showResultModal(true, maxHeight, reward);
+                    resetGame();
+                    return true;
+                }
+                return false;
+            }
+            
+            function handleMiss() {
+                if (maxHeight >= 5000) checkAndUnlockAchievement('big_explosion');
+                
+                intenseShake();
+                
+                let container = document.createElement('div');
+                container.style.position = 'fixed';
+                container.style.top = '0';
+                container.style.left = '0';
+                container.style.width = '100%';
+                container.style.height = '100%';
+                container.style.pointerEvents = 'none';
+                container.style.zIndex = '200';
+                document.body.appendChild(container);
+                
+                let count = Math.min(Math.floor(height / 50) + 60, 250);
+                for (let i = 0; i < count; i++) {
+                    let p = document.createElement('div');
+                    p.style.position = 'absolute';
+                    p.style.width = '10px';
+                    p.style.height = '10px';
+                    p.style.borderRadius = '50%';
+                    p.style.left = Math.random() * window.innerWidth + 'px';
+                    p.style.top = Math.random() * window.innerHeight + 'px';
+                    p.style.backgroundColor = `hsl(${Math.random() * 60 + 20}, 100%, 55%)`;
+                    p.style.animation = 'explosion 0.5s ease-out forwards';
+                    container.appendChild(p);
+                }
+                
+                setTimeout(() => container.remove(), 500);
+                
+                currentStreak = 0;
+                showResultModal(false, maxHeight, 0);
+                resetGame();
+            }
+            
+            function resetGame() {
+                if (animationId) cancelAnimationFrame(animationId);
+                gameState = 'idle';
+                height = actualStartHeight;
+                maxHeight = actualStartHeight;  // 确保这行存在
+                velocityY = 0;
+                chargePercent = 0;
+                playerX = GAME_CONFIG.playerStartX;
+                kettleX = playerX;
+                kettleVX = 0;
+                cameraOffsetY = 0;
+                document.getElementById('currentHeight').textContent = Math.floor(actualStartHeight);
+                document.getElementById('chargeBar').style.width = '0%';
+                render();
+                
+                // 重置后更新按钮
+                updateActionButton();
+            }
+            // 获取玩家屏幕坐标
+            function getPlayerScreenPos() {
+                let buildingBaseY = canvasHeight - 80 + cameraOffsetY * 0.5;
+                let buildingTopY = buildingBaseY - 160;
+                let playerScreenY = buildingTopY - 18 + GAME_CONFIG.playerStartY * 2;
+                let playerScreenX = canvasWidth / 2 + (playerX / 6);
+                playerScreenX = Math.min(Math.max(playerScreenX, 70), canvasWidth - 70);
+                return { x: playerScreenX, y: playerScreenY };
+            }
+            
+            // 获取水壶屏幕坐标
+            function getKettleScreenPos() {
+                let buildingBaseY = canvasHeight - 80 + cameraOffsetY * 0.5;
+                let groundY = buildingBaseY + 15;
+                
+                let kettleScreenY;
+                if (height <= 0) {
+                    kettleScreenY = groundY - 25;
+                } else {
+                    kettleScreenY = canvasHeight - 140 - (height * 1.2);
+                }
+                kettleScreenY = Math.min(Math.max(kettleScreenY, 60), canvasHeight - 70);
+                let kettleScreenX = canvasWidth / 2 + (kettleX / 6);
+                kettleScreenX = Math.min(Math.max(kettleScreenX, 55), canvasWidth - 55);
+                return { x: kettleScreenX, y: kettleScreenY };
+            }
+            
+            
+            function render() {
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                
+                let t = Math.min(height / 2000, 1);
+                let skyGradient = ctx.createLinearGradient(0, 0, 0, canvasHeight);
+                skyGradient.addColorStop(0, `rgb(${100 - t * 60}, ${150 - t * 100}, ${255 - t * 130})`);
+                skyGradient.addColorStop(1, `rgb(${135 - t * 50}, ${206 - t * 80}, ${235 - t * 100})`);
+                ctx.fillStyle = skyGradient;
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                
+                // 背景参考物（随高度缓慢移动）
+                ctx.font = '32px "Segoe UI Emoji"';
+                bgElements.forEach(el => {
+                    let speedMultiplier = el.speedFactor !== undefined ? el.speedFactor : 0.5;
+                    let screenY = el.baseY + cameraOffsetY * speedMultiplier;
+                    let maxBgHeight = 25000;
+                    
+                    // 循环出现
+                    while (screenY < -100) screenY += maxBgHeight;
+                    while (screenY > canvasHeight + 100) screenY -= maxBgHeight;
+                    
+                    if (screenY > -100 && screenY < canvasHeight + 100) {
+                        // 根据物品类型添加微小的发光效果
+                        if (el.emoji !== "☁️") {
+                            ctx.shadowBlur = 8;
+                            ctx.shadowColor = "rgba(255, 215, 0, 0.5)";
+                        } else {
+                            ctx.shadowBlur = 0;
+                        }
+                        ctx.fillText(el.emoji, el.x, screenY);
+                        ctx.shadowBlur = 0;
+                    }
+                });
+                
+                // 楼房（武宗子Y偏移影响楼房显示）
+                let playerYOffset = GAME_CONFIG.playerStartY * 0.5;
+                let buildingBaseY = canvasHeight - 80 + cameraOffsetY * 0.5;
+                let buildingHeight = 160;
+                let buildingTopY = buildingBaseY - buildingHeight;
+                
+                ctx.font = '14px Arial';
+                buildings.forEach(building => {
+                    let screenY = buildingTopY;
+                    if (screenY + building.height > -100 && screenY < canvasHeight + 100) {
+                        ctx.fillStyle = building.color;
+                        ctx.fillRect(building.x, screenY, building.width, building.height);
+                        ctx.fillStyle = '#AAAAAA';
+                        for (let i = 0; i < 5; i++) {
+                            ctx.fillRect(building.x + 15, screenY + 20 + i * 28, 10, 15);
+                            ctx.fillRect(building.x + 45, screenY + 20 + i * 28, 10, 15);
+                        }
+                        ctx.fillStyle = building.roofColor;
+                        ctx.fillRect(building.x - 5, screenY - 12, building.width + 10, 15);
+                        ctx.fillStyle = '#BBBBBB';
+                        ctx.fillRect(building.x + building.width / 2 - 8, screenY - 20, 16, 12);
+                    }
+                });
+                
+                extraBuildings.forEach(b => {
+                    let screenY = buildingTopY - 30;
+                    if (screenY + b.height > -100 && screenY < canvasHeight + 100) {
+                        ctx.fillStyle = b.color;
+                        ctx.fillRect(b.x, screenY, 60, b.height);
+                        ctx.fillStyle = '#9B6E3E';
+                        ctx.fillRect(b.x + 20, screenY + 40, 20, 12);
+                    }
+                });
+                
+                let groundY = buildingBaseY + 15;
+                ctx.fillStyle = '#5C9E5C';
+                ctx.fillRect(0, groundY, canvasWidth, canvasHeight - groundY);
+                ctx.fillStyle = '#4A7A4A';
+                for (let i = 0; i < 25; i++) {
+                    ctx.fillRect(i * 45, groundY + 5, 25, 8);
+                }
+                
+                // 使用统一函数获取玩家位置
+                let playerPos = getPlayerScreenPos();
+                let playerScreenX = playerPos.x;
+                let playerScreenY = playerPos.y;
+                
+                // 判定范围色块（调试用）
+                if (GAME_CONFIG.showHitbox === true || GAME_CONFIG.showHitbox === 1 || GAME_CONFIG.showHitbox === "1") {
+                    ctx.save();
+                    ctx.globalAlpha = GAME_CONFIG.hitboxAlpha || 0.5;
+                    ctx.fillStyle = 'rgba(255, 100, 100, 0.5)';
+                    ctx.beginPath();
+                    let catchRadius = playerArmLength / 2.2;
+                    ctx.arc(playerScreenX, playerScreenY, catchRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.9)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(playerScreenX, playerScreenY, catchRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = 'red';
+                    ctx.shadowBlur = 0;
+                    ctx.fillText(`判定半径: ${catchRadius.toFixed(1)}px`, playerScreenX + 15, playerScreenY - 10);
+                    ctx.restore();
+                }
+                
+                // 金色判定圈 - 仅调试模式显示
+                if (GAME_CONFIG.showHitbox === true || GAME_CONFIG.showHitbox === 1 || GAME_CONFIG.showHitbox === "1") {
+                    ctx.beginPath();
+                    ctx.arc(playerScreenX, playerScreenY, playerArmLength / 2.2, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255,215,0,0.7)';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                }
+                
+                // 绘制小人 (武宗子) - 头部
+                ctx.fillStyle = '#16DA49';
+                ctx.beginPath();
+                ctx.arc(playerScreenX, playerScreenY, 22, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 耳朵 - 移动到脸部的正左和正右
+                ctx.fillStyle = '#16DA49';
+                ctx.beginPath();
+                ctx.ellipse(playerScreenX - 28, playerScreenY - 2, 10, 14, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(playerScreenX + 28, playerScreenY - 2, 10, 14, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 眼睛（白色部分）
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(playerScreenX - 9, playerScreenY - 6, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(playerScreenX + 9, playerScreenY - 6, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 瞳孔
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.arc(playerScreenX - 8, playerScreenY - 7, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(playerScreenX + 10, playerScreenY - 7, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.font = 'bold 13px Arial';
+                ctx.fillStyle = '#FFD700';
+                ctx.shadowBlur = 2;
+                ctx.fillText('🏢 5F', playerScreenX - 22, playerScreenY - 32);
+                ctx.shadowBlur = 0;
+                
+                // 水壶 - 仅在上升或下落阶段显示（idle和charging状态隐藏）
+                if (gameState === 'rising' || gameState === 'falling') {
+                    let kettlePos = getKettleScreenPos();
+                    ctx.font = '48px "Segoe UI Emoji"';
+                    ctx.fillStyle = '#C0C0C0';
+                    ctx.fillText('🫖', kettlePos.x - 24, kettlePos.y - 14);
+                }
+                
+                document.getElementById('currentHeight').textContent = Math.floor(height);
+                
+                // 顶部箭头
+                let playerArrow = document.getElementById('playerArrow');
+                if (playerScreenX < 55 || playerScreenX > canvasWidth - 55) {
+                    playerArrow.style.display = 'block';
+                    let arrowX = Math.min(Math.max(playerScreenX, 65), canvasWidth - 65);
+                    playerArrow.style.left = arrowX + 'px';
+                } else {
+                    playerArrow.style.display = 'none';
+                }
+                
+                // 底部固定箭头
+                let bottomArrow = document.getElementById('bottomArrow');
+                let gameWrapperRect = document.getElementById('gameWrapper').getBoundingClientRect();
+                let relativeX = (playerScreenX / canvasWidth) * gameWrapperRect.width;
+                let arrowScreenX = gameWrapperRect.left + relativeX;
+                arrowScreenX = Math.min(Math.max(arrowScreenX, 30), window.innerWidth - 30);
+                bottomArrow.style.left = arrowScreenX + 'px';
+            }
+            
+            function gameLoop(timestamp) {
+                if (gameState === 'rising' || gameState === 'falling') {
+                    let deltaTime = timestamp - (lastTimestamp || timestamp);
+                    updatePhysics(deltaTime / 1000);
+                    lastTimestamp = timestamp;
+                }
+                render();
+                if (gameState === 'rising' || gameState === 'falling') {
+                    animationId = requestAnimationFrame(gameLoop);
+                }
+            }
+            
+            // ==================== 新增：动态动作按钮逻辑（触屏友好）====================
+            // 定义按钮状态和图标映射
+            const ACTION_STATE = {
+                IDLE: { text: '', icon: 'fa-hand-rock', action: 'startCharge' },
+                CHARGING: { text: '', icon: 'fa-fist-raised', action: 'releaseCharge' },
+                FALLING: { text: '', icon: 'fa-hand-paper', action: 'catch' }
+            };
+            
+            let currentActionState = 'IDLE'; // 'IDLE', 'CHARGING', 'FALLING'
+            
+            // 更新按钮的显示和功能
+            function updateActionButton() {
+                const dynamicActionBtn = document.getElementById('dynamicActionBtn');
+                if (!dynamicActionBtn) return;
+                
+                let state;
+                if (gameState === 'charging') {
+                    state = ACTION_STATE.CHARGING;
+                    currentActionState = 'CHARGING';
+                } else if (gameState === 'falling') {
+                    state = ACTION_STATE.FALLING;
+                    currentActionState = 'FALLING';
+                } else { // idle 或其他状态
+                    state = ACTION_STATE.IDLE;
+                    currentActionState = 'IDLE';
+                }
+                
+                // 更新按钮图标和文本（移动端可显示文本，PC端可选）
+                dynamicActionBtn.innerHTML = `<i class="fas ${state.icon}"></i><span style="margin-left: 5px; font-size: 12px;">${state.text}</span>`;
+                
+                // 更新按钮的点击/触摸事件（先移除旧的，再添加新的，避免重复绑定）
+                const newHandler = () => {
+                    if (modalOpen) return; // 弹窗打开时不响应
+                    
+                    if (currentActionState === 'IDLE') {
+                        startCharge();
+                    } 
+                    else if (currentActionState === 'CHARGING') {
+                        releaseCharge();
+                    }
+                    else if (currentActionState === 'FALLING') {
+                        handleCatch();  // 尝试接住
+                    }
+                };
+                
+                // 替换事件监听器，避免重复绑定
+                const newBtn = dynamicActionBtn.cloneNode(true);
+                dynamicActionBtn.parentNode.replaceChild(newBtn, dynamicActionBtn);
+                const freshBtn = document.getElementById('dynamicActionBtn');
+                freshBtn.addEventListener('click', newHandler);
+                freshBtn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    newHandler();
+                });
+            }
+            
+            // ==================== 初始化 ====================
+            function initGame() {
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+                initBackgroundElements();
+                resetGame();
+                render();
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space') {
+                            e.preventDefault();
+                            // 如果弹窗打开，不响应空格操作
+                            if (modalOpen) return;
+                            if (gameState === 'idle') startCharge();
+                            else if (gameState === 'falling') handleCatch();
+                        }
+                    if (e.code === 'KeyA') playerX -= playerSpeed;
+                    if (e.code === 'KeyD') playerX += playerSpeed;
+                    playerX = Math.min(Math.max(playerX, -2000), 2000);
+                    if (gameState === 'idle') {
+                        kettleX = playerX;
+                    }
+                });
+                
+                document.addEventListener('keyup', (e) => {
+                    if (e.code === 'Space' && gameState === 'charging') {
+                        // 如果弹窗打开，不响应空格松开操作
+                        if (modalOpen) return;
+                        releaseCharge();
+                    }
+                });
+                
+                // 左右移动按钮保持不变
+                document.getElementById('leftBtn').addEventListener('click', () => {
+                    playerX -= playerSpeed;
+                    playerX = Math.min(Math.max(playerX, -2000), 2000);
+                    if (gameState === 'idle') {
+                        kettleX = playerX;
+                    }
+                });
+                document.getElementById('rightBtn').addEventListener('click', () => {
+                    playerX += playerSpeed;
+                    playerX = Math.min(Math.max(playerX, -2000), 2000);
+                    if (gameState === 'idle') {
+                        kettleX = playerX;
+                    }
+                });
+                
+                // 初始化动态按钮（替换原有的 actionBtn）
+                // 先确保页面上有 dynamicActionBtn，如果没有则创建（兼容原有HTML结构）
+                let dynamicBtn = document.getElementById('dynamicActionBtn');
+                if (!dynamicBtn) {
+                    // 如果原来的按钮是 actionBtn，则将其 ID 改为 dynamicActionBtn
+                    const oldBtn = document.getElementById('actionBtn');
+                    if (oldBtn) {
+                        oldBtn.id = 'dynamicActionBtn';
+                        dynamicBtn = oldBtn;
+                    }
+                }
+                updateActionButton();
+                
+                document.querySelectorAll('.shop-buy-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (!LoginModule.isLoggedIn()) {
+                            LoginModule.showLoginModal();
+                            return;
+                        }
+                        let item = btn.dataset.item;
+                        let price = {slow:10, speed:10, arm:10}[item];
+                        if (totalGold >= price) {
+                            totalGold -= price;
+                            updateUserFundsDisplay();
+                            saveGoldToServer(-price, `购买道具: ${item}`);
+                            if (item === 'slow') { gravity = GAME_CONFIG.gravity * 0.3; setTimeout(() => { gravity = GAME_CONFIG.gravity; }, 5000); }
+                            if (item === 'speed') { playerSpeed = GAME_CONFIG.playerSpeed * 3; setTimeout(() => { playerSpeed = GAME_CONFIG.playerSpeed; }, 5000); }
+                            if (item === 'arm') { playerArmLength = GAME_CONFIG.armLength * 2; setTimeout(() => { playerArmLength = GAME_CONFIG.armLength; }, 5000); }
+                            checkAndUnlockAchievement('first_item');
+                            showNotification(`✨ 道具已激活！`, 'success');
+                        } else {
+                            showNotification('金币不足！', 'error');
+                        }
+                    });
+                });
+                
+                document.getElementById('achievementToggle').addEventListener('click', () => {
+                    document.getElementById('achievementModal').style.display = 'flex';
+                    updateAchievementPanel();
+                });
+                document.getElementById('closeAchievementBtn').addEventListener('click', () => {
+                    document.getElementById('achievementModal').style.display = 'none';
+                });
+                document.getElementById('closeResultBtn').addEventListener('click', () => {
+                    closeResultModal();
+                });
+                document.getElementById('restartGameBtn').addEventListener('click', () => {
+                    closeResultModal();
+                    resetGame();
+                });
+                
+                
+                window.addEventListener('click', (e) => {
+                    let modal = document.getElementById('achievementModal');
+                    if (e.target === modal) modal.style.display = 'none';
+                    let resultModal = document.getElementById('resultModal');
+                    if (e.target === resultModal) resultModal.style.display = 'none';
+                });
+                
+                window.addEventListener('resize', () => {
+                    render();
+                });
+            }
+            
+            const style = document.createElement('style');
+            style.textContent = `@keyframes explosion { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }`;
+            document.head.appendChild(style);
+            
+            window.addEventListener('load', () => {
+                // 初始化 LoginModule
+                LoginModule.init('.header-right');
+                
+                // 监听登录事件
+                document.addEventListener('userLoggedIn', function(e) {
+                    isLoggedIn = true;
+                    currentUser = e.detail.user;
+                    loadUserGold();
+                    loadUnlockedAchievements();
+                    if (window.UI && UI.success) {
+                        UI.success('登录成功！');
+                    }
+                });
+                
+                document.addEventListener('userLoggedOut', function() {
+                    isLoggedIn = false;
+                    currentUser = null;
+                    totalGold = 0;
+                    unlockedAchievements = [];
+                    updateAchievementPanel();
+                    if (window.UI && UI.info) {
+                        UI.info('已退出登录');
+                    }
+                });
+                
+                // 初始化游戏
+                initGame();
+                
+                // 加载已登录用户数据
+                if (LoginModule.isLoggedIn()) {
+                    isLoggedIn = true;
+                    currentUser = LoginModule.getCurrentUser();
+                    loadUserGold();
+                    loadUnlockedAchievements();
+                }
+                
+                if (window.UI && UI.updateDateTime) UI.updateDateTime();
+                setTimeout(() => {
+                    let mask = document.getElementById('loading-mask');
+                    if (mask) mask.style.display = 'none';
+                }, 800);
+            });
+        </script>
+</body>
+</html>

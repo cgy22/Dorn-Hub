@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<meta name="description" content="来自Dorn Hub的𣿅国知识测试小游戏。测试您对大𣿅子IP𣿅国世界观的了解程度，见识惊人离谱的𣿅国事实，并能够进行排行。Dorn Hub是大𣿅子IP的核心数字平台，也是用户进入𣿅国世界的第一道大门。">
+    <link rel="icon" href="https://dornhub.eu.org/SatornhLogo.png">
+    
+    <title>𣿅国小百科竞赛 - Dorn Hub</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+    <!-- Cookie 同意组件 -->
+    <script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+	<!-- Cloudflare Turnstile -->
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+	<!-- Turnstile 统一管理模块 -->
+	<script src="/resources/turnstile.js"></script>
+    
+    <!-- 题库数据 -->
+    <script src="https://dornhub.eu.org/resources/questions.js"></script>
+    
+    <style>
+        /* 页面特定样式 - 保留原contest.html的功能性样式 */
+        :root {
+            --main-color: #16DA49;
+        }
+        
+        /* 覆盖ui.css中的一些样式以适应本页面 */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 120px 20px 20px;
+            position: relative;
+            min-height: calc(100vh - 120px);
+        }
+        
+        /* 覆盖标题栏样式，使其与其他页面一致 */
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0;
+            margin-bottom: 0;
+            box-shadow: 0 2px 20px var(--shadow-color);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .header-left h1 {
+            color: white;
+        }
+        
+        /* 覆盖按钮样式以匹配ui.css */
+        .quiz-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+            margin: 5px;
+        }
+        
+        .quiz-button:hover {
+            background-color: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .quiz-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .quiz-button:hover::before {
+            left: 100%;
+        }
+        
+        .quiz-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .quiz-button:disabled::before {
+            display: none;
+        }
+        
+        .restart-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .restart-button:hover {
+            background-color: #0f8f30;
+            transform: scale(1.02);
+        }
+        
+        .restart-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .restart-button:hover::before {
+            left: 100%;
+        }
+        
+        .start-button {
+            padding: 15px 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .start-button:hover {
+            background-color: #0f8f30;
+            transform: scale(1.05);
+        }
+        
+        .start-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .start-button:hover::before {
+            left: 100%;
+        }
+        
+        /* 卡片样式 - 修改点：移除背景、边框、阴影定义，让section-container接管 */
+        .quiz-info, 
+        .start-info, 
+        .leaderboard-container, 
+        .records-container {
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .question-container {
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .question-container:hover {
+            transform: translateY(-2px);
+        }
+        
+        .option {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            transition: all 0.2s var(--animation-curve);
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+        }
+        
+        .option:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        /* 进度条 */
+        .progress-bar {
+            background-color: var(--border-color);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            background-color: var(--primary-color);
+            height: 100%;
+            transition: width 0.3s;
+        }
+        
+        /* 计时器 */
+        .timer-container {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .timer {
+            color: #FF0000;
+            font-size: 24px;
+            margin-left: 10px;
+        }
+        
+        /* 结果容器 - 修改点：移除背景、边框、阴影定义，让section-container接管 */
+        .result-container {
+            padding: 20px;
+            margin-top: 30px;
+            position: relative;
+            padding-bottom: 140px;
+        }
+        
+        .result-question {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .result-question.correct {
+            border-left: 4px solid #28a745;
+        }
+        
+        .result-question.incorrect {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .explanation {
+            background: var(--secondary-color);
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .score-display {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .stats-info {
+            background: var(--secondary-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        /* 固定在底部的按钮 - 修改点：添加毛玻璃效果 */
+        .fixed-buttons {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 760px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 -2px 10px var(--shadow-color);
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px) saturate(180%);
+            -webkit-backdrop-filter: blur(10px) saturate(180%);
+        }
+        
+        /* 排行榜 - 修改点：添加section-container类会通过HTML添加 */
+        .leaderboard-table, .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .leaderboard-table th,
+        .leaderboard-table td,
+        .records-table th,
+        .records-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .leaderboard-table th,
+        .records-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .leaderboard-table tr:hover,
+        .records-table tr:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .rank-1-10 {
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+        
+        .rank-11-30 {
+            background-color: rgba(192, 192, 192, 0.1);
+        }
+        
+        .rank-31-60 {
+            background-color: rgba(205, 127, 50, 0.1);
+        }
+        
+        .user-number {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .record-info {
+            background: var(--secondary-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* 上传表单 */
+        .upload-form {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .upload-form input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+            }
+            
+            .quiz-navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .quiz-button {
+                width: 100%;
+            }
+            
+            .fixed-buttons {
+                width: 90%;
+                padding: 10px;
+            }
+            
+            .leaderboard-table,
+            .records-table {
+                font-size: 12px;
+            }
+            
+            .leaderboard-table th,
+            .leaderboard-table td,
+            .records-table th,
+            .records-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- 加载遮罩 -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+    
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1 class="ms-fontSize-32 ms-fontWeight-semibold">
+                    <span id="navname1">Dorn</span>
+                    <span id="navname2">竞赛</span>
+                </h1>
+            </div>
+            <div class="header-right">
+                <!-- LoginModule 会自动注入登录下拉菜单到这里 -->
+                <a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none; margin-left: 10px;">
+                    <i class="fas fa-home"></i> 主页
+                </a>
+            </div>
+        </div>
+    </header>
+        
+    <div class="container">
+        <!-- 开始界面 - 修改点：添加section-container类 -->
+        <div id="start-container" class="start-container" style="text-align: center; padding: 40px 20px;">
+            <div class="start-title" style="font-size: 28px; color: var(--primary-color); margin-bottom: 20px;">
+                <i class="fas fa-trophy" style="color: var(--primary-color);"></i> 𣿅国小百科竞赛
+            </div>
+            <div class="start-info section-container">
+                <h3><i class="fas fa-clipboard-list"></i> 竞赛规则说明：</h3>
+                <ul class="rules-list" style="text-align: left; margin: 20px 0;">
+                    <li>本次竞赛共<strong>50道题目</strong>，每题<strong>2分</strong>，总分<strong>100分</strong></li>
+                    <li>答题时间限制为<strong>15分钟</strong>，超时系统将自动提交</li>
+                    <li>题目选项顺序会随机打乱，增加挑战性</li>
+                    <li>系统会记录您的<strong>选择次数</strong>，作为排名参考</li>
+                    <li>完成测试后，可选择是否将成绩上传到<strong>排行榜</strong></li>
+                    <li>排行榜排名标准：分数 > 用时 > 选择次数</li>
+                </ul>
+                <p style="color: #666; font-style: italic;">
+                    提示：如果你还不了解𣿅国，请前往"𣿅国电子文史资料库"
+                    <a href="https://dornhub.eu.org/cloud" style="color: var(--primary-color);">cloud.dorn.rf.gd</a>
+                    学习相关知识，尤其学习《𣿅子集校注》。
+                </p>
+            </div>
+            <button class="start-button" id="start-quiz-btn"><i class="fas fa-play"></i> 开始竞赛</button>
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="https://dornhub.eu.org/gov-services/id/index.html"><button class="quiz-button"><i class="fas fa-id-card"></i> 前往申领𣿅国绿卡</button></a>
+                <button class="quiz-button" id="show-leaderboard-start-btn"><i class="fas fa-chart-bar"></i> 查看排行榜</button>
+                <button class="quiz-button" id="show-records-start-btn"><i class="fas fa-history"></i> 参赛记录</button>
+            </div>
+        </div>
+
+        <!-- 答题界面 -->
+        <div id="quiz-container" style="display: none;">
+            <div class="quiz-header" style="text-align: center; margin-bottom: 30px;">
+                <h2><i class="fas fa-pencil-alt"></i> 𣿅国小百科竞赛</h2>
+                <p>请完成以下50道题目，每题2分，总分100分，限时15分钟</p>
+                <div class="timer-container">
+                    剩余时间: <span class="timer" id="timer">15:00</span>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="quiz-progress"></div>
+                </div>
+                <div class="progress-text" id="progress-text">第 1 题 / 共 50 题</div>
+            </div>
+            
+            <div id="question-area">
+                <!-- 题目将通过JavaScript动态生成，每个question-container会在displayQuestion中添加section-container类 -->
+            </div>
+            
+            <div class="quiz-navigation" style="display: flex; justify-content: space-between; margin-top: 30px;">
+                <button class="quiz-button" id="prev-btn" disabled><i class="fas fa-arrow-left"></i> 上一题</button>
+                <button class="quiz-button" id="next-btn">下一题 <i class="fas fa-arrow-right"></i></button>
+                <button class="quiz-button" id="submit-quiz-btn" style="display: none;">提交测试</button>
+            </div>
+        </div>
+
+        <!-- 结果界面 - 修改点：添加section-container类 -->
+        <div id="result-container" class="result-container section-container" style="display: none;">
+            <div class="score-display" id="score-display"></div>
+            <div class="stats-info" id="stats-info"></div>
+            
+            <!-- 显示用户序号 -->
+            <div class="record-info" id="record-info" style="display: none;">
+                <strong>本次答题已自动记录！用户序号：<span id="user-number-display"></span></strong>
+            </div>
+            
+            <div class="upload-form" id="upload-form" style="display: none;">
+                <h3><i class="fas fa-upload"></i> 上传成绩到排行榜</h3>
+                <input type="text" id="username" placeholder="请输入您的用户名" maxlength="20">
+                <button class="quiz-button" id="upload-score-btn" style="width: 100%;">上传成绩</button>
+                <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                    注意：用户名将公开显示在排行榜中，请勿使用敏感信息
+                </p>
+            </div>
+            
+            <div class="result-details" id="result-details">
+            </div>
+            
+            <!-- 固定在底部的按钮 - 已自带毛玻璃效果，无需修改 -->
+            <div class="fixed-buttons">
+                <button class="restart-button" id="restart-btn"><i class="fas fa-redo-alt"></i> 重新开始测试</button>
+                <button class="restart-button" id="view-leaderboard-btn" style="background-color: #6499FF;"><i class="fas fa-chart-bar"></i> 查看排行榜</button>
+                <button class="restart-button" id="view-records-btn" style="background-color: #FF9800;"><i class="fas fa-history"></i> 查看参赛记录</button>
+            </div>
+        </div>
+
+        <!-- 排行榜界面 - 修改点：添加section-container类 -->
+        <div id="leaderboard-container" class="leaderboard-container section-container" style="display: none;">
+            <h2><i class="fas fa-chart-bar"></i> 排行榜</h2>
+            <div id="leaderboard-content"></div>
+            <button class="restart-button" id="back-to-start-btn" style="margin-top: 20px;"><i class="fas fa-home"></i> 返回首页</button>
+        </div>
+        
+        <!-- 参赛记录界面 - 修改点：添加section-container类 -->
+        <div id="records-container" class="records-container section-container" style="display: none;">
+            <h2><i class="fas fa-history"></i> 参赛记录</h2>
+            <p>显示最近100次参赛记录，按时间倒序排列（最新的在最上方）</p>
+            <div id="records-content"></div>
+            <div class="navigation-buttons" style="margin-top: 20px;">
+                <button class="restart-button" id="back-to-start-from-records"><i class="fas fa-home"></i> 返回首页</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    <!-- 登录模块 -->
+    <script src="https://dornhub.eu.org/resources/login.js"></script>
+    
+    <script>
+        // 答题相关变量
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let quizScore = 0;
+        let quizQuestions = [];
+        let shuffledOptions = [];
+        let selectionCounts = [];
+        let quizStartTime = 0;
+        let quizEndTime = 0;
+        let timerInterval = null;
+        let timeLeft = 15 * 60;
+        let quizStarted = false;
+        let currentUserNumber = null;
+        
+        // 从题库中随机选择50道题目
+        function getRandomQuestions() {
+            const selectedQuestions = [];
+            const usedIndices = new Set();
+            const questionCount = Math.min(50, questionBank.length);
+            
+            while (selectedQuestions.length < questionCount) {
+                const randomIndex = Math.floor(Math.random() * questionBank.length);
+                if (!usedIndices.has(randomIndex)) {
+                    selectedQuestions.push(questionBank[randomIndex]);
+                    usedIndices.add(randomIndex);
+                }
+                if (usedIndices.size >= questionBank.length) break;
+            }
+            return selectedQuestions;
+        }
+        
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function updateTimer() {
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = formatTime(timeLeft);
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert('时间到！系统将自动提交答案。');
+                showResults();
+            }
+            timeLeft--;
+        }
+        
+        async function saveRecord() {
+            const timeUsed = Math.round((quizEndTime - quizStartTime) / 1000);
+            const totalSelections = calculateTotalSelections();
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/save_record.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ score: quizScore, time_used: timeUsed, selection_count: totalSelections })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    currentUserNumber = result.user_number;
+                    return result.user_number;
+                }
+                return null;
+            } catch (error) {
+                console.error('保存记录失败:', error);
+                return null;
+            }
+        }
+        
+        function startQuiz() {
+            quizQuestions = getRandomQuestions();
+            userAnswers = new Array(quizQuestions.length).fill(null);
+            selectionCounts = new Array(quizQuestions.length).fill(0);
+            shuffledOptions = [];
+            currentUserNumber = null;
+            
+            quizQuestions.forEach((question, index) => {
+                const optionIndices = question.options.map((_, i) => i);
+                const shuffledIndices = shuffleArray(optionIndices);
+                shuffledOptions[index] = {
+                    indices: shuffledIndices,
+                    correctAnswer: shuffledIndices.indexOf(question.correctAnswer)
+                };
+            });
+            
+            currentQuestionIndex = 0;
+            timeLeft = 15 * 60;
+            quizStartTime = Date.now();
+            quizStarted = true;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+            updateQuizProgress();
+            displayQuestion();
+            
+            document.getElementById('start-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('leaderboard-container').style.display = 'none';
+            document.getElementById('records-container').style.display = 'none';
+        }
+        
+        function initInterface() {
+            quizStarted = false;
+            currentUserNumber = null;
+            document.getElementById('start-container').style.display = 'block';
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('leaderboard-container').style.display = 'none';
+            document.getElementById('records-container').style.display = 'none';
+        }
+        
+        function updateQuizProgress() {
+            const progress = document.getElementById('quiz-progress');
+            const progressText = document.getElementById('progress-text');
+            const progressPercentage = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+            progress.style.width = `${progressPercentage}%`;
+            progressText.textContent = `第 ${currentQuestionIndex + 1} 题 / 共 ${quizQuestions.length} 题`;
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').style.display = currentQuestionIndex < quizQuestions.length - 1 ? 'block' : 'none';
+            document.getElementById('submit-quiz-btn').style.display = currentQuestionIndex === quizQuestions.length - 1 ? 'block' : 'none';
+        }
+        
+        function displayQuestion() {
+            const questionArea = document.getElementById('question-area');
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            const currentShuffled = shuffledOptions[currentQuestionIndex];
+            let optionsHTML = '';
+            
+            currentShuffled.indices.forEach((originalIndex, displayIndex) => {
+                const optionText = currentQuestion.options[originalIndex];
+                const isSelected = userAnswers[currentQuestionIndex] === displayIndex;
+                optionsHTML += `<div class="option ${isSelected ? 'selected' : ''}" data-index="${displayIndex}">${String.fromCharCode(65 + displayIndex)}. ${optionText}</div>`;
+            });
+            
+            questionArea.innerHTML = `
+                <div class="question-container section-container">
+                    <div class="question-number" style="font-weight: bold; color: var(--primary-color); margin-bottom: 10px;">题目 ${currentQuestionIndex + 1}</div>
+                    <div class="question-text" style="font-size: 18px; margin-bottom: 15px;">${currentQuestion.question}</div>
+                    <div class="options-container" style="display: flex; flex-direction: column; gap: 10px;">${optionsHTML}</div>
+                </div>
+            `;
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const selectedIndex = parseInt(this.getAttribute('data-index'));
+                    userAnswers[currentQuestionIndex] = selectedIndex;
+                    selectionCounts[currentQuestionIndex]++;
+                    document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            updateQuizProgress();
+        }
+        
+        function calculateScore() {
+            let score = 0;
+            quizQuestions.forEach((question, index) => {
+                const userSelectedIndex = userAnswers[index];
+                if (userSelectedIndex !== null && userSelectedIndex === shuffledOptions[index].correctAnswer) {
+                    score += 2;
+                }
+            });
+            return score;
+        }
+        
+        function calculateTotalSelections() {
+            return selectionCounts.reduce((total, count) => total + count, 0);
+        }
+        
+        function updateUploadForm() {
+            const isLoggedIn = LoginModule.isLoggedIn();
+            const currentUser = LoginModule.getCurrentUser();
+            const uploadForm = document.getElementById('upload-form');
+            const usernameInput = document.getElementById('username');
+            
+            if (isLoggedIn && currentUser) {
+                usernameInput.style.display = 'none';
+                uploadForm.innerHTML = `
+                    <h3><i class="fas fa-upload"></i> 上传成绩到排行榜</h3>
+                    <p>将使用您的账号昵称: <strong>${currentUser.nickname || currentUser.name}</strong></p>
+                    <button class="quiz-button" id="upload-score-btn" style="width: 100%;">上传成绩</button>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">上传后将会根据您的得分获得资金奖励</p>
+                `;
+            } else {
+                usernameInput.style.display = 'block';
+                uploadForm.innerHTML = `
+                    <h3><i class="fas fa-upload"></i> 上传成绩到排行榜</h3>
+                    <input type="text" id="username" placeholder="请输入您的用户名" maxlength="20">
+                    <button class="quiz-button" id="upload-score-btn" style="width: 100%;">上传成绩</button>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                        注意：用户名将公开显示在排行榜中，请勿使用敏感信息<br>
+                        <button onclick="LoginModule.showLoginModal()" style="color: var(--primary-color); background:none; border:none; cursor:pointer;">登录账号可使用昵称并获取资金奖励</button>
+                    </p>
+                `;
+            }
+            document.getElementById('upload-score-btn').addEventListener('click', uploadScore);
+        }
+        
+        async function uploadScore() {
+            const isLoggedIn = LoginModule.isLoggedIn();
+            const currentUser = LoginModule.getCurrentUser();
+            let username = '';
+            
+            if (isLoggedIn && currentUser) {
+                username = currentUser.nickname || currentUser.name;
+            } else {
+                username = document.getElementById('username').value.trim();
+                if (!username) {
+                    alert('请输入用户名');
+                    return;
+                }
+            }
+            
+            const timeUsed = Math.round((quizEndTime - quizStartTime) / 1000);
+            const totalSelections = calculateTotalSelections();
+            
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/save_score.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, score: quizScore, time_used: timeUsed, selection_count: totalSelections })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('成绩上传成功！');
+                    document.getElementById('upload-form').style.display = 'none';
+                    if (isLoggedIn && currentUser) {
+                        await addQuizReward(quizScore, timeUsed);
+                    }
+                } else {
+                    alert('上传失败: ' + result.message);
+                }
+            } catch (error) {
+                alert('网络错误，请稍后重试');
+                console.error('Upload error:', error);
+            }
+        }
+        
+        async function addQuizReward(score, timeUsed) {
+            const currentUser = LoginModule.getCurrentUser();
+            if (!currentUser) return;
+            
+            const totalFunds = score / 10;
+            const deduction = timeUsed / 100;
+            const finalReward = Math.max(0, totalFunds - deduction);
+            if (finalReward <= 0) return;
+            
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/add_quiz_reward.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_number: currentUser.id_number, reward_amount: finalReward, score: score, time_used: timeUsed })
+                });
+                const result = await response.json();
+                if (result.success && result.updated_user) {
+                    // 更新本地用户数据
+                    localStorage.setItem('currentUser', JSON.stringify(result.updated_user));
+                    // 刷新登录模块状态
+                    LoginModule.refresh();
+                    if (typeof UI !== 'undefined' && UI.notify) {
+                        UI.notify(`获得答题奖励 ${finalReward.toFixed(2)}𣿅元`, 'success');
+                    }
+                }
+            } catch (error) {
+                console.error('添加奖励失败:', error);
+            }
+        }
+        
+        async function showResults() {
+            clearInterval(timerInterval);
+            quizEndTime = Date.now();
+            const timeUsed = Math.round((quizEndTime - quizStartTime) / 1000);
+            quizScore = calculateScore();
+            await saveRecord();
+            
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.textContent = `您的得分: ${quizScore} / 100`;
+            if (quizScore < 60) scoreDisplay.style.color = '#FF0000';
+            else if (quizScore >= 60 && quizScore < 90) scoreDisplay.style.color = '#6499FF';
+            else scoreDisplay.style.color = '#16DA49';
+            
+            document.getElementById('stats-info').innerHTML = `
+                <strong>答题统计：</strong><br>用时: ${formatTime(timeUsed)}<br>
+                选择次数: ${calculateTotalSelections()}次<br>
+                平均每题选择: ${(calculateTotalSelections() / quizQuestions.length).toFixed(1)}次<br>
+                <strong>用户序号: ${currentUserNumber || '获取中...'}</strong>
+            `;
+            
+            updateUploadForm();
+            document.getElementById('upload-form').style.display = 'block';
+            
+            let resultDetailsHTML = '';
+            quizQuestions.forEach((question, index) => {
+                const userAnswerIndex = userAnswers[index];
+                const currentShuffled = shuffledOptions[index];
+                const isCorrect = userAnswerIndex === currentShuffled.correctAnswer;
+                let userAnswerText = "未作答";
+                if (userAnswerIndex !== null) {
+                    const originalOptionIndex = currentShuffled.indices[userAnswerIndex];
+                    userAnswerText = `${String.fromCharCode(65 + userAnswerIndex)}. ${question.options[originalOptionIndex]}`;
+                }
+                const correctShuffledIndex = currentShuffled.correctAnswer;
+                const correctOriginalIndex = currentShuffled.indices[correctShuffledIndex];
+                const correctAnswerText = `${String.fromCharCode(65 + correctShuffledIndex)}. ${question.options[correctOriginalIndex]}`;
+                let optionsHTML = '<div style="margin: 5px 0;"><strong>所有选项：</strong></div>';
+                currentShuffled.indices.forEach((originalIndex, displayIndex) => {
+                    optionsHTML += `<div style="margin-left: 15px;">${String.fromCharCode(65 + displayIndex)}. ${question.options[originalIndex]}</div>`;
+                });
+                resultDetailsHTML += `
+                    <div class="result-question ${isCorrect ? 'correct' : 'incorrect'}">
+                        <div class="result-status" style="font-weight: bold; margin-bottom: 10px; font-size: 18px; color: ${isCorrect ? '#16DA49' : '#FF0000'};">${isCorrect ? '✓ 答对' : '✕ 答错'} (选择次数: ${selectionCounts[index]})</div>
+                        <div class="question-number" style="font-weight: bold; color: var(--primary-color); margin-bottom: 10px;">题目 ${index + 1}</div>
+                        <div class="question-text" style="font-size: 16px; margin-bottom: 10px;">${question.question}</div>
+                        ${optionsHTML}
+                        <div style="margin-top: 10px;"><strong>您的答案：</strong> ${userAnswerText}</div>
+                        <div><strong>正确答案：</strong> ${correctAnswerText}</div>
+                        <div class="explanation"><strong>解析：</strong>${question.explanation}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('result-details').innerHTML = resultDetailsHTML;
+            
+            document.getElementById('start-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+            document.getElementById('leaderboard-container').style.display = 'none';
+            document.getElementById('records-container').style.display = 'none';
+        }
+        
+        // 修复排行榜排名显示错误：确保排名序号从1开始且顺序正确
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/get_leaderboard.php');
+                const leaderboard = await response.json();
+                let leaderboardHTML = `<table class="leaderboard-table"><thead><tr><th>排名</th><th>用户名</th><th>得分</th><th>用时</th><th>选择次数</th><th>上传时间</th></tr></thead><tbody>`;
+                // 使用显式的排名序号，基于数组索引+1，确保排名从1开始且顺序正确
+                leaderboard.forEach((entry, idx) => {
+                    const rank = idx + 1;
+                    let rankClass = rank <= 10 ? 'rank-1-10' : (rank <= 30 ? 'rank-11-30' : 'rank-31-60');
+                    leaderboardHTML += `<tr class="${rankClass}"><td>${rank}</td><td>${escapeHtml(entry.username)}</td><td>${entry.score}</td><td>${formatTime(entry.time_used)}</td><td>${entry.selection_count}</td><td>${new Date(entry.created_at).toLocaleString()}</td></tr>`;
+                });
+                leaderboardHTML += '</tbody></table>';
+                document.getElementById('leaderboard-content').innerHTML = leaderboardHTML;
+            } catch (error) {
+                document.getElementById('leaderboard-content').innerHTML = '<p>加载排行榜失败</p>';
+                console.error('加载排行榜出错:', error);
+            }
+        }
+        
+        // 辅助函数，防止XSS
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        async function loadRecords() {
+            try {
+                const response = await fetch('https://dornhub.eu.org/php/get_records.php');
+                const records = await response.json();
+                let recordsHTML = `<table class="records-table"><thead><tr><th>用户序号</th><th>得分</th><th>用时</th><th>选择次数</th><th>提交时间</th></tr></thead><tbody>`;
+                if (records.length === 0) {
+                    recordsHTML += `<tr><td colspan="5" style="text-align: center;">暂无参赛记录</td></tr>`;
+                } else {
+                    records.forEach(record => {
+                        recordsHTML += `<tr><td class="user-number">${escapeHtml(String(record.user_number))}</td><td>${record.score}</td><td>${formatTime(record.time_used)}</td><td>${record.selection_count}</td><td>${new Date(record.created_at).toLocaleString()}</td></tr>`;
+                    });
+                }
+                recordsHTML += '</tbody></table>';
+                document.getElementById('records-content').innerHTML = recordsHTML;
+            } catch (error) {
+                document.getElementById('records-content').innerHTML = '<p>加载参赛记录失败</p>';
+                console.error('加载记录出错:', error);
+            }
+        }
+        
+        function showLeaderboard() {
+            loadLeaderboard();
+            document.getElementById('start-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('leaderboard-container').style.display = 'block';
+            document.getElementById('records-container').style.display = 'none';
+        }
+        
+        function showRecords() {
+            loadRecords();
+            document.getElementById('start-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('leaderboard-container').style.display = 'none';
+            document.getElementById('records-container').style.display = 'block';
+        }
+        
+        // 事件监听
+        document.getElementById('prev-btn').addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion(); } });
+        document.getElementById('next-btn').addEventListener('click', () => { if (currentQuestionIndex < quizQuestions.length - 1) { currentQuestionIndex++; displayQuestion(); } });
+        document.getElementById('submit-quiz-btn').addEventListener('click', showResults);
+        document.getElementById('restart-btn').addEventListener('click', startQuiz);
+        document.getElementById('start-quiz-btn').addEventListener('click', startQuiz);
+        document.getElementById('show-leaderboard-start-btn').addEventListener('click', showLeaderboard);
+        document.getElementById('view-leaderboard-btn').addEventListener('click', showLeaderboard);
+        document.getElementById('view-records-btn').addEventListener('click', showRecords);
+        document.getElementById('show-records-start-btn').addEventListener('click', showRecords);
+        document.getElementById('back-to-start-btn').addEventListener('click', initInterface);
+        document.getElementById('back-to-start-from-records').addEventListener('click', initInterface);
+        
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 初始化登录模块
+            LoginModule.init('.header-right');
+            
+            // 监听登录事件
+            document.addEventListener('userLoggedIn', function(e) {
+                initInterface();
+                if (typeof UI !== 'undefined' && UI.success) {
+                    UI.success('登录成功！');
+                }
+            });
+            
+            document.addEventListener('userLoggedOut', function() {
+                initInterface();
+                if (typeof UI !== 'undefined' && UI.info) {
+                    UI.info('已退出登录');
+                }
+            });
+            
+            // 初始化页面
+            initInterface();
+        };
+    </script>
+</body>
+</html>

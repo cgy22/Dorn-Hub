@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://dornhub.eu.org/SatornhLogo.png">
+    
+    <title>𣿅国公民绿卡系统（账号创建与查询系统）</title>
+    
+    <!-- Fluent UI CSS -->
+    <link rel="stylesheet" href="https://res-1.cdn.office.net/files/fabric-cdn-prod_20230815.001/office-ui-fabric-core/11.1.0/css/fabric.min.css">
+    <!-- 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- 加载遮罩样式 - 优先加载 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/loading.css">
+    <!-- 统一UI样式 -->
+    <link rel="stylesheet" href="https://dornhub.eu.org/resources/ui.css">
+    
+    <!-- 加载遮罩脚本 - 优先加载 -->
+    <script src="https://dornhub.eu.org/resources/loading.js"></script>
+	<!-- Cookie 同意组件 -->
+	<script src="https://dornhub.eu.org/resources/cookie-consent.js"></script>
+	<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+	<!-- Turnstile 统一管理模块 -->
+	<script src="/resources/turnstile.js"></script>
+    
+    <!-- 城市数据 -->
+    <script src="https://dornhub.eu.org/resources/cities.js"></script>
+    
+    <style>
+        /* 页面特定样式 - 保留原id-card.html的功能性样式 */
+        :root {
+            --main-color: #16DA49;
+        }
+        
+        /* 覆盖ui.css中的一些样式以适应本页面 */
+        body {
+            font-family: 'Noto Sans SC', var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 20px;
+        }
+        
+        /* 覆盖标题栏样式，使其与其他页面一致 */
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0;
+            margin-bottom: 0;
+            box-shadow: 0 2px 20px var(--shadow-color);
+        }
+        
+        header h1 {
+            margin: 0;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .header-left h1 {
+            color: white;
+        }
+        
+        /* 覆盖按钮样式以匹配ui.css */
+        .quiz-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quiz-button:hover {
+            background-color: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .quiz-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .quiz-button:hover::before {
+            left: 100%;
+        }
+        
+        .submit-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s var(--animation-curve);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-button:hover {
+            background: #106ebe;
+            transform: scale(1.02);
+        }
+        
+        .submit-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .submit-button:hover::before {
+            left: 100%;
+        }
+        
+        .submit-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .query-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: auto;
+            align-self: flex-start;
+            transition: all 0.3s var(--animation-curve);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .query-button:hover {
+            background: #106ebe;
+            transform: scale(1.05);
+        }
+        
+        .query-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Turnstile 容器样式 */
+        .turnstile-container {
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* 卡片样式 - 修改点：移除背景、边框、阴影定义，让section-container接管 */
+        .query-section,
+        .quiz-info,
+        .leaderboard-container,
+        .records-container,
+        .question-container {
+            /* 移除原有的background, border, box-shadow，让section-container提供 */
+            padding: 20px;
+            margin-bottom: 30px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .quiz-info,
+        .query-section {
+            border-left: 4px solid var(--primary-color); /* 保留左侧彩色边框作为特色 */
+        }
+        
+        .question-container {
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s var(--animation-curve);
+        }
+        
+        .question-container:hover {
+            transform: translateY(-2px);
+        }
+        
+        .option {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            transition: all 0.2s var(--animation-curve);
+            border-radius: 4px;
+            padding: 12px 15px;
+            cursor: pointer;
+        }
+        
+        .option:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .option.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        /* 进度条 */
+        .progress-bar {
+            background-color: var(--border-color);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            background-color: var(--primary-color);
+            height: 100%;
+            transition: width 0.3s;
+        }
+        
+        /* PDF模板样式保持不变 */
+        #pdf-template-container {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            display: none;
+        }
+        
+        #pdf-template {
+            width: 1100px; 
+            height: 770px; 
+            border: 15px solid;
+            border-radius: 20px;
+            box-sizing: border-box;
+            overflow: hidden; 
+            position: relative;
+            background-color: white;
+            color: black; 
+            font-family: 'SimSun', 'Noto Sans SC', sans-serif;
+            margin: 0;
+            padding: 0;
+            transform: none;
+        }
+        
+        #pdf-template::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('bg.png'); 
+            background-size: cover;
+            background-position: center;
+            opacity: 1;
+            z-index: 1;
+        }
+		/* 地图引导链接样式 */
+		.map-guide-link {
+		    display: inline-flex;
+		    align-items: center;
+		    gap: 5px;
+		    margin-left: 15px;
+		    font-size: 14px;
+		    font-weight: normal;
+		    color: var(--primary-color);
+		    text-decoration: none;
+		    transition: all 0.3s ease;
+		    padding: 4px 8px;
+		    border-radius: 4px;
+		    background-color: rgba(var(--primary-color-rgb), 0.1);
+		}
+		
+		.map-guide-link:hover {
+		    background-color: var(--primary-color);
+		    color: white;
+		    text-decoration: none;
+		    transform: translateY(-2px);
+		}
+		
+		.map-guide-link i {
+		    font-size: 14px;
+		}
+		
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+            }
+            
+            .query-form {
+                flex-direction: column;
+            }
+            
+            .query-button {
+                width: 100%;
+            }
+			.map-guide-link {
+			    margin-left: 0;
+			    margin-top: 8px;
+			    display: inline-block;
+			}
+			
+			.form-group label {
+			    display: flex;
+			    flex-direction: column;
+			    gap: 8px;
+			}
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- 加载遮罩 -->
+    <div id="loading-mask">
+        <div class="spinner-text">
+            <span id="loading-text-1">Dorn</span>
+            <span id="loading-text-2">&nbsp;Hub&nbsp;</span>
+        </div>
+        <br>
+        <p>好东西就要来了……</p>
+        <br>
+        <div class="loading-spinner"></div>
+        <br>
+        <br>
+        <button class="btn" id="stop-button">
+            <i class="fas fa-stop-circle"></i> 中断加载
+        </button>
+        <p id="stop-text">* 页面加载时间过长时，可点击此按钮以中断加载。这会导致页面部分功能无法正常使用。</p>
+    </div>
+    
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1 class="ms-fontSize-32 ms-fontWeight-semibold">
+                    <span id="navname1">Dorn</span>
+                    <span id="navname2">绿卡</span>
+                </h1>
+            </div>
+            <div class="header-right">
+                <a href="https://dornhub.eu.org" class="settings-btn" style="text-decoration: none;">
+                    <i class="fas fa-home"></i> 主页
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 修改点：添加section-container类和turnstile验证表单 -->
+        <div class="query-section section-container">
+            <h3><i class="fas fa-search" style="color: var(--primary-color);"></i> 身份信息查询</h3>
+            <p>输入身份证件号和密码以查询已有身份信息</p>
+            
+            <!-- 查询表单 - 添加 data-turnstile 属性让 turnstile.js 自动处理 -->
+            <form id="query-form" data-turnstile="#queryTurnstileContainer">
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="query-id-number">身份证件号:</label>
+                        <input type="text" id="query-id-number" placeholder="请输入身份证件号" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="query-password">查询密码:</label>
+                        <input type="password" id="query-password" placeholder="请输入密码" required>
+                    </div>
+                </div>
+                
+                <!-- Turnstile 容器 -->
+                <div id="queryTurnstileContainer" class="turnstile-container"></div>
+                
+                <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                    <button type="submit" class="query-button" id="query-btn">查询</button>
+                </div>
+            </form>
+            
+            <div class="query-result" id="query-result">
+            </div>
+        </div>
+
+        <div id="quiz-container">
+            <div class="quiz-header" style="text-align: center; margin-bottom: 30px;">
+                <h2><i class="fas fa-clipboard-list" style="color: var(--primary-color);"></i> 𣿅国公民资格测试</h2>
+                <p>请完成以下25道题目，每题4分，总分100分</p>
+            </div>
+            
+            <!-- 修改点：添加section-container类 -->
+            <div class="quiz-info section-container">
+                <p><strong>测试规则：</strong></p>
+                <ul>
+                    <li>答对一定数量的题目将获准加入𣿅国</li>
+                    <li>在此基础上，答对更多数量的题目将获准得到更高种姓</li>
+                    <li>测试完成后不会显示得分和正确答案</li>
+                    <li>鹏子曰：“通过测试，就像呼吸一样简单。”了解𣿅国即可轻松通过测试。</li>
+                    <li>如果你还不了解𣿅国，请前往“𣿅国电子文史资料库”<a href="https://dornhub.eu.org/cloud">cloud.dorn.rf.gd</a>学习相关知识。尤其学习《𣿅子集校注》。</li>
+                    <li>你还可以点击下方按钮前往“𣿅国小百科测试”进行题库的学习。</li>
+                </ul>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="questions.html"><button class="quiz-button">前往学习𣿅国知识</button></a>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="quiz-progress"></div>
+                </div>
+                <div class="progress-text" id="progress-text">第 1 题 / 共 25 题</div>
+            </div>
+            
+            <div id="question-area">
+                <!-- 题目将通过JavaScript动态生成，每个question-container会在js中添加section-container类 -->
+            </div>
+            
+            <div class="quiz-navigation" style="display: flex; justify-content: space-between; margin-top: 30px;">
+                <button class="quiz-button" id="prev-btn" disabled>上一题</button>
+                <button class="quiz-button" id="next-btn">下一题</button>
+                <button class="quiz-button" id="submit-quiz-btn" style="display: none;">提交测试</button>
+            </div>
+        </div>
+
+        <div id="application-container" style="display: none;">
+            <h2><i class="fas fa-id-card" style="color: var(--primary-color);"></i> 身份信息录入（账号注册）</h2>
+            <!-- 修改点：为表单添加section-container类 -->
+            <form id="id-form" class="section-container" style="padding: 20px;">
+                <div class="form-group">
+                    <label for="name">姓名（此栏填写完后不可修改）:</label>
+                    <input type="text" id="name" required placeholder="请输入姓名">
+                </div>
+                
+                <div class="form-group">
+                    <label for="nickname">昵称（此栏填写完后可在后续进行修改）:</label>
+                    <input type="text" id="nickname" placeholder="请输入昵称（可选）">
+                    <small style="color: #666;">如果不填写，将使用姓名作为昵称</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthdate">出生日期:</label>
+                    <input type="date" id="birthdate" required value="2006-12-21">
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">性别:</label>
+                    <select id="gender" required>
+                        <option value="">-- 请选择 --</option>
+                        <option value="Male">男性</option>
+                        <option value="Female">女性</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="caste">种姓（若不可选，则已根据分数自动分配）:</label>
+                    <select id="caste" required>
+                        <option value="">-- 请选择 --</option>
+                        <option value="𣿅罗门">𣿅罗门</option>
+                        <option value="𣿅帝利">𣿅帝利</option>
+                        <option value="𣿅舍">𣿅舍</option>
+                        <option value="𣿅陀罗">𣿅陀罗</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="region-district">地区选择:
+					<a href="https://dornhub.eu.org/resources/images/Administrative-Division-Map-of-Donh-2026.png" 
+					           target="_blank" 
+					           class="map-guide-link"
+					           title="点击查看𣿅国行政区划图">
+					            <i class="fas fa-map-marked-alt"></i> 查看𣿅国行政区划图
+					        </a>
+					<a href="https://cgy22-my.sharepoint.com/:i:/g/personal/share_cgy22_onmicrosoft_com/IQDw1AVwI8g0Qb-OIomkrMtxAXwmyRITfpzCxHMTyYLkfx0?e=Yx4HVV"
+					           target="_blank" 
+					           class="map-guide-link"
+					           title="点击下载𣿅国行政区划图">
+					            <i class="fas fa-map-marked-alt"></i> 下载𣿅国行政区划图
+					        </a>
+					</label>
+                    <select id="region-district" required>
+                        <option value="">-- 请选择 大区 --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="region-admin" required disabled>
+                        <option value="">-- 请选择 行政区 --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="region-city" required disabled>
+                        <option value="" data-postcode="">-- 请选择 城市 --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="user-password">设置账号密码:</label>
+                    <input type="password" id="user-password" placeholder="至少8位，必须包含字母和数字" required>
+                    <small style="color: #666;">密码必须包含字母和数字，至少8位</small>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">确认密码:</label>
+                    <input type="password" id="confirm-password" placeholder="请再次输入密码" required>
+                </div>
+				<div class="form-group">
+				    <label for="email">备用邮箱 <span style="color: #666; font-size: 12px;">(选填，用于重置密码)</span></label>
+				    <input type="email" id="email" placeholder="your@email.com">
+				    <small style="color: #999;">注意：我们并不强制收集你的邮箱地址，也不会验证你邮箱地址的真实性，但如果你没有填写准确的邮箱地址，你将无法重置密码。这意味着如果你忘记了账号密码，你将永远无法找回。你不能通过联系管理员的方式人工重置密码，因为我们无法验证你身份的真实性。</small>
+				</div>
+				<div class="policy-links" style="margin: 20px 0; padding: 15px; background: var(--secondary-color); border-radius: 8px;">
+				    <p style="margin-bottom: 10px; font-weight: bold;"><i class="fas fa-gavel"></i> 提交即表示您同意以下条款：</p>
+				    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+				        <a href="https://dornhub.eu.org/privacy-policy.html" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+				            <i class="fas fa-shield-alt"></i> 隐私政策
+				        </a>
+				        <a href="https://dornhub.eu.org/terms.html" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+				            <i class="fas fa-file-contract"></i> 使用条款
+				        </a>
+				        <a href="https://dornhub.eu.org/cookie-policy.html" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+				            <i class="fas fa-cookie-bite"></i> Cookie 政策
+				        </a>
+				        <a href="https://dornhub.eu.org/disclaimer.html" target="_blank" style="color: var(--primary-color); text-decoration: none;">
+				            <i class="fas fa-exclamation-triangle"></i> 免责声明
+				        </a>
+				    </div>
+				    <p style="margin-top: 10px; font-size: 12px; color: var(--text-secondary);">
+				        <i class="fas fa-envelope"></i> <strong>关于邮箱：</strong> 您提供的备用邮箱仅用于密码找回，我们不会用于营销目的。您可以在个人中心随时修改或删除邮箱。
+				    </p>
+				</div>
+				<!-- Cloudflare Turnstile 人机验证组件 -->
+                <div class="form-group">
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAAC2E9TsjP-02HPpE"></div>
+                    <small style="color: #999;">请完成人机验证</small>
+                </div>
+                <button type="submit" class="submit-button" id="submit-btn">生成身份文件（注册账号）</button>
+            </form>
+
+            <div class="loading" id="loading" style="display: none; text-align: center; padding: 20px;">正在生成PDF与注册账号，请稍候...</div>
+        </div>
+
+        <h2 style="margin-top: 30px;"><i class="fas fa-file-pdf" style="color: var(--primary-color);"></i> 文件预览与下载</h2>
+        <!-- 修改点：为预览容器添加section-container类 -->
+        <div id="pdf-preview" class="section-container" style="margin-top: 20px; min-height: 700px; overflow: hidden; padding: 0;">
+            <iframe id="pdf-iframe" style="height: 700px !important; width: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <div class="pdf-generating-notice" id="pdf-generating-notice" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--primary-color); color: white; padding: 15px 30px; border-radius: 25px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10002; display: none; animation: pulse 1.5s infinite;">
+        📄 正在生成PDF，请稍后……
+    </div>
+
+    <!-- 模态框已经使用了modal-content，其样式在ui.css中已包含毛玻璃效果，无需修改 -->
+    <div class="confirm-modal" id="confirm-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10001; justify-content: center; align-items: center;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>确认申领𣿅国公民身份</h3>
+            </div>
+            <div class="modal-body">
+                <p>⚠️ 重要提示：理论上，每个公民仅能申领一次身份文件。</p>
+                <p>请确认你的信息填写正确，一旦申领将无法修改。如有需要修改，请联系工作人员。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="confirm-no">取消</button>
+                <button class="btn btn-primary" id="confirm-yes">确认申领</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="duplicate-modal" id="duplicate-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10003; justify-content: center; align-items: center;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 style="color: #e74c3c;">⚠️ 申领失败</h3>
+            </div>
+            <div class="modal-body">
+                <p>此证件已被申领。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="duplicate-close">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="quiz-result-modal" id="quiz-result-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10004; justify-content: center; align-items: center;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="quiz-result-title">测试结果</h3>
+            </div>
+            <div class="modal-body">
+                <p id="quiz-result-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="quiz-result-button" style="left:20px; bottom:20px;">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="confirm-modal" id="password-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10005; justify-content: center; align-items: center;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 style="color: #e74c3c;">密码不匹配</h3>
+            </div>
+            <div class="modal-body">
+                <p>两次输入的密码不一致，请重新输入！</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="password-modal-close">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdf-template-container" style="position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.5); z-index: 10000; display: none;">
+        <div id="pdf-template" style="width: 1100px; height: 770px; border: 15px solid; border-radius: 20px; box-sizing: border-box; overflow: hidden; position: relative; background-color: white; color: black; font-family: 'SimSun', 'Noto Sans SC', sans-serif; margin: 0; padding: 0;">
+            <div class="content-wrapper" style="position: relative; z-index: 2; padding: 20px 40px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
+                <div class="header-section" style="text-align: center; margin-bottom: 15px;">
+                    <div class="badge-container" style="margin-bottom: 10px;">
+                        <img src="flag.jpg" alt="国徽" style="width: 80px; height: auto; display: inline-block;">
+                    </div>
+                    <div class="main-title" style="font-size: 34px; font-weight: 900; margin: 0; letter-spacing: 3px;">𣿅国公民身份证</div>
+                    <div class="fixed-slogan" style="font-size: 16px; margin-top: 5px; margin-bottom: 20px; color: #555; line-height: 1.4;">
+                        你很荣幸作为一名𣿅国公民，在伟大总统的领导下，见证𣿅国的繁荣。
+                    </div>
+                </div>
+
+                <div class="info-section" style="display: flex; flex-grow: 1; padding-bottom: 10px; justify-content: space-between; align-items: flex-start;">
+                    <div class="info-details" style="flex: 1; padding-right: 50px; max-width: 700px;">
+                        <div class="detail-row" style="margin-bottom: 8px; display: flex; font-size: 19px;">
+                            <div class="detail-label" style="font-weight: bold; width: 180px; flex-shrink: 0; border-bottom: 1px solid #ddd; padding: 3px 0;">公民身份证号:</div>
+                            <div class="detail-value" id="doc-id-number" style="flex-grow: 1; padding: 3px 0; word-break: break-all; border-bottom: 1px solid #ddd;">DN02-######</div>
+                        </div>
+                        <div class="detail-row" style="margin-bottom: 8px; display: flex; font-size: 19px;">
+                            <div class="detail-label" style="font-weight: bold; width: 180px; flex-shrink: 0; border-bottom: 1px solid #ddd; padding: 3px 0;">姓名:</div>
+                            <div class="detail-value" id="doc-name" style="flex-grow: 1; padding: 3px 0; word-break: break-all; border-bottom: 1px solid #ddd;">######</div>
+                        </div>
+                        <div class="detail-row" style="margin-bottom: 8px; display: flex; font-size: 19px;">
+                            <div class="detail-label" style="font-weight: bold; width: 180px; flex-shrink: 0; border-bottom: 1px solid #ddd; padding: 3px 0;">出生日期:</div>
+                            <div class="detail-value" id="doc-birthdate" style="flex-grow: 1; padding: 3px 0; word-break: break-all; border-bottom: 1px solid #ddd;">######</div>
+                        </div>
+                        <div class="detail-row" style="margin-bottom: 8px; display: flex; font-size: 19px;">
+                            <div class="detail-label" style="font-weight: bold; width: 180px; flex-shrink: 0; border-bottom: 1px solid #ddd; padding: 3px 0;">性别:</div>
+                            <div class="detail-value" id="doc-gender" style="flex-grow: 1; padding: 3px 0; word-break: break-all; border-bottom: 1px solid #ddd;">######</div>
+                        </div>
+                        <div class="detail-row" style="margin-bottom: 8px; display: flex; font-size: 19px;">
+                            <div class="detail-label" style="font-weight: bold; width: 180px; flex-shrink: 0; border-bottom: 1px solid #ddd; padding: 3px 0;">种姓:</div>
+                            <div class="detail-value" id="doc-caste" style="flex-grow: 1; padding: 3px 0; word-break: break-all; border-bottom: 1px solid #ddd;">######</div>
+                        </div>
+                        <div class="detail-row" style="margin-bottom: 8px; display: flex; font-size: 19px;">
+                            <div class="detail-label" style="font-weight: bold; width: 180px; flex-shrink: 0; border-bottom: 1px solid #ddd; padding: 3px 0;">地区:</div>
+                            <div class="detail-value" id="doc-region" style="flex-grow: 1; padding: 3px 0; word-break: break-all; border-bottom: 1px solid #ddd;">######</div>
+                        </div>
+                    </div>
+
+                    <div class="image-area" style="width: 220px; text-align: center; display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
+                        <canvas id="qrcode-canvas" style="width: 120px; height: 120px; border: 1px solid #333; margin-bottom: 10px;"></canvas>
+                    </div>
+                </div>
+                
+                <div class="footer-section" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 15px;">
+                    <div class="footer-left" style="width: 55%; font-size: 22px; position: relative; padding-bottom: 20px;">
+                        伟大的总统授予你神圣的𣿅国公民身份:<br>
+                        <img src="sign.png" alt="签名图片" style="width: 120px; height: auto; position: absolute; bottom: 0; right: 0; opacity: 0.9;"> 
+                    </div>
+                    <div class="footer-right" style="width: 40%; text-align: right; position: relative; font-size: 22px; padding-bottom: 10px;">
+                        人口管理部国民身份管理局
+                        <img src="https://dornhub.eu.org/gov-services/dep-logo/National-Identity-Administration.png" alt="盖章图片" style="width: 200px; height: auto; position: absolute; bottom: 20px; right: 20px; opacity: 0.8;"> 
+                    </div>
+                </div>
+                
+                <div class="page-footer" style="text-align: center; font-size: 20px; padding-top: 5px; border-top: 1px dashed #aaa; width: 100%;">
+                    <span id="doc-issue-date">YYYY-MM-DD</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 统一UI脚本 -->
+    <script src="https://dornhub.eu.org/resources/ui.js"></script>
+    <script src="https://dornhub.eu.org/resources/questions.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    
+    <script>
+            // API端点配置
+            const API_BASE = 'https://dornhub.eu.org/php'; // 设置为服务器路径
+            const CHECK_DUPLICATE_API = API_BASE + '/check_duplicate.php';
+            const SAVE_CITIZEN_API = API_BASE + '/save_citizen.php';
+            const QUERY_CITIZEN_API = API_BASE + '/query_citizen.php';
+            const SENSITIVE_CHECK_API = API_BASE + '/SensitiveWordsDetect/test_sensitive_api.php';
+        
+            // 彩蛋关键词
+            const EASTER_EGG_KEYWORD = '我喜欢喝刺梨汁';
+        
+            // const casteRules = {
+            //     "𣿅罗门": ["𣿅", "童", "董", "郑", "薛", "李", "司马", "钟"],
+            //     "𣿅帝利": ["黄", "高", "陈", "王", "吴", "周", "曾", "叶", "兰", "上官", "洪", "林", "谢", "曹", "肖", "袁", "蔡", "夏", "江", "姜", "徐", "刘", "杨"],
+            //     "𣿅舍": ["邱", "胡", "张", "赵", "孙", "唐", "马", "朱", "郭", "何", "罗", "梁", "宋", "许", "韩", "邓", "彭", "田", "潘", "蒋", "于", "余", "杜", "程", "魏", "苏", "吕", "丁", "任", "卢", "姚", "沈", "崔", "谭", "陆", "范", "汪", "廖", "石", "金", "韦", "贾", "付", "方", "邹", "熊", "白", "孟", "秦", "侯", "段", "雷", "龙", "史", "陶", "贺", "毛", "顾", "万", "钱", "戴", "严", "孔", "向", "莫", "常"]
+            // };
+        
+            const regionColors = {
+                "中央特区": "#000000",
+                "中𣿅大区": "#16DA49",
+                "东𣿅大区": "#FF69B4", 
+                "北𣿅大区": "#349DA5",
+                "西𣿅大区": "#FFB500",
+                "南𣿅大区": "#DA70D6", 
+                "东南𣿅大区": "#A51515", 
+                "西南𣿅大区": "#00E3A4", 
+                "群岛大区": "#6499FF"  
+            };
+        
+            // 获取DOM元素
+            const form = document.getElementById('id-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const regionDistrictSelect = document.getElementById('region-district');
+            const regionAdminSelect = document.getElementById('region-admin');
+            const regionCitySelect = document.getElementById('region-city');
+            const loadingElement = document.getElementById('loading');
+            const pdfTemplateContainer = document.getElementById('pdf-template-container');
+            const confirmModal = document.getElementById('confirm-modal');
+            const confirmYes = document.getElementById('confirm-yes');
+            const confirmNo = document.getElementById('confirm-no');
+            const pdfGeneratingNotice = document.getElementById('pdf-generating-notice');
+            const duplicateModal = document.getElementById('duplicate-modal');
+            const duplicateClose = document.getElementById('duplicate-close');
+        
+            // 查询表单相关元素
+            const queryForm = document.getElementById('query-form');
+            const queryIdInput = document.getElementById('query-id-number');
+            const queryPwdInput = document.getElementById('query-password');
+            const queryResult = document.getElementById('query-result');
+            const originalQueryBtn = document.getElementById('query-btn');
+        
+            // 密码相关DOM元素
+            const userPassword = document.getElementById('user-password');
+            const confirmPassword = document.getElementById('confirm-password');
+            const passwordModal = document.getElementById('password-modal');
+            const passwordModalClose = document.getElementById('password-modal-close');
+        
+            // 申领状态
+            let hasApplied = false;
+            let currentFormData = null;
+        
+            // 答题相关变量
+            let currentQuestionIndex = 0;
+            let userAnswers = [];
+            let quizScore = 0;
+            let canChooseCaste = false;
+        
+            // 从题库中随机选择25道题目
+            function getRandomQuestions() {
+                const selectedQuestions = [];
+                const usedIndices = new Set();
+                
+                const questionCount = Math.min(25, questionBank.length);
+                
+                while (selectedQuestions.length < questionCount) {
+                    const randomIndex = Math.floor(Math.random() * questionBank.length);
+                    if (!usedIndices.has(randomIndex)) {
+                        selectedQuestions.push(questionBank[randomIndex]);
+                        usedIndices.add(randomIndex);
+                    }
+                    
+                    if (usedIndices.size >= questionBank.length) break;
+                }
+                
+                return selectedQuestions;
+            }
+        
+            let quizQuestions = getRandomQuestions();
+        
+            passwordModalClose.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+            });
+        
+            // ========== 彩蛋检测：在 Turnstile 拦截之前先处理 ==========
+            if (originalQueryBtn) {
+                originalQueryBtn.addEventListener('click', function(e) {
+                    const queryId = queryIdInput.value.trim();
+                    
+                    // 彩蛋检测：输入彩蛋词直接激活，不经过 turnstile 验证
+                    if (queryId === EASTER_EGG_KEYWORD) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        activateCheatMode();
+                        showQueryResult('🎉 总统很高兴，给你直接颁发𣿅国绿卡！', true);
+                        return false;
+                    }
+                });
+            }
+        
+            // ========== Turnstile 验证通过后的查询处理 ==========
+            if (queryForm) {
+                queryForm.addEventListener('turnstile-verified', async function(e) {
+                    const queryId = queryIdInput.value.trim();
+                    const queryPwd = queryPwdInput.value;
+                    
+                    // 彩蛋已经在按钮点击时处理过了，这里直接跳过
+                    if (queryId === EASTER_EGG_KEYWORD) {
+                        // 重置 Turnstile
+                        const container = document.getElementById('queryTurnstileContainer');
+                        if (container && typeof TurnstileManager !== 'undefined') {
+                            TurnstileManager.reset(container);
+                        }
+                        return;
+                    }
+                    
+                    if (!queryId || !queryPwd) {
+                        showQueryResult('身份证件号和密码均不能为空！', false);
+                        const container = document.getElementById('queryTurnstileContainer');
+                        if (container && typeof TurnstileManager !== 'undefined') {
+                            TurnstileManager.reset(container);
+                        }
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch(QUERY_CITIZEN_API, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                id_number: queryId,
+                                password: queryPwd
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.error) {
+                            showQueryResult(result.error, false);
+                        } else if (result.success && result.data) {
+                            const citizen = result.data;
+                            
+                            // 构建认证信息显示
+                            let certificationHtml = '';
+                            if (citizen.certification && citizen.certification.trim() !== '') {
+                                certificationHtml = `<strong>认证:</strong> ${citizen.certification}<br>`;
+                            }
+                            
+                            const infoHtml = `
+                                <div class="query-info">
+                                    <strong>姓名:</strong> ${citizen.name}<br>
+                                    <strong>昵称:</strong> ${citizen.nickname}<br>
+                                    <strong>出生日期:</strong> ${citizen.birthdate}<br>
+                                    <strong>性别:</strong> ${citizen.gender}<br>
+                                    <strong>种姓:</strong> ${citizen.caste}<br>
+                                    <strong>地区:</strong> ${citizen.region}<br>
+                                    <strong>资金:</strong> ${citizen.funds || 50.00} 𣿅元<br>
+                                    <strong>等级:</strong> ${citizen.level || 1}<br>
+                                    ${certificationHtml}
+                                    <strong>上一次登录:</strong> ${citizen.last_login || '从未登录'}<br>
+                                    <strong>签发日期:</strong> ${citizen.issue_date}
+                                </div>
+                                <button class="query-button" onclick="previewExistingCitizen('${queryId}')">PDF预览（点击后请在下方"文件预览与下载"查看）</button>
+                            `;
+                            showQueryResult(infoHtml, true);
+                        } else {
+                            showQueryResult('未查询到相关身份信息', false);
+                        }
+                        
+                    } catch (error) {
+                        console.error('查询失败:', error);
+                        showQueryResult('查询失败，请稍后重试', false);
+                    }
+                    
+                    // 重置 Turnstile 以便下次查询
+                    const container = document.getElementById('queryTurnstileContainer');
+                    if (container && typeof TurnstileManager !== 'undefined') {
+                        TurnstileManager.reset(container);
+                    }
+                });
+            }
+        
+            function showQueryResult(message, isSuccess) {
+                const queryResult = document.getElementById('query-result');
+                queryResult.innerHTML = message;
+                queryResult.className = `query-result ${isSuccess ? 'query-success' : 'query-error'}`;
+                queryResult.style.display = 'block';
+            }
+        
+            function activateCheatMode() {
+                quizScore = 100;
+                canChooseCaste = true;
+                
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('application-container').style.display = 'block';
+                document.getElementById('caste').disabled = false;
+            }
+        
+            // 预览已有公民信息
+            async function previewExistingCitizen(idNumber) {
+                try {
+                    const response = await fetch(QUERY_CITIZEN_API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id_number: idNumber, password: queryPwdInput.value })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success && result.data) {
+                        const citizen = result.data;
+                        
+                        document.getElementById('doc-id-number').textContent = citizen.id_number;
+                        document.getElementById('doc-name').textContent = citizen.name;
+                        document.getElementById('doc-birthdate').textContent = citizen.birthdate;
+                        document.getElementById('doc-gender').textContent = citizen.gender;
+                        document.getElementById('doc-caste').textContent = citizen.caste;
+                        document.getElementById('doc-region').textContent = citizen.region;
+                        document.getElementById('doc-issue-date').textContent = citizen.issue_date;
+        
+                        const district = citizen.region.split(' ')[0];
+                        const borderColor = regionColors[district] || '#ccc';
+                        const pdfTemplate = document.getElementById('pdf-template');
+                        pdfTemplate.style.border = `15px solid ${borderColor}`;
+                        pdfTemplate.style.borderRadius = '20px';
+        
+                        generateQRCode(citizen.id_number);
+        
+                        await generatePDF(citizen.name, citizen.id_number, true);
+                        
+                    } else {
+                        alert('获取身份信息失败');
+                    }
+                    
+                } catch (error) {
+                    console.error('预览失败:', error);
+                    alert('预览失败，请稍后重试');
+                }
+            }
+        
+            // 根据成绩分配种姓
+            function assignCasteByScore(score) {
+                if (score >= 90) {
+                    return null; // 90分以上返回null，表示可自由选择
+                } else if (score >= 80) {
+                    return "𣿅帝利";
+                } else if (score >= 70) {
+                    return "𣿅舍";
+                } else if (score >= 60) {
+                    return "𣿅陀罗";
+                } else {
+                    return null; // 未通过测试
+                }
+            }
+        
+            // function getSurname(fullName) {
+            //     if (!fullName || fullName.length === 0) return "";
+                
+            //     const compoundSurnames = ["司马", "上官"];
+            //     for (const compoundSurname of compoundSurnames) {
+            //         if (fullName.startsWith(compoundSurname)) {
+            //             return compoundSurname;
+            //         }
+            //     }
+                
+            //     return fullName.charAt(0);
+            // }
+        
+            // 初始化答题页面
+            function initQuiz() {
+                userAnswers = new Array(quizQuestions.length).fill(null);
+                currentQuestionIndex = 0;
+                updateQuizProgress();
+                displayQuestion();
+            }
+        
+            // 更新答题进度
+            function updateQuizProgress() {
+                const progress = document.getElementById('quiz-progress');
+                const progressText = document.getElementById('progress-text');
+                
+                const progressPercentage = ((currentQuestionIndex + 1) / quizQuestions.length) * 100;
+                progress.style.width = `${progressPercentage}%`;
+                progressText.textContent = `第 ${currentQuestionIndex + 1} 题 / 共 ${quizQuestions.length} 题`;
+                
+                document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+                document.getElementById('next-btn').style.display = currentQuestionIndex < quizQuestions.length - 1 ? 'block' : 'none';
+                document.getElementById('submit-quiz-btn').style.display = currentQuestionIndex === quizQuestions.length - 1 ? 'block' : 'none';
+            }
+        
+            // 显示当前题目 - 修改点：为question-container添加section-container类
+            function displayQuestion() {
+                const questionArea = document.getElementById('question-area');
+                const currentQuestion = quizQuestions[currentQuestionIndex];
+                
+                let optionsHTML = '';
+                currentQuestion.options.forEach((option, index) => {
+                    const isSelected = userAnswers[currentQuestionIndex] === index;
+                    optionsHTML += `
+                        <div class="option ${isSelected ? 'selected' : ''}" data-index="${index}">
+                            ${String.fromCharCode(65 + index)}. ${option}
+                        </div>
+                    `;
+                });
+                
+                questionArea.innerHTML = `
+                    <div class="question-container section-container">
+                        <div class="question-number" style="font-weight: bold; color: var(--primary-color); margin-bottom: 10px;">题目 ${currentQuestionIndex + 1}</div>
+                        <div class="question-text" style="font-size: 18px; margin-bottom: 15px;">${currentQuestion.question}</div>
+                        <div class="options-container" style="display: flex; flex-direction: column; gap: 10px;">
+                            ${optionsHTML}
+                        </div>
+                    </div>
+                `;
+                
+                document.querySelectorAll('.option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        const selectedIndex = parseInt(this.getAttribute('data-index'));
+                        userAnswers[currentQuestionIndex] = selectedIndex;
+                        
+                        document.querySelectorAll('.option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                    });
+                });
+                
+                updateQuizProgress();
+            }
+        
+            // 计算得分
+            function calculateScore() {
+                let score = 0;
+                quizQuestions.forEach((question, index) => {
+                    if (userAnswers[index] === question.correctAnswer) {
+                        score += 4;
+                    }
+                });
+                return score;
+            }
+        
+            // 处理答题提交
+            function submitQuiz() {
+                quizScore = calculateScore();
+                
+                if (quizScore >= 60) {
+                    canChooseCaste = quizScore >= 90; // 只有90分以上才能自由选择
+                    const assignedCaste = assignCasteByScore(quizScore);
+                    
+                    let casteRule = "";
+                    if (canChooseCaste) {
+                        casteRule = "恭喜，你答题得到了一个很高的分数（90-100分）。作为新𣿅国人中的精英人才，你可在申领页自由选择种姓。";
+                    } else {
+                        casteRule = `根据你的测试成绩，你将自动获得${assignedCaste}种姓。`;
+                        // 自动设置种姓选择框的值
+                        document.getElementById('caste').value = assignedCaste;
+                        document.getElementById('caste').disabled = true;
+                    }
+                    
+                    const noticeContent = `
+                        ${casteRule}<br>
+                        1. 每人仅能申领一次𣿅国公民身份文件，提交后无法修改。<br>
+                        2. 请在申领页准确填写姓名、出生日期等信息，避免错误。<br>
+                        3. 身份文件生成后可预览并下载。第一次申领时务必牢记身份证号！
+                    `;
+                    
+                    document.getElementById('quiz-result-title').textContent = "恭喜通过测试！欢迎你，新𣿅国人！请务必认真阅读此申领须知！";
+                    document.getElementById('quiz-result-message').innerHTML = noticeContent;
+                    document.getElementById('quiz-result-modal').style.display = 'flex';
+                    document.getElementById('quiz-result-modal').setAttribute('data-is-pass', 'true');
+                    
+                } else {
+                    document.getElementById('quiz-result-title').textContent = "测试未通过";
+                    document.getElementById('quiz-result-message').textContent = `你的成绩未达到60分及格线。总统不高兴。你还不够热爱𣿅国，总统无法给你签发𣿅国公民身份。`;
+                    document.getElementById('quiz-result-modal').style.display = 'flex';
+                    document.getElementById('quiz-result-modal').setAttribute('data-is-pass', 'false');
+                }
+            }
+        
+            // 答题事件监听
+            document.getElementById('prev-btn').addEventListener('click', function() {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    displayQuestion();
+                }
+            });
+        
+            document.getElementById('next-btn').addEventListener('click', function() {
+                if (currentQuestionIndex < quizQuestions.length - 1) {
+                    currentQuestionIndex++;
+                    displayQuestion();
+                }
+            });
+        
+            document.getElementById('submit-quiz-btn').addEventListener('click', submitQuiz);
+        
+            // 答题结果弹窗"确定"按钮点击事件
+            document.getElementById('quiz-result-button').addEventListener('click', function() {
+                const isPass = document.getElementById('quiz-result-modal').getAttribute('data-is-pass') === 'true';
+                
+                document.getElementById('quiz-result-modal').style.display = 'none';
+                
+                if (isPass) {
+                    document.getElementById('quiz-container').style.display = 'none';
+                    document.getElementById('application-container').style.display = 'block';
+                    if (!canChooseCaste) {
+                        document.getElementById('caste').disabled = true;
+                    }
+                } else {
+                    window.location.reload();
+                }
+            });
+        
+            // 监听姓名输入（改为不再自动分配种姓，仅保留输入验证）
+            document.getElementById('name').addEventListener('input', function() {
+                // 如果用户不可自由选择种姓，且已有成绩分数，则根据成绩设置种姓
+                if (!canChooseCaste && quizScore > 0) {
+                    const assignedCaste = assignCasteByScore(quizScore);
+                    if (assignedCaste) {
+                        document.getElementById('caste').value = assignedCaste;
+                    }
+                }
+            });
+        
+            function populateDistrict() {
+                const districts = [...new Set(rawData.map(item => item['大区']))].sort();
+                
+                regionDistrictSelect.innerHTML = '<option value="">-- 请选择 大区 --</option>';
+                districts.forEach(d => {
+                    const option = document.createElement('option');
+                    option.value = d;
+                    option.textContent = d;
+                    regionDistrictSelect.appendChild(option);
+                });
+            }
+            
+            function populateAdmin() {
+                const selectedDistrict = regionDistrictSelect.value;
+                regionAdminSelect.disabled = true;
+                regionCitySelect.disabled = true;
+            
+                regionAdminSelect.innerHTML = '<option value="">-- 请选择 行政区 --</option>';
+                regionCitySelect.innerHTML = '<option value="" data-postcode="">-- 请选择 城市 --</option>';
+            
+                if (selectedDistrict) {
+                    const admins = [...new Set(rawData
+                        .filter(item => item['大区'] === selectedDistrict)
+                        .map(item => item['行政区中文名'] || '直辖市/区'))] 
+                        .sort();
+            
+                    admins.forEach(a => {
+                        const option = document.createElement('option');
+                        option.value = a;
+                        option.textContent = a;
+                        regionAdminSelect.appendChild(option);
+                    });
+                    regionAdminSelect.disabled = false;
+                }
+            }
+            
+            function populateCity() {
+                const selectedDistrict = regionDistrictSelect.value;
+                const selectedAdmin = regionAdminSelect.value;
+                regionCitySelect.disabled = true;
+            
+                regionCitySelect.innerHTML = '<option value="" data-postcode="">-- 请选择 城市 --</option>';
+            
+                if (selectedDistrict && selectedAdmin) {
+                    const cities = rawData.filter(item => 
+                        item['大区'] === selectedDistrict && (item['行政区中文名'] === selectedAdmin || (selectedAdmin === '直辖市/区' && !item['行政区中文名'])));
+            
+                    cities.forEach(c => {
+                        const option = document.createElement('option');
+                        option.value = c['城市中文名'];
+                        option.textContent = `${c['城市中文名']} (${c['邮政区号']})`;
+                        option.setAttribute('data-postcode', c['邮政区号']);
+                        option.setAttribute('data-admin', c['行政区中文名'] || '直辖市/区');
+                        regionCitySelect.appendChild(option);
+                    });
+                    regionCitySelect.disabled = false;
+                }
+            }
+            
+            regionDistrictSelect.addEventListener('change', () => {
+                populateAdmin();
+                populateCity(); 
+            });
+            regionAdminSelect.addEventListener('change', populateCity);
+        
+            // ========== 敏感词检测函数（前端检测） ==========
+            async function checkSensitiveText(text) {
+                if (!text || text.trim() === '') {
+                    return { has_sensitive: false };
+                }
+                try {
+                    const response = await fetch(SENSITIVE_CHECK_API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: text.trim() })
+                    });
+                    const result = await response.json();
+                    return result;
+                } catch (error) {
+                    console.error('敏感词检测请求失败:', error);
+                    // 检测失败时返回无敏感词，避免阻塞用户（后端仍会作为最终防线）
+                    return { has_sensitive: false };
+                }
+            }
+
+            // 表单提交处理（含密码验证、昵称处理、Turnstile 人机验证和敏感词检测）
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+            
+                if (hasApplied) {
+                    alert('你已经申领过身份文件，每人仅能申领一次。');
+                    return;
+                }
+        
+                // ========== 新增：获取 Turnstile token 并进行后端验证 ==========
+                const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+                
+                if (!turnstileToken) {
+                    alert('请先完成人机验证（点击“我不是机器人”复选框）。');
+                    return;
+                }
+                
+                // 显示验证中状态
+                submitBtn.disabled = true;
+                submitBtn.textContent = '验证中...';
+                
+                try {
+                    // 调用后端验证接口
+                    const verifyResponse = await fetch(API_BASE + '/verify_turnstile.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: turnstileToken })
+                    });
+                    
+                    const verifyResult = await verifyResponse.json();
+                    
+                    if (!verifyResult.success) {
+                        alert('人机验证失败，请重试。' + (verifyResult.message ? ' ' + verifyResult.message : ''));
+                        // 重置 Turnstile（让用户重新验证）
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                        }
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '生成身份文件（注册账号）';
+                        return;
+                    }
+                    
+                    // ========== 验证通过，继续原有流程 ==========
+                    
+                    const password = userPassword.value;
+                    const confirmPwd = confirmPassword.value;
+                    
+                    // 检查两次密码是否一致
+                    if (password !== confirmPwd) {
+                        passwordModal.style.display = 'flex';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '生成身份文件（注册账号）';
+                        return;
+                    }
+                    
+                    // 新密码验证规则：至少8位，必须同时包含字母和数字
+                    if (password.length < 8) {
+                        alert('密码长度至少需要8位！请重新设置。');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '生成身份文件（注册账号）';
+                        return;
+                    }
+                    
+                    // 检查是否包含字母（大小写均可）
+                    const hasLetter = /[a-zA-Z]/.test(password);
+                    // 检查是否包含数字
+                    const hasNumber = /\d/.test(password);
+                    
+                    if (!hasLetter || !hasNumber) {
+                        alert('密码必须同时包含字母和数字！请重新设置。\n示例：password123 或 Abc123456');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '生成身份文件（注册账号）';
+                        return;
+                    }
+        
+                    // 处理昵称：如果未填写则使用姓名
+                    const nicknameInput = document.getElementById('nickname').value.trim();
+                    const nameInput = document.getElementById('name').value.trim();
+                    const nickname = nicknameInput || nameInput;
+                
+                    // ========== 敏感词检测（在确认弹窗之前） ==========
+                    // 检测姓名
+                    const nameCheck = await checkSensitiveText(nameInput);
+                    if (nameCheck.has_sensitive) {
+                        alert('❌ 姓名包含敏感词，请修改后重试');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '生成身份文件（注册账号）';
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                        }
+                        return;
+                    }
+                    
+                    // 检测昵称
+                    const nicknameCheck = await checkSensitiveText(nickname);
+                    if (nicknameCheck.has_sensitive) {
+                        alert('❌ 昵称包含敏感词，请修改后重试');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '生成身份文件（注册账号）';
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                        }
+                        return;
+                    }
+        
+                    // 收集表单数据（含明文密码和昵称）
+                    const formData = {
+                        name: nameInput,
+                        nickname: nickname,
+                        birthdate: document.getElementById('birthdate').value,
+                        genderValue: document.getElementById('gender').value,
+                        caste: document.getElementById('caste').value,
+                        selectedCityOption: regionCitySelect.options[regionCitySelect.selectedIndex],
+                        district: regionDistrictSelect.value,
+                        password: userPassword.value // 明文密码
+                    };
+                
+                    // 构建完整地区信息
+                    const admin = formData.selectedCityOption.getAttribute('data-admin') === '直辖市/区' ? '' : formData.selectedCityOption.getAttribute('data-admin');
+                    const city = regionCitySelect.value;
+                    const regionCombined = `${formData.district} ${admin} ${city}`.trim().replace(/\s+/g, ' ');
+                
+                    const today = new Date();
+                    const issueDate = today.toISOString().slice(0, 10);
+                    
+                    // 构建检查信息
+                    const checkInfo = {
+                        name: formData.name,
+                        birthdate: formData.birthdate,
+                        gender: formData.genderValue === 'Male' ? '男性' : '女性',
+                        caste: formData.caste,
+                        region: regionCombined,
+                        issue_date: issueDate
+                    };
+                
+                    submitBtn.textContent = '检查信息中...';
+            
+                    // 检查是否存在重复
+                    const isDuplicate = await checkDuplicate(checkInfo);
+                    
+                    if (isDuplicate) {
+                        duplicateModal.style.display = 'flex';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '生成身份文件（注册账号）';
+                        // 重置 Turnstile
+                        if (typeof turnstile !== 'undefined') {
+                            turnstile.reset();
+                        }
+                        return;
+                    }
+                    
+                    // 没有重复，继续原有流程
+                    currentFormData = formData;
+                    confirmModal.style.display = 'flex';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '生成身份文件（注册账号）';
+                    
+                } catch (error) {
+                    console.error('验证或检测错误:', error);
+                    alert('验证服务异常，请稍后重试。');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '生成身份文件（注册账号）';
+                    // 重置 Turnstile
+                    if (typeof turnstile !== 'undefined') {
+                        turnstile.reset();
+                    }
+                }
+            });
+        
+            // 确认申领
+            confirmYes.addEventListener('click', async function() {
+                confirmModal.style.display = 'none';
+                
+                if (!currentFormData) return;
+            
+                const { name, nickname, birthdate, genderValue, caste, selectedCityOption, district, password } = currentFormData;
+                
+                const genderText = genderValue === 'Male' ? '男性' : '女性';
+                const postcode = selectedCityOption.getAttribute('data-postcode');
+                const admin = selectedCityOption.getAttribute('data-admin') === '直辖市/区' ? '' : selectedCityOption.getAttribute('data-admin');
+                const city = regionCitySelect.value;
+                const regionCombined = `${district} ${admin} ${city}`.trim().replace(/\s+/g, ' '); 
+                
+                const today = new Date();
+                const issueDate = today.toISOString().slice(0, 10);
+            
+                // 生成 ID 号码
+                const idNumber = generateIDNumber(postcode, issueDate, name, genderValue);
+            
+                // 更新 PDF 模板内容
+                document.getElementById('doc-id-number').textContent = idNumber;
+                document.getElementById('doc-name').textContent = name;
+                document.getElementById('doc-birthdate').textContent = birthdate;
+                document.getElementById('doc-gender').textContent = genderText;
+                document.getElementById('doc-caste').textContent = caste;
+                document.getElementById('doc-region').textContent = regionCombined;
+                document.getElementById('doc-issue-date').textContent = issueDate;
+            
+                // 设置边框颜色
+                const borderColor = regionColors[district] || '#ccc';
+                const pdfTemplate = document.getElementById('pdf-template');
+                pdfTemplate.style.border = `15px solid ${borderColor}`;
+                pdfTemplate.style.borderRadius = '20px';
+            
+                // 生成二维码
+                generateQRCode(idNumber);
+            
+                // 显示加载指示器
+                loadingElement.style.display = 'block';
+                pdfGeneratingNotice.style.display = 'block';
+            
+                try {
+                    // 生成PDF预览
+                    await generatePDF(name, idNumber);
+                    
+                    // 保存信息到数据库
+                    const citizenInfo = {
+                        name: name,
+                        nickname: nickname,
+                        birthdate: birthdate,
+                        gender: genderText,
+                        caste: caste,
+                        region: regionCombined,
+                        id_number: idNumber,
+                        issue_date: issueDate,
+                        password: password,
+                        funds: 50.00,
+                        level: 1,
+                        certification: '' // 认证字段留空
+                    };
+                    
+                    await saveCitizenInfo(citizenInfo);
+                    
+                    // 显示注册成功的个人信息
+                    const registrationInfo = `
+                        <div class="query-result query-success" style="display: block; margin-top: 20px; padding: 15px; border-radius: 4px; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724;">
+                            <h3>🎉 注册成功！您的个人信息如下：</h3>
+                            <div class="query-info">
+                                <strong>姓名:</strong> ${name}<br>
+                                <strong>昵称:</strong> ${nickname}<br>
+                                <strong>身份证号:</strong> ${idNumber}<br>
+                                <strong>出生日期:</strong> ${birthdate}<br>
+                                <strong>性别:</strong> ${genderText}<br>
+                                <strong>种姓:</strong> ${caste}<br>
+                                <strong>地区:</strong> ${regionCombined}<br>
+                                <strong>资金:</strong> 50.00 𣿅元<br>
+                                <strong>等级:</strong> 1<br>
+                                <strong>签发日期:</strong> ${issueDate}
+                            </div>
+                            <p><strong>⚠️ 重要提示：请牢记您的身份证号和密码！如果你没记住，关闭本页面后将再也无法查看！</strong></p>
+                        </div>
+                    `;
+                    
+                    // 在提交按钮下方插入注册信息
+                    submitBtn.insertAdjacentHTML('afterend', registrationInfo);
+                    
+                    // 标记为已申领，禁用按钮
+                    hasApplied = true;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = '已申领';
+                    
+                } catch (error) {
+                    console.error('PDF生成或数据库保存错误:', error);
+                    alert('处理失败: ' + (error.message || '请稍后重试'));
+                } finally {
+                    loadingElement.style.display = 'none';
+                    pdfGeneratingNotice.style.display = 'none';
+                }
+            });
+            
+            // 关闭重复申领警告
+            duplicateClose.addEventListener('click', function() {
+                duplicateModal.style.display = 'none';
+            });
+            
+            // 取消申领
+            confirmNo.addEventListener('click', function() {
+                confirmModal.style.display = 'none';
+                currentFormData = null;
+            });
+            
+            // 身份证号生成逻辑
+            function generateRandomChars(length) {
+                const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                let result = '';
+                for (let i = 0; i < length; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return result;
+            }
+            
+            function generateCheckLetter(gender) {
+                const maleChars = 'ACEGIKMOQSUWY';
+                const femaleChars = 'BDFHJLNPRTVXZ';
+                const charSet = gender === 'Male' ? maleChars : femaleChars;
+                return charSet.charAt(Math.floor(Math.random() * charSet.length));
+            }
+            
+            function generateIDNumber(postcode, issueDate, name, gender) {
+                const fixedPrefix = 'DN02-';
+                const yyyymmdd = issueDate.replace(/-/g, ''); 
+                
+                let hexName = '';
+                try {
+                    hexName = Array.from(new TextEncoder().encode(name))
+                        .map(b => b.toString(16).padStart(2, '0'))
+                        .join('');
+                } catch (e) {
+                    for (let i = 0; i < name.length; i++) {
+                        hexName += name.charCodeAt(i).toString(16).padStart(2, '0');
+                    }
+                }
+                const nameCode = hexName.slice(0, 4).toUpperCase().padEnd(4, 'X'); 
+                const randomChars = generateRandomChars(3); 
+                const checkLetter = generateCheckLetter(gender); 
+            
+                return `${fixedPrefix}${postcode}${yyyymmdd}${nameCode}${randomChars}${checkLetter}`;
+            }
+            
+            function generateQRCode(data) {
+                const canvas = document.getElementById('qrcode-canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+                const qr = new QRious({
+                    element: canvas,
+                    value: data,
+                    size: 120,
+                    level: 'H'
+                });
+            }
+            
+            async function generatePDF(name, idNumber, isQueryPreview = false) {
+                return new Promise((resolve, reject) => {
+                    pdfTemplateContainer.style.display = 'flex';
+                    
+                    setTimeout(() => {
+                        const element = document.getElementById('pdf-template');
+                        
+                        const opt = {
+                            margin: [0, 0, 0, 0],
+                            filename: isQueryPreview ? `查询-𣿅国公民身份证-${name}.pdf` : `𣿅国公民身份证-${name}.pdf`,
+                            image: { 
+                                type: 'jpeg', 
+                                quality: 0.98 
+                            },
+                            html2canvas: { 
+                                scale: 2,
+                                logging: false,
+                                useCORS: true,
+                                width: 1100,
+                                height: 770,
+                                x: 0,
+                                y: 0,
+                                scrollX: 0,
+                                scrollY: 0,
+                                windowWidth: 1100,
+                                windowHeight: 770,
+                                backgroundColor: '#FFFFFF',
+                                allowTaint: false,
+                                onclone: function(clonedDoc) {
+                                    const clonedElement = clonedDoc.getElementById('pdf-template');
+                                    if (clonedElement) {
+                                        clonedElement.style.border = element.style.border;
+                                        clonedElement.style.borderRadius = element.style.borderRadius;
+                                    }
+                                }
+                            },
+                            jsPDF: { 
+                                unit: 'px', 
+                                format: [1100, 770],
+                                orientation: 'landscape',
+                                hotfixes: ['px_scaling']
+                            } 
+                        };
+            
+                        html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+                            const blob = pdf.output('blob');
+                            const url = URL.createObjectURL(blob);
+                            
+                            const iframe = document.getElementById('pdf-iframe');
+                            iframe.src = url;
+                            
+                            pdfTemplateContainer.style.display = 'none';
+                            
+                            resolve();
+                        }).catch(error => {
+                            console.error('PDF 生成失败:', error);
+                            pdfTemplateContainer.style.display = 'none';
+                            reject(error);
+                        });
+                    }, 100);
+                });
+            }
+        
+            // API函数
+            async function checkDuplicate(info) {
+                try {
+                    const response = await fetch(CHECK_DUPLICATE_API, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(info)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    return result.is_duplicate;
+                } catch (error) {
+                    console.error('检查重复信息失败:', error);
+                    return false;
+                }
+            }
+            
+            // ========== 修改：saveCitizenInfo 正确处理错误 ==========
+            async function saveCitizenInfo(info) {
+                try {
+                    const response = await fetch(SAVE_CITIZEN_API, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(info)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.error) {
+                        // 抛出错误，让调用方处理
+                        throw new Error(result.error);
+                    }
+                    
+                    return result;
+                } catch (error) {
+                    console.error('保存公民信息失败:', error);
+                    // 重新抛出错误，不返回模拟成功
+                    throw error;
+                }
+            }
+            
+            // 页面加载完成后初始化
+            window.onload = function() {
+                populateDistrict();
+                initQuiz();
+                
+                // 预加载图片资源
+                const images = [
+                    'flag.jpg',
+                    'bg.png',
+                    'https://dornhub.eu.org/gov-services/dep-logo/National-Identity-Administration.png',
+                    'sign.png'
+                ];
+                
+                images.forEach(src => {
+                    const img = new Image();
+                    img.src = src;
+                });
+            };
+        </script>
+</body>
+</html>
