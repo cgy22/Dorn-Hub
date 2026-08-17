@@ -1,3 +1,32 @@
+## New Features
+
+1. Added a new "About Our Team" page.
+2. Launched the game "Donh Space War Simulator", adapted from the C++ version of "Plane War". Three versions are available: Standard, Cracked, and Hard.
+
+---
+
+## Improvements
+
+1. Adjusted the layout of the navigation bar buttons in "Madam Tonh Loves Shopping".
+2. Changed the "Older Versions" dropdown menu to a fixed-height scrollable list.
+3. The website navigation on the homepage now supports folder-style display. Websites of similar types or closely related content can now be grouped into the same folder.
+
+---
+
+## Fixes
+
+1. The styles and functionality of the "Personalization Settings" section in the "Account" page have been updated to match the corresponding section in the homepage "Settings" panel.
+
+---
+
+## Additional Notes
+
+1. This version contains redundant HDR-related code that currently serves no actual function. It is intended for testing HDR capabilities on the webpage for potential future use.
+2. The "Last Login" field on the "Account" page does not update — this is a known issue.
+3. Regardless of how many days are missed, it always counts as consecutive check-ins — this is a known issue.
+
+---
+
 ## 新功能
 
 1. 新增“关于我们团队”页面；
