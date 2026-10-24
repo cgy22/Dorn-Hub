@@ -2134,7 +2134,7 @@ input:checked + .toggle-slider:before {
     display: block;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 920px) {
     .hamburger-btn {
         display: flex;
     }
