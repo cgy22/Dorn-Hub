@@ -1,5 +1,5 @@
 // ui.js - 统一UI控制与动画效果
-// 文件位置: https://dornhub.eu.org/resources/ui.js
+// 文件位置: /resources/ui.js
 
 /**
  * 全局UI控制模块
@@ -18,7 +18,7 @@
 
         const img = document.createElement('img');
         img.className = 'hdr-trigger';
-        img.src = 'https://dornhub.eu.org/resources/images/avif-hdr-pq.avif';
+        img.src = '/resources/images/avif-hdr-pq.avif';
         img.alt = '';
         img.loading = 'eager';
         img.decoding = 'async';
@@ -270,7 +270,7 @@
         if (type === 'random') {
             loadRandomBackground(bgLayer);
         } else if (type === 'default') {
-            bgLayer.style.backgroundImage = `url('https://dornhub.eu.org/flag.jpg')`;
+            bgLayer.style.backgroundImage = `url('/flag.jpg')`;
             document.body.appendChild(bgLayer);
         } else if (type === 'custom') {
             loadCustomBackground(bgLayer);
@@ -1010,7 +1010,7 @@
     }
 
     function moveHeaderRight() {
-        var isMobile = window.innerWidth <= 800;
+        var isMobile = window.innerWidth <= 920;
         var header = document.querySelector('header .header-content');
         if (!header || !headerRight) return;
 
