@@ -52,19 +52,28 @@ Please keep all content respectful and on-theme for the Donh IP.
 
 **Copyright © 2021-2026 Dorn Hub. All Rights Reserved.**
 
-Code and content of this project are protected by copyright. Unauthorized copying, modification, distribution, or commercial use is prohibited.
+Code and content of this project are protected by copyright. Except for the materials explicitly released under the open-source licenses described below, unauthorized copying, modification, distribution, or commercial use is prohibited.
 
 ### Code
-The **code** (*.js, *.css, *.html, *.php) in this repository is licensed under the **AGPL-3.0** license.
+
+The **code** (`*.js`, `*.css`, `*.html`, `*.php`) in this repository is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
 
 ### Content
 
-Some of the paintings, music, articles, and other content in this warehouse are licensed under CC BY-NC-ND 4.0 license.
+Some of the paintings, music, articles, and other content in this repository are licensed under the **Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)** license.
+
+### Reserved materials
+
+All other materials — including but not limited to trademarks, logos, the "Dorn Hub" name, production configuration, credentials, databases, and any code or content not explicitly released under an open-source license — remain **All Rights Reserved** and are protected by copyright. They may not be copied, modified, distributed, or commercially used without prior written permission.
+
+### Version note
+
+The code in this repository may lag behind the production version deployed at https://dornhub.eu.org. The production deployment is not automatically covered by the AGPL-3.0 license unless explicitly stated.
 
 ### Detailed explanation
 
-- Code file: See [LICENSE](LICENSE)
-- Content file: See [CONTENT-LICENSE](CONTENT-LICENSE)
+- Code license: See [LICENSE](LICENSE) (AGPL-3.0 full text)
+- Content license: See [CONTENT-LICENSE](CONTENT-LICENSE) (CC BY-NC-ND 4.0 full text)
 
 ---
 
@@ -128,21 +137,32 @@ Dorn Hub
 
 ---
 
-## ©️ 版权信息
+## ©️ 版权声明
 
 **Copyright © 2021-2026 Dorn Hub. All Rights Reserved.**
 
-本项目的代码和内容受版权保护。未经授权，禁止复制、修改、分发或商业使用。
+本项目之代码与内容受版权保护。除下文明确以开源许可证发布之材料外，禁止未经授权复制、修改、分发或用于商业用途。
 
 ### 代码
-本仓库的**代码**（*.js, *.css, *.html, *.php）使用 **AGPL-3.0** 许可证。
+
+本仓库中的**代码**（`*.js`、`*.css`、`*.html`、`*.php`）采用 **GNU Affero 通用公共许可证第 3 版（AGPL-3.0）**授权。
 
 ### 内容
-本仓库的部分**绘画、音乐、文章等内容**使用 **CC BY-NC-ND 4.0** 许可证。
+
+本仓库中的部分绘画、音乐、文章及其他内容采用 **知识共享 署名-非商业性使用-禁止演绎 4.0 国际（CC BY-NC-ND 4.0）**授权。
+
+### 保留材料
+
+其他所有材料——包括但不限于商标、标识、"Dorn Hub"名称、生产环境配置、凭据、数据库，以及未明确以开源许可证发布的任何代码或内容——均**保留所有权利**，受版权保护。未经事先书面许可，不得复制、修改、分发或用于商业用途。
+
+### 版本说明
+
+本仓库中的代码可能滞后于部署于 https://dornhub.eu.org 的生产版本。除非另有明确说明，生产环境部署不自动适用 AGPL-3.0 许可证。
 
 ### 详细说明
-- 代码文件：参见 [LICENSE](LICENSE)
-- 内容文件：参见 [CONTENT-LICENSE](CONTENT-LICENSE)
+
+- 代码许可证：见 [LICENSE](LICENSE)（AGPL-3.0 全文）
+- 内容许可证：见 [CONTENT-LICENSE](CONTENT-LICENSE)（CC BY-NC-ND 4.0 全文）
 
 ---
 
