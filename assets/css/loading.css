@@ -94,6 +94,24 @@
     100% { transform: rotate(360deg); }
 }
 
+/* ==================== 小尺寸 spinner（用于按钮/行内 loading） ==================== */
+.loading-spinner.spinner-sm {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+    border-top-width: 2px;
+    margin: 0;
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* 深色主题下保持与默认 spinner 一致的边框基底色 */
+[data-theme="dark"] .loading-spinner.spinner-sm {
+    border-color: rgba(255, 255, 255, 0.1);
+    border-top-color: var(--primary-color, #16DA49);
+}
+
 /* 中断加载按钮 */
 #stop-button {
     display: none;
